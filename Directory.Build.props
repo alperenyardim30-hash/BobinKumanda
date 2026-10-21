@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>0.1.0</Version>
+    <Authors>Bobin Kardeşler</Authors>
+    <Company>Bobin Kardeşler</Company>
+    <Product>KumandaLab</Product>
+    <Copyright>© 2026 Bobin Kardeşler — GPL-3.0</Copyright>
+    <SatelliteResourceLanguages>tr;en</SatelliteResourceLanguages>
+  </PropertyGroup>
+</Project>

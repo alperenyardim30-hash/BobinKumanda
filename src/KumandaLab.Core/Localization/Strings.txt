@@ -1,0 +1,195 @@
+# KumandaLab metinleri. Biçim: anahtar | Türkçe | English   ({0} {1} yer tutucular, \n yeni satır)
+# ---- Kategoriler ----
+category.Supply | Besleme | Supply
+category.Protection | Koruma | Protection
+category.Control | Kumanda | Control devices
+category.Contacts | Kontaklar | Contacts
+category.Relays | Röle ve zaman röleleri | Relays and timers
+category.Sensors | Sensörler | Sensors
+category.Loads | Yükler ve lambalar | Loads and lamps
+category.Motors | Motorlar | Motors
+category.Systems | Hazır sistemler | Ready-made systems
+category.Misc | Diğer | Other
+
+# ---- Elemanlar ----
+comp.source-l1 | L1 fazı | Phase L1
+comp.source-l2 | L2 fazı | Phase L2
+comp.source-l3 | L3 fazı | Phase L3
+comp.source-n | Nötr (N) | Neutral (N)
+comp.source-pe | Koruma iletkeni (PE) | Protective earth (PE)
+comp.source-3ph | Üç faz besleme (L1 L2 L3) | Three-phase supply (L1 L2 L3)
+comp.source-3phnpe | Üç faz + N + PE besleme | Three-phase + N + PE supply
+comp.relay-coil | Kontaktör / röle bobini | Contactor / relay coil
+comp.timer-on | Zaman rölesi (çekmede gecikmeli) | Timer relay (on-delay)
+comp.timer-off | Zaman rölesi (düşmede gecikmeli) | Timer relay (off-delay)
+comp.contact-no | Normalde açık kontak (NO) | Normally open contact (NO)
+comp.contact-nc | Normalde kapalı kontak (NC) | Normally closed contact (NC)
+comp.contact-3no | Ana kontaklar (3 kutup, NO) | Main contacts (3-pole, NO)
+comp.contact-3nc | Üç kutuplu kapalı kontak | Three-pole NC contact
+comp.contact-co | Değiştirici kontak | Changeover contact
+comp.button-no | Start butonu (NO) | Start push button (NO)
+comp.button-nc | Stop butonu (NC) | Stop push button (NC)
+comp.button-nonc | Jumelli buton (NO + NC) | Double push button (NO + NC)
+comp.limit-co | Sınır anahtarı (değiştirici) | Limit switch (changeover)
+comp.limit-nonc | Sınır anahtarı (NO + NC) | Limit switch (NO + NC)
+comp.switch-3p | Üç kutuplu şalter | Three-pole switch
+comp.switch-3p-co | Üç kutuplu iki konumlu şalter | Three-pole two-position switch
+comp.lamp | Sinyal lambası | Indicator lamp
+comp.motor-3ph | Üç fazlı motor | Three-phase motor
+comp.motor-3ph-6t | Yıldız-üçgen motor (6 uçlu) | Star-delta motor (6 terminals)
+comp.motor-1ph | Bir fazlı motor | Single-phase motor
+comp.motor-1ph-cs | Bir fazlı motor (santrifüj anahtarlı) | Single-phase motor (centrifugal switch)
+comp.system-door1 | Kapı sistemi 1 | Door system 1
+comp.system-door2 | Kapı sistemi 2 | Door system 2
+comp.system-elevator | Asansör (5 durak) | Elevator (5 floors)
+
+# ---- Bilgi kartları ----
+info.source-l1 | 230 V faz iletkeni (eski adı R). Kahverengi renkle gösterilir. | 230 V phase conductor (formerly R). Shown in brown.
+info.source-l2 | 230 V faz iletkeni (eski adı S). Siyah renkle gösterilir. | 230 V phase conductor (formerly S). Shown in black.
+info.source-l3 | 230 V faz iletkeni (eski adı T). Gri renkle gösterilir. | 230 V phase conductor (formerly T). Shown in grey.
+info.source-n | Nötr iletkeni. Faz ile nötr arası 230 V'tur. Mavi renkle gösterilir. | Neutral conductor. Phase to neutral is 230 V. Shown in blue.
+info.source-pe | Koruma iletkeni (toprak). Metal gövdeler buna bağlanır. Sarı-yeşil renkle gösterilir. | Protective earth. Metal enclosures connect to it. Shown in green-yellow.
+info.source-3ph | Üç faz şebeke: fazlar arası 400 V, faz-nötr 230 V. | Three-phase mains: 400 V between phases, 230 V phase to neutral.
+info.source-3phnpe | Beş iletkenli TN-S şebeke: L1, L2, L3, N ve PE. | Five-wire TN-S supply: L1, L2, L3, N and PE.
+info.relay-coil | Bobine anma gerilimi uygulanınca kontaktör çeker; aynı etiketli bütün kontaklar konum değiştirir. Bobin uçları A1-A2. | When rated voltage is applied the contactor pulls in and all contacts with the same label switch. Coil terminals A1-A2.
+info.timer-on | Bobin enerjilenince ayarlanan süre kadar bekler, sonra gecikmeli kontakları değiştirir. Enerji kesilince hemen geri döner. | When energised it waits for the set time, then switches its timed contacts. Resets immediately when de-energised.
+info.timer-off | Bobin enerjilenince kontaklar hemen değişir; enerji kesildikten sonra ayarlanan süre kadar bekleyip geri döner. | Contacts switch immediately when energised and return after the set time once de-energised.
+info.contact-no | Bağlı olduğu bobin (aynı etiket) çekince kapanır. Mühürleme ve kilitleme devrelerinde kullanılır. Numaraları 13-14, 23-24... | Closes when its coil (same label) pulls in. Used for latching and interlocks. Numbered 13-14, 23-24...
+info.contact-nc | Bobin çekmediğinde kapalıdır, çekince açılır. Karşılıklı kilitleme için kullanılır. Numaraları 11-12, 21-22... | Closed while the coil is released and opens when it pulls in. Used for interlocking. Numbered 11-12, 21-22...
+info.contact-3no | Kontaktörün güç devresindeki ana kontakları (1-2, 3-4, 5-6). Motoru şebekeye bağlar. | Main power contacts of a contactor (1-2, 3-4, 5-6). Connect the motor to the mains.
+info.contact-3nc | Üç kutuplu normalde kapalı kontak. | Three-pole normally closed contact.
+info.contact-co | Ortak uç (11) dinlenmede 12'ye, bobin çekince 14'e bağlanır. | Common terminal (11) connects to 12 at rest and to 14 when the coil pulls in.
+info.button-no | Basılı tutulduğu sürece kontağı kapalıdır. Simülasyonda fareyle basılı tutun; Shift ile tıklarsanız basılı kalır. | Its contact is closed while held down. In simulation hold the mouse button; Shift-click to latch it.
+info.button-nc | Basılınca devreyi açar. Durdurma devrelerinde seri bağlanır. | Opens the circuit while pressed. Connected in series in stop circuits.
+info.button-nonc | Tek basışta üstteki NC kontağı açar, alttaki NO kontağı kapatır. Buton kilitlemesinde kullanılır. | One press opens the upper NC and closes the lower NO contact. Used for push-button interlocking.
+info.limit-co | Makinenin hareketli parçası dokununca konum değiştirir. Simülasyonda tıklayarak tetikleyin. | Switches when a moving machine part touches it. Click it in simulation to actuate.
+info.limit-nonc | Bir NC ve bir NO kontağı olan sınır anahtarı. | Limit switch with one NC and one NO contact.
+info.switch-3p | Elle açılıp kapatılan üç kutuplu şalter. Tıklayarak konum değiştirin. | Manually operated three-pole switch. Click to toggle.
+info.switch-3p-co | Her kutup iki konum arasında geçer; ileri-geri pako şalter gibi kullanılabilir. | Each pole switches between two positions; can be used like a reversing cam switch.
+info.lamp | Gerilim uygulanınca yanar. Rengi ve anma gerilimi özelliklerden değiştirilebilir. | Lights up when voltage is applied. Colour and rated voltage can be changed in the properties.
+info.motor-3ph | Üç fazlı asenkron motor. Fazların sırası değişince ters döner; bir faz eksikse kalkamaz ve ısınır. | Three-phase induction motor. Swapping two phases reverses it; with a missing phase it cannot start and overheats.
+info.motor-3ph-6t | Klemens kutusu açık motor. Yıldız için W2-U2-V2 birleştirilir; üçgen için U1-W2, V1-U2, W1-V2 bağlanır. | Motor with open terminal box. For star, join W2-U2-V2; for delta, connect U1-W2, V1-U2, W1-V2.
+info.motor-1ph | Ana sargı (U1-U2) ve kondansatörlü yardımcı sargı (Z1-Z2). Yön için yardımcı sargının uçları değiştirilir. | Main winding (U1-U2) and auxiliary winding with capacitor (Z1-Z2). Swap the auxiliary winding ends to reverse.
+info.motor-1ph-cs | Hızlanınca santrifüj anahtar yardımcı sargıyı devreden çıkarır. | The centrifugal switch disconnects the auxiliary winding once the motor speeds up.
+info.system-door1 | Motorla açılıp kapanan sürgülü kapı. Kapı tam açık ve tam kapalı konumda sınır anahtarlarına basar. | Motor-driven sliding door. It presses the limit switches when fully open and fully closed.
+info.system-door2 | Yukarı doğru açılan kapı. İki ucunda sınır anahtarı vardır. | Door that opens upwards, with a limit switch at each end.
+info.system-elevator | Beş duraklı asansör. Kabin bir kata gelince o katın sınır anahtarına basar. | Five-floor elevator. The car presses that floor's limit switch when it arrives.
+
+# ---- Parametreler ----
+param.coilVoltage | Bobin gerilimi | Coil voltage
+param.time | Süre | Time
+param.channel | Kontak tipi | Contact type
+param.lampColor | Renk | Colour
+param.ratedVoltage | Anma gerilimi (V) | Rated voltage (V)
+param.power | Güç | Power
+param.powerKw | Güç | Power
+param.connection | İç bağlantı | Internal connection
+param.startTime | Kalkış süresi | Run-up time
+param.windingVoltage | Sargı gerilimi (V) | Winding voltage (V)
+choice.channel.auto | Otomatik (bobine göre) | Automatic (from coil)
+choice.channel.instant | Ani | Instantaneous
+choice.channel.timed | Zaman gecikmeli | Time-delayed
+choice.lampColor.yellow | Sarı | Yellow
+choice.lampColor.red | Kırmızı | Red
+choice.lampColor.green | Yeşil | Green
+choice.lampColor.blue | Mavi | Blue
+choice.lampColor.white | Beyaz | White
+choice.lampColor.orange | Turuncu | Orange
+choice.connection.star | Yıldız | Star
+choice.connection.delta | Üçgen | Delta
+choice.coilVoltage.230AC | 230 V AC | 230 V AC
+choice.coilVoltage.24AC | 24 V AC | 24 V AC
+choice.coilVoltage.24DC | 24 V DC | 24 V DC
+choice.coilVoltage.400AC | 400 V AC | 400 V AC
+choice.coilVoltage.110AC | 110 V AC | 110 V AC
+choice.coilVoltage.12DC | 12 V DC | 12 V DC
+
+# ---- Sorunlar ----
+problem.duplicateLabel | "{0}" etiketi birden fazla bobin/cihazda kullanılmış. | Label "{0}" is used on more than one coil/device.
+explain.duplicateLabel | Kontaklar etiketlerinden hangi bobine ait olduklarını anlar. İki bobin aynı etiketi taşırsa kontaklar yalnızca birini izler. Etiketlerden birini değiştirin (ör. K1 ve K2). | Contacts find their coil by label. If two coils share a label the contacts follow only one of them. Rename one (e.g. K1 and K2).
+problem.noMaster | "{0}" kontağının bağlı olduğu bir bobin yok. | Contact "{0}" has no coil with that label.
+explain.noMaster | Kontaklar, aynı etiketi taşıyan bobin veya butonla birlikte çalışır. Kontağın etiketini bir bobinin etiketiyle aynı yapın ya da o etiketle bir bobin ekleyin. | A contact works together with the coil or button that has the same label. Give it the label of an existing coil, or add a coil with that label.
+problem.oscillation | Devre kararlı bir duruma gelemiyor (salınım). | The circuit cannot settle (oscillation).
+explain.oscillation | Bir röle kendi bobinini kendi kontağıyla kesiyor olabilir: çekince açılan bir kontak bobini besliyorsa röle sürekli çekip bırakır. Bobinin besleme yolundaki kontakları kontrol edin. | A relay may be cutting its own coil: if a contact that opens when the relay pulls in feeds that coil, the relay keeps pulling in and dropping out. Check the contacts in the coil's supply path.
+problem.shortCircuit | Kısa devre! Akım {0} değerine çıktı ve koruma elemanı yok. | Short circuit! The current reached {0} and there is no protective device.
+explain.shortCircuit | Bir faz, başka bir faza, nötre ya da toprağa yük üzerinden geçmeden doğrudan bağlandı. Kırmızı yanıp sönen yolu inceleyin. Sık nedenler: ileri-geri ya da yıldız-üçgen kontaktörlerinde kilitleme (NC kontak) unutulmuş, kablo yanlış klemense bağlanmış. Gerçek panoda devrenin başına sigorta veya W otomatı konur. | A phase was connected directly to another phase, neutral or earth without passing through a load. Inspect the flashing red path. Common causes: a missing interlock (NC contact) between forward/reverse or star/delta contactors, or a wire on the wrong terminal. Real panels have a fuse or circuit breaker at the start of the circuit.
+problem.coilBurned | {0} bobini yandı: {1} uygulandı, bobin {2}. | Coil {0} burned out: {1} applied to a {2} coil.
+explain.coilOverVoltage | Bobine anma geriliminden çok daha yüksek gerilim uygulandı. 230 V'luk bir bobin iki faz arasına (400 V) bağlanmış olabilir. Bobini faz ile nötr arasına bağlayın ya da bobin gerilimini değiştirin. | A voltage far above the rating was applied. A 230 V coil may be connected between two phases (400 V). Connect it between phase and neutral, or change the coil voltage.
+explain.coilAcOnDc | AC bobine DC gerilim uygulandı. AC bobinin DC direnci küçüktür, büyük akım çeker ve ısınarak yanar. Bobin tipini 24 V DC seçin ya da AC ile besleyin. | DC was applied to an AC coil. An AC coil has a low DC resistance, draws a large current and burns out. Choose a DC coil or supply it with AC.
+problem.coilUnderVoltage | {0} bobininde {1} var ama çekmek için yetmiyor (bobin {2}). | Coil {0} sees {1}, not enough to pull in ({2} coil).
+explain.coilUnderVoltage | Bobin anma geriliminin %85'ini görmeden çekmez. Bobin başka bir yükle seri bağlanmış ya da yanlış gerilim seçilmiş olabilir. | A coil needs at least 85% of its rated voltage. It may be in series with another load, or the wrong coil voltage is selected.
+problem.coilDcOnAc | {0} DC bobinine {1} AC uygulanıyor. | {1} AC applied to DC coil {0}.
+explain.coilDcOnAc | DC bobinler alternatif akımda titreşir ve güvenilir çekmez. DC güç kaynağı kullanın ya da bobin tipini AC seçin. | DC coils chatter on AC and do not pull in reliably. Use a DC power supply or choose an AC coil.
+problem.loadBurned | {0} yandı: {1} uygulandı, anma gerilimi {2} V. | {0} burned out: {1} applied, rated {2} V.
+explain.loadOverVoltage | Yüke anma geriliminden yüksek gerilim uygulandı. 230 V'luk bir lamba iki faz arasına bağlanmış olabilir. | The load got more than its rated voltage. A 230 V lamp may be connected between two phases.
+problem.motorBurned | {0} motoru aşırı ısınıp yandı. | Motor {0} overheated and burned out.
+explain.motorBurned | Motor uzun süre anma akımının çok üstünde akım çekti: kalkamadı (faz eksik, fren kapalı) ya da aşırı yüklendi. Motor devresine bir termik röle ekleyin; termik röle motor yanmadan önce kumanda devresini açar. | The motor drew far more than its rated current for too long: it could not start (missing phase, brake engaged) or was overloaded. Add a thermal overload relay; it opens the control circuit before the motor burns.
+problem.motorPhaseLoss | {0} motorunda faz eksik: motor uğulduyor. | Motor {0} is missing a phase and humming.
+explain.motorPhaseLoss | Üç fazdan biri gelmiyor. Duran motor kalkamaz; dönen motor yavaşlar ve fazla akım çeker. Kontaktör ana kontaklarını ve sigortaları kontrol edin. | One of the three phases is missing. A stopped motor cannot start; a running motor slows down and draws excess current. Check the main contacts and fuses.
+problem.motorOverVoltage | {0} sargılarına {1} geliyor (sargı {2} V). | Motor {0} windings see {1} ({2} V windings).
+explain.motorOverVoltage | Sargı gerilimi anma değerinin üstünde. 230/400 V motor 400 V şebekede üçgen bağlanmış olabilir. Yıldız bağlayın ya da sargı gerilimini kontrol edin. | Winding voltage is above rating. A 230/400 V motor may be delta-connected on a 400 V supply. Connect it in star or check the winding voltage.
+problem.motorBrake | {0} motoru frenli halde enerjilendi. | Motor {0} is energised with the brake applied.
+explain.motorBrake | Fren bobini enerjilenmeden motor dönemez ve aşırı akım çeker. Fren bobinini motorla birlikte besleyin. | The motor cannot turn until the brake coil is energised and draws excess current. Supply the brake coil together with the motor.
+problem.motorHot | {0} motoru ısınıyor (%{1}). | Motor {0} is overheating ({1}%).
+explain.motorHot | Motor anma akımından fazla çekiyor. Uzun sürerse yanar. Termik röle bu durumda devreyi açar. | The motor is drawing more than its rated current and will burn if this continues. A thermal overload relay opens the circuit in this situation.
+problem.motor1NoStart | {0} motoru kalkamıyor: yardımcı sargı devrede değil. | Motor {0} cannot start: the auxiliary winding is not connected.
+explain.motor1Stalled | Bir fazlı motor yalnızca ana sargıyla kendi kendine kalkamaz. Yardımcı sargıyı (Z1-Z2) da besleyin. | A single-phase motor cannot start on its main winding alone. Supply the auxiliary winding (Z1-Z2) too.
+problem.systemEnd | {0} yolun sonuna dayandı ama motor hâlâ çalışıyor. | {0} reached the end of travel but the motor is still running.
+explain.systemEnd | Sınır anahtarı motoru durduracak şekilde bağlanmamış. Sınır anahtarının NC kontağını ilgili kontaktörün bobin devresine seri bağlayın. | The limit switch is not wired to stop the motor. Put its NC contact in series with the corresponding contactor coil.
+
+# ---- Günlük ----
+log.started | Simülasyon başladı | Simulation started
+log.pulled | {0} çekti | {0} pulled in
+log.released | {0} bıraktı | {0} dropped out
+log.timerElapsed | {0} süresi doldu ({1} s) | {0} timed out ({1} s)
+log.pressed | {0} basıldı | {0} pressed
+log.releasedButton | {0} bırakıldı | {0} released
+log.limitOn | {0} tetiklendi | {0} actuated
+log.limitOff | {0} serbest | {0} released
+log.switchOn | {0} kapatıldı | {0} switched on
+log.switchOff | {0} açıldı | {0} switched off
+log.switchPos1 | {0} 1. konumda | {0} in position 1
+log.switchPos2 | {0} 2. konumda | {0} in position 2
+log.motorStopped | {0} durdu | {0} stopped
+log.motorRunning | {0} çalışıyor: {1}, {2} | {0} running: {1}, {2}
+log.systemSwitchOn | {0}: S{1} sınır anahtarı tetiklendi | {0}: limit switch S{1} actuated
+log.systemSwitchOff | {0}: S{1} sınır anahtarı serbest | {0}: limit switch S{1} released
+
+# ---- Ölçümler ve durumlar ----
+readout.coilVoltage | Bobin gerilimi | Coil voltage
+readout.coilRated | Bobin anma gerilimi | Rated coil voltage
+readout.current | Akım | Current
+readout.state | Durum | State
+readout.timedContacts | Gecikmeli kontaklar | Timed contacts
+readout.remaining | Kalan süre | Time remaining
+readout.voltageToEarth | Toprağa göre gerilim | Voltage to earth
+readout.lineVoltage | Fazlar arası gerilim | Line voltage
+readout.hint | İpucu | Tip
+readout.voltage | Gerilim | Voltage
+readout.power | Güç | Power
+readout.speed | Hız | Speed
+readout.direction | Dönüş yönü | Direction
+readout.windingVoltage | Sargı gerilimi | Winding voltage
+readout.connection | Bağlantı | Connection
+readout.windingCurrent | Sargı {0} akımı | Winding {0} current
+readout.ratedCurrent | Anma akımı (sargı) | Rated current (winding)
+readout.heat | Isınma | Heating
+readout.mainCurrent | Ana sargı akımı | Main winding current
+readout.auxCurrent | Yardımcı sargı akımı | Auxiliary winding current
+readout.position | Konum | Position
+state.burned | Yandı | Burned out
+state.pulled | Çekili | Pulled in
+state.released | Bırakmış | Released
+state.switched | Konum değiştirdi | Switched
+state.rest | Dinlenmede | At rest
+state.actuated | Basılı / tetikli | Actuated
+state.on | Çalışıyor | On
+state.off | Kapalı | Off
+hint.momentary | Fareyle basılı tutun; Shift ile tıklayınca basılı kalır. | Hold the mouse button; Shift-click to latch.
+dir.right | sağa | clockwise
+dir.left | sola | counter-clockwise
+conn.star | yıldız | star
+conn.delta | üçgen | delta
+unit.winding | sargı | winding
+unit.rpm | d/d | rpm
+sys.door | KAPI | DOOR
