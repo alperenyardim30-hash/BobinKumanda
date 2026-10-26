@@ -302,7 +302,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
                 SetDocument(r.Circuit, null);
                 if (r.Warnings.Count > 0)
                 {
-                    MessageBox.Show(Loc.T("ui.importWarnings") + "\n\n• " + string.Join("\n• ", r.Warnings), App.ProductName,
+                    Dialogs.Show(Loc.T("ui.importWarnings") + "\n\n• " + string.Join("\n• ", r.Warnings),
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -319,7 +319,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or CircuitFileException or NotSupportedException)
         {
-            MessageBox.Show($"{Loc.T("ui.openFailed")}:\n{path}\n\n{e.Message}", App.ProductName, MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Show($"{Loc.T("ui.openFailed")}:\n{path}\n\n{e.Message}", MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
     }
@@ -340,7 +340,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         {
             var dlg = new SaveFileDialog
             {
-                Filter = $"{Loc.T("ui.filterCircuit")} (*.bobin)|*.bobin",
+                Filter = $"{Loc.T("ui.filterCircuit")} (*.bobin)|*.bobin|{Loc.T("ui.filterEsc")} (*.esc)|*.esc",
                 FileName = Path.GetFileNameWithoutExtension(DocumentName) + CircuitFile.Extension,
                 DefaultExt = CircuitFile.Extension
             };
@@ -349,6 +349,11 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
                 return false;
             }
             path = dlg.FileName;
+        }
+        if (string.Equals(Path.GetExtension(path), ".esc", StringComparison.OrdinalIgnoreCase))
+        {
+            // Eski biçim kayıplıdır (yeni elemanlar, sayfalar): belge .bobin olarak açık kalır, yalnızca dışa aktarılır
+            return ExportEsc(path);
         }
         try
         {
@@ -365,7 +370,27 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {
-            MessageBox.Show($"{Loc.T("ui.saveFailed")}:\n{path}\n\n{e.Message}", App.ProductName, MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Show($"{Loc.T("ui.saveFailed")}:\n{path}\n\n{e.Message}", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return false;
+        }
+    }
+
+    private bool ExportEsc(string path)
+    {
+        try
+        {
+            EscExportResult r = EscExporter.Save(Circuit!, path, CurrentSheet);
+            string message = Loc.T("ui.escSaved") + "\n" + path;
+            if (r.Warnings.Count > 0)
+            {
+                message += "\n\n" + Loc.T("ui.escSavedNotes") + "\n• " + string.Join("\n• ", r.Warnings);
+            }
+            Dialogs.Show(message, MessageBoxButton.OK, MessageBoxImage.Information);
+            return true;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            Dialogs.Show($"{Loc.T("ui.saveFailed")}:\n{path}\n\n{e.Message}", MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
     }
@@ -377,7 +402,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         {
             return true;
         }
-        MessageBoxResult r = MessageBox.Show(Loc.T("ui.unsaved"), App.ProductName, MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+        MessageBoxResult r = Dialogs.Show(Loc.T("ui.unsaved"), MessageBoxButton.YesNoCancel, MessageBoxImage.Question, quietAnswer: MessageBoxResult.No);
         return r switch
         {
             MessageBoxResult.Yes => SaveDocument(FilePath),
@@ -435,7 +460,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or CircuitFileException)
         {
-            MessageBox.Show($"{Loc.T("ui.openFailed")}:\n{o.Path}\n\n{e.Message}", App.ProductName, MessageBoxButton.OK, MessageBoxImage.Warning);
+            Dialogs.Show($"{Loc.T("ui.openFailed")}:\n{o.Path}\n\n{e.Message}", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -826,7 +851,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
             return;
         }
         bool empty = !Circuit.Components.Any(c => c.Sheet == id) && !Circuit.Wires.Any(w => w.Sheet == id) && !Circuit.Texts.Any(t => t.Sheet == id);
-        if (!empty && MessageBox.Show(Loc.T("ui.deleteSheetAsk"), App.ProductName, MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+        if (!empty && Dialogs.Show(Loc.T("ui.deleteSheetAsk"), MessageBoxButton.YesNo, MessageBoxImage.Question, quietAnswer: MessageBoxResult.Yes) != MessageBoxResult.Yes)
         {
             return;
         }

@@ -62,6 +62,7 @@ internal static class ScriptRunner
             }
             await Idle();
         }
+        errors.AddRange(Dialogs.Suppressed.Select(m => "uyarı kutusu: " + m));
         string log = Path.Combine(AppSettings.Folder, "logs", "script.txt");
         Directory.CreateDirectory(Path.GetDirectoryName(log)!);
         File.WriteAllLines(log, errors.Count == 0 ? ["ok"] : errors);

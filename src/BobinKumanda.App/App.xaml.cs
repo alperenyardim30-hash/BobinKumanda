@@ -52,6 +52,7 @@ public partial class App : Application
             }
         }
         scripted = script != null;
+        Dialogs.Quiet = scripted;
 
         AppSettings settings = AppSettings.Load();
         settings.ReadOnly = scripted;
@@ -59,6 +60,15 @@ public partial class App : Application
         var vm = new MainViewModel(settings);
         var window = new MainWindow(vm);
         MainWindow = window;
+        if (scripted)
+        {
+            // Deneme penceresi kullanıcının ekranında görünmesin ve odağı almasın; çizim ve ekran görüntüsü yine çalışır
+            window.WindowStartupLocation = WindowStartupLocation.Manual;
+            window.Left = SystemParameters.VirtualScreenLeft - window.Width - 200;
+            window.Top = SystemParameters.VirtualScreenTop;
+            window.ShowActivated = false;
+            window.ShowInTaskbar = false;
+        }
         window.Show();
         if (file != null && File.Exists(file))
         {

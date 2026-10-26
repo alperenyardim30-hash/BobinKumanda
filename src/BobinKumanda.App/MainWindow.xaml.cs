@@ -571,7 +571,7 @@ public partial class MainWindow
         Autosave.Orphan latest = orphans[0];
         string when = latest.SavedAt.ToString("g", Loc.Culture);
         string name = latest.OriginalPath != null ? Path.GetFileName(latest.OriginalPath) : latest.Name;
-        MessageBoxResult r = MessageBox.Show(this, Loc.T("ui.recover", name, when), App.ProductName, MessageBoxButton.YesNo, MessageBoxImage.Question);
+        MessageBoxResult r = Dialogs.Show(Loc.T("ui.recover", name, when), MessageBoxButton.YesNo, MessageBoxImage.Question, this, MessageBoxResult.No);
         if (r == MessageBoxResult.Yes)
         {
             vm.Recover(latest);

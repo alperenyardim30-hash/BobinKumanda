@@ -75,7 +75,7 @@ public static class CrossReference
         return result;
     }
 
-    /// <summary>Kontağın kısa adı: "13-14", ana kontaklarda "1-2·3-4·5-6".</summary>
+    /// <summary>Kontağın kısa adı: "13-14", ana kontaklarda "1-2,3-4,5-6".</summary>
     public static string ContactText(ComponentDef def, ContactNumber n)
     {
         var numbers = def.Terminals.Select(t => def.NumberFor(t, n) ?? "").Where(s => s.Length > 0).ToList();
@@ -97,7 +97,7 @@ public static class CrossReference
         {
             pairs.Add(numbers[i] + "-" + numbers[i + 1]);
         }
-        return string.Join("·", pairs);
+        return string.Join(",", pairs);
     }
 
     private static IEnumerable<(ComponentInstance C, ComponentDef Def)> Followers(Circuit circuit)
