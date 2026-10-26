@@ -34,7 +34,8 @@ public sealed class AppSettings
             if (File.Exists(path))
             {
                 AppSettings s = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(path), Options) ?? new AppSettings();
-                s.RecentFiles ??= [];
+                // Klasör taşınınca ya da elle düzenlenince aynı dosya iki kez görünmesin
+                s.RecentFiles = (s.RecentFiles ?? []).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
                 return s;
             }
         }
