@@ -5,7 +5,7 @@ using KumandaLab.Core.Simulation;
 
 namespace KumandaLab.Core.Drawing;
 
-public sealed class RenderOptions
+public sealed class CircuitRenderOptions
 {
     public string Sheet { get; init; } = "s1";
     public SymbolStyle Style { get; init; } = SymbolStyle.School;
@@ -33,9 +33,9 @@ public static class CircuitRenderer
     public const double WireWidth = 1.2;
     public const double JunctionRadius = 2.2;
 
-    public static void Draw(Circuit circuit, ISymbolPainter world, RenderOptions? options = null)
+    public static void Draw(Circuit circuit, ISymbolPainter world, CircuitRenderOptions? options = null)
     {
-        options ??= new RenderOptions();
+        options ??= new CircuitRenderOptions();
         string sheet = options.Sheet;
         IReadOnlyDictionary<string, uint> colors = options.ColorWires ? WireColors(circuit) : new Dictionary<string, uint>();
         var junctionInk = new Dictionary<string, Paint>(StringComparer.Ordinal);

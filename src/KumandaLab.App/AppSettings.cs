@@ -1,0 +1,65 @@
+using System.IO;
+using System.Text.Json;
+
+namespace KumandaLab.App;
+
+/// <summary>Kullanıcı ayarları: %LOCALAPPDATA%\KumandaLab\settings.json. Okunamazsa varsayılanlar kullanılır.</summary>
+public sealed class AppSettings
+{
+    public const int MaxRecent = 10;
+
+    public string Language { get; set; } = "tr";
+    public bool DarkTheme { get; set; }
+    public bool TerminalNumbers { get; set; }
+    public bool Grid { get; set; } = true;
+    public bool Flow { get; set; } = true;
+    public double Speed { get; set; } = 1;
+    public List<string> RecentFiles { get; set; } = [];
+
+    public static string Folder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KumandaLab");
+
+    private static string FilePath => Path.Combine(Folder, "settings.json");
+
+    private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
+
+    public static AppSettings Load()
+    {
+        try
+        {
+            if (File.Exists(FilePath))
+            {
+                AppSettings s = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(FilePath), Options) ?? new AppSettings();
+                s.RecentFiles ??= [];
+                return s;
+            }
+        }
+        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException)
+        {
+            // Bozuk ayar dosyası programın açılmasını engellemesin
+        }
+        return new AppSettings();
+    }
+
+    public void Save()
+    {
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            File.WriteAllText(FilePath, JsonSerializer.Serialize(this, Options));
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            // Okul bilgisayarlarında yazma izni olmayabilir; ayarlar bu oturumla sınırlı kalır
+        }
+    }
+
+    public void AddRecent(string path)
+    {
+        RecentFiles.RemoveAll(p => string.Equals(p, path, StringComparison.OrdinalIgnoreCase));
+        RecentFiles.Insert(0, path);
+        if (RecentFiles.Count > MaxRecent)
+        {
+            RecentFiles.RemoveRange(MaxRecent, RecentFiles.Count - MaxRecent);
+        }
+    }
+}

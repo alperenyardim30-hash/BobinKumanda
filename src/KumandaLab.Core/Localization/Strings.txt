@@ -205,3 +205,75 @@ esc.badLinks | Bazı bağlantılar dosyada hatalı kaydedilmiş, atlandı. | Som
 esc.misplaced | {0} kablo ucu klemensin tam üstüne denk gelmedi; kablolar klemense kadar uzatıldı. | {0} wire ends did not sit exactly on their terminal; the wires were extended to it.
 kmlab.corrupt | KumandaLab dosyası okunamadı; dosya bozuk olabilir. | The KumandaLab file could not be read; it may be damaged.
 kmlab.newer | Bu dosya KumandaLab'in daha yeni bir sürümüyle kaydedilmiş. Programı güncelleyin. | This file was saved by a newer KumandaLab. Please update the program.
+
+# ---- Arayüz ----
+ui.file | Dosya | File
+ui.new | Yeni | New
+ui.open | Aç | Open
+ui.save | Kaydet | Save
+ui.saveAs | Farklı kaydet | Save as
+ui.exit | Çıkış | Exit
+ui.home | Giriş | Home
+ui.simulation | Simülasyon | Simulation
+ui.view | Görünüm | View
+ui.help | Yardım | Help
+ui.groupFile | Dosya | File
+ui.groupRun | Çalıştır | Run
+ui.groupSpeed | Hız | Speed
+ui.groupZoom | Yakınlaştırma | Zoom
+ui.groupShow | Göster | Show
+ui.groupLook | Görünüm | Appearance
+ui.groupInfo | Bilgi | Information
+ui.start | Başlat | Start
+ui.stop | Durdur | Stop
+ui.pause | Duraklat | Pause
+ui.resume | Devam et | Resume
+ui.step | Adım | Step
+ui.speed | Hız | Speed
+ui.fit | Sayfaya sığdır | Fit to page
+ui.zoomIn | Yakınlaştır | Zoom in
+ui.zoomOut | Uzaklaştır | Zoom out
+ui.terminalNumbers | Klemens numaraları | Terminal numbers
+ui.grid | Izgara | Grid
+ui.flow | Akım animasyonu | Current animation
+ui.darkTheme | Koyu tema | Dark theme
+ui.language | Dil | Language
+ui.properties | Özellikler | Properties
+ui.measurements | Ölçümler | Readings
+ui.log | Olay günlüğü | Event log
+ui.problems | Sorunlar | Problems
+ui.noSelection | Bilgi görmek için bir elemana tıklayın. | Click a component to see its details.
+ui.label | Etiket | Label
+ui.type | Tip | Type
+ui.untitled | Adsız devre | Untitled circuit
+ui.filterAll | KumandaLab ve EKTS devreleri | KumandaLab and EKTS circuits
+ui.filterKmlab | KumandaLab devresi | KumandaLab circuit
+ui.filterEsc | Eski EKTS devresi | Old EKTS circuit
+ui.importWarnings | Dosya açıldı, bazı uyarılar var: | The file was opened with some warnings:
+ui.openFailed | Dosya açılamadı | The file could not be opened
+ui.saveFailed | Dosya kaydedilemedi | The file could not be saved
+ui.unsaved | Değişiklikler kaydedilmedi. Kaydetmek ister misiniz? | Changes have not been saved. Save them?
+ui.escSaveNote | Eski .esc biçiminde kaydetme sonraki sürümde gelecek; devre .kmlab olarak kaydedilecek. | Saving in the old .esc format comes in a later version; the circuit will be saved as .kmlab.
+ui.simTime | Süre | Time
+ui.status.edit | Düzenleme | Editing
+ui.status.running | Simülasyon çalışıyor | Simulation running
+ui.status.paused | Duraklatıldı | Paused
+ui.status.faulted | Bir hata yüzünden durdu | Stopped by a fault
+ui.hint.sim | Butonlara tıklayın. Tekerlek: yakınlaştır, boş yeri sürükle: kaydır. | Click the buttons. Wheel: zoom, drag empty space: pan.
+ui.hint.edit | F5: simülasyonu başlat. Tekerlek: yakınlaştır, sürükle: kaydır. | F5: start the simulation. Wheel: zoom, drag: pan.
+ui.welcome | KumandaLab'e hoş geldiniz | Welcome to KumandaLab
+ui.welcomeText | Bir devre açın. Eski EKTS .esc dosyaları da açılır. | Open a circuit. Old EKTS .esc files open too.
+ui.about | Hakkında | About
+ui.aboutText | KumandaLab {0}
+Bobin Kardeşler — GPL-3.0 lisanslı özgür yazılım
+
+EKTS'den esinlenilmiştir (Vepa HALLIYEV, Marmara Üniversitesi, 2005). | KumandaLab {0}
+Bobin Kardeşler — free software under GPL-3.0
+
+Inspired by EKTS (Vepa HALLIYEV, Marmara University, 2005).
+ui.crash | Beklenmeyen bir hata oluştu. Ayrıntılar şu dosyaya yazıldı: | An unexpected error occurred. Details were written to:
+ui.editSoon | Eleman ekleme ve kablo çizme bir sonraki aşamada geliyor. | Adding components and drawing wires comes in the next stage.
+ui.yes | Evet | Yes
+ui.no | Hayır | No
+ui.problemsNone | Sorun yok. | No problems.
+

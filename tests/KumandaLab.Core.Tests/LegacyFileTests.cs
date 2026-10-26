@@ -209,7 +209,7 @@ public class LegacyFileTests
         sb.Append(CultureInfo.InvariantCulture, $"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {w:0} {h:0}\" width=\"{w:0}\" height=\"{h:0}\">");
         sb.Append("<rect width=\"100%\" height=\"100%\" fill=\"#ffffff\"/>");
         var painter = new SvgPainter(sb, new Vec(-box.X, -box.Y) * scale, scale);
-        CircuitRenderer.Draw(c, painter, new RenderOptions { ShowTerminalNumbers = numbers });
+        CircuitRenderer.Draw(c, painter, new CircuitRenderOptions { ShowTerminalNumbers = numbers });
         sb.Append("</svg>");
         return sb.ToString();
     }
