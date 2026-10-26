@@ -40,13 +40,18 @@ public static class CircuitEditor
         return c;
     }
 
-    /// <summary>Yeni kontak için etiket: devredeki son rölenin etiketi, hiç röle yoksa K1.</summary>
+    /// <summary>
+    /// Yeni kontak için etiket: devredeki son rölenin etiketi, hiç röle yoksa K1. Termik kontağı gibi kendi öneki olan
+    /// kontaklar o önekli son cihazı (F2) izler.
+    /// </summary>
     public static string DefaultFollowerLabel(Circuit circuit, ComponentDef def)
     {
+        bool Prefers(ComponentDef d) =>
+            def.LabelPrefix == "K" ? d.Category == ComponentCategory.Relays : d.LabelPrefix == def.LabelPrefix;
         for (int i = circuit.Components.Count - 1; i >= 0; i--)
         {
             ComponentInstance c = circuit.Components[i];
-            if (ComponentCatalog.Find(c.Type) is { Role: DeviceRole.Master, Category: ComponentCategory.Relays } && c.Label.Trim().Length > 0)
+            if (ComponentCatalog.Find(c.Type) is { Role: DeviceRole.Master } d && Prefers(d) && c.Label.Trim().Length > 0)
             {
                 return c.Label.Trim();
             }

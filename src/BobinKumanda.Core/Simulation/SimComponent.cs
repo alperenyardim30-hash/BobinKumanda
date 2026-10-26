@@ -16,12 +16,20 @@ public enum InteractionKind
     /// <summary>Kaydırıcı değeri (seviye, basınç, sıcaklık) veya konum.</summary>
     SetValue,
     Reset,
-    Test
+    Test,
+    /// <summary>Arıza oluştur / kaldır (motorda gövde kaçağı gibi).</summary>
+    Fault
 }
 
 public readonly record struct Interaction(InteractionKind Kind, double Value = 0);
 
 public sealed record Readout(string Name, string Value);
+
+/// <summary>Simülasyonda sağ paneldeki kaydırıcı: seviye, basınç, sıcaklık, mil yükü... Değişince SetValue gönderilir.</summary>
+public sealed record SimSlider(string NameKey, double Min, double Max, double Value, string Unit, double Step = 1);
+
+/// <summary>Sağ paneldeki işlem düğmesi (termik röle reset/test, sigorta değiştir...).</summary>
+public sealed record SimAction(InteractionKind Kind, string NameKey);
 
 /// <summary>Etiketle bulunan ana cihaz (bobin, buton, koruma rölesi...). Kontaklar bunun kanallarını izler.</summary>
 public interface IDeviceMaster
@@ -57,6 +65,12 @@ public abstract class SimComponent
 
     /// <summary>Zamanla değişen süreç (hızlanma, ısınma) varsa her adımda Advance çağrılır.</summary>
     public virtual bool NeedsTicks => false;
+
+    /// <summary>Elle ayarlanan değer (sensörde ölçülen büyüklük, motorda mil yükü); yoksa null.</summary>
+    public virtual SimSlider? Slider => null;
+
+    /// <summary>Sağ panelde gösterilecek işlem düğmeleri.</summary>
+    public virtual IReadOnlyList<SimAction> Actions => [];
 
     protected Pin T(int index) => new(TerminalNodes[index], index);
 

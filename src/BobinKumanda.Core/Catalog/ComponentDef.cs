@@ -88,6 +88,9 @@ public abstract class ComponentDef
     /// <summary>Eski EKTS'deki ElementType değeri; .esc dönüşümünde kullanılır.</summary>
     public virtual int? LegacyType => null;
 
+    /// <summary>Eski programdaki bağlantı ucu sayısı; sonradan eklenen klemensler (motorda PE) eski dosyada yoktur.</summary>
+    public virtual int LegacyTerminalCount => Terminals.Count;
+
     /// <summary>Paletteki arama için ek anahtar kelimeler (iki dilde).</summary>
     public virtual string Tags => "";
 
@@ -102,6 +105,9 @@ public abstract class ComponentDef
 
     /// <summary>Aynı etiketli bütün örnekler tek bir iletken sayılır (sayfa bağlantı oku).</summary>
     public virtual bool LinksByLabel => false;
+
+    /// <summary>Etiketi sembolün içine kendisi yazar (sayfa bağlantı oku); dışarıda ayrıca gösterilmez.</summary>
+    public virtual bool DrawsOwnLabel => false;
 
     /// <summary>Etiketin altında gösterilen kısa değer (zaman rölesinde "3 s").</summary>
     public virtual string? SubLabel(ComponentInstance c) => null;

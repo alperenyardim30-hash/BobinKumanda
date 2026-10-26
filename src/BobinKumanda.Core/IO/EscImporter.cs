@@ -74,7 +74,7 @@ public static class EscImporter
             components[i] = c;
             circuit.Components.Add(c);
 
-            if (e.ConnPoints.Count != def.Terminals.Count)
+            if (e.ConnPoints.Count != def.LegacyTerminalCount)
             {
                 result.Warnings.Add(Loc.T("esc.terminalCount", c.Label.Length > 0 ? c.Label : def.Name, e.ConnPoints.Count, def.Terminals.Count));
             }

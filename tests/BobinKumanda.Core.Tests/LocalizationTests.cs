@@ -41,8 +41,11 @@ public partial class LocalizationTests
         }
     }
 
-    /// <summary>Koddaki sabit anahtarlar: Loc.T("ui.x"), SetHint("ui.x") ve XAML'de {l:Loc ui.x}.</summary>
-    [GeneratedRegex("""(?:(?:Loc\.T|Loc\.TryT|SetHint)\(\s*"([a-z]+\.[A-Za-z0-9.\-]+)"|\{l:Loc\s+([a-z]+\.[A-Za-z0-9.\-]+)\})""")]
+    /// <summary>
+    /// Koddaki sabit anahtarlar: Loc.T("ui.x"), L("log.x") (simülasyon elemanlarında), SetHint("ui.x"), kaydırıcı ve
+    /// düğme adları ("slider.x", "action.x") ve XAML'de {l:Loc ui.x}.
+    /// </summary>
+    [GeneratedRegex("""(?:(?:Loc\.T|Loc\.TryT|SetHint|\bL)\(\s*"([a-z]+\.[A-Za-z0-9.\-]+)"|\{l:Loc\s+([a-z]+\.[A-Za-z0-9.\-]+)\}|"((?:slider|action)\.[A-Za-z]+)")""")]
     private static partial Regex KeyPattern();
 
     [Fact]
@@ -60,7 +63,7 @@ public partial class LocalizationTests
             }
             foreach (Match m in KeyPattern().Matches(File.ReadAllText(file)))
             {
-                string key = m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Value;
+                string key = m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Success ? m.Groups[2].Value : m.Groups[3].Value;
                 if (!Loc.Has(key))
                 {
                     missing.Add($"{Path.GetFileName(file)}: {key}");
@@ -68,5 +71,37 @@ public partial class LocalizationTests
             }
         }
         Assert.Empty(missing);
+    }
+
+    [Fact]
+    public void Every_component_parameter_and_choice_has_a_name()
+    {
+        var missing = new List<string>();
+        foreach (Catalog.ComponentDef def in Catalog.ComponentCatalog.All)
+        {
+            foreach (string key in new[] { "comp." + def.TypeId, "info." + def.TypeId })
+            {
+                if (!Loc.Has(key))
+                {
+                    missing.Add(key);
+                }
+            }
+            foreach (Catalog.ParamDef p in def.Params)
+            {
+                if (!Loc.Has(p.NameKey))
+                {
+                    missing.Add(def.TypeId + ": " + p.NameKey);
+                }
+                foreach (string c in p.Choices ?? [])
+                {
+                    // sayılar (anma akımı, gerilim) olduğu gibi gösterilir
+                    if (!double.TryParse(c, System.Globalization.CultureInfo.InvariantCulture, out _) && !Loc.Has(p.ChoiceNameKey(c)))
+                    {
+                        missing.Add(def.TypeId + ": " + p.ChoiceNameKey(c));
+                    }
+                }
+            }
+        }
+        Assert.Empty(missing.Distinct());
     }
 }

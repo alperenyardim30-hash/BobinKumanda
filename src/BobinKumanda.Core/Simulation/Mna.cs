@@ -38,6 +38,9 @@ public sealed class Stamper
     internal readonly List<string> DcSlots = [];
     internal SimComponent? CurrentOwner;
 
+    /// <summary>false: kaynakların EMF'si sıfırlanır (enerjisiz devrede ölçüm için).</summary>
+    internal bool Powered = true;
+
     internal void Reset()
     {
         Branches.Clear();
@@ -71,6 +74,11 @@ public sealed class Stamper
     /// </summary>
     public int Source(Pin pos, Pin neg, Complex emfAc, Complex zAc, double emfDc, double rDc, string slot)
     {
+        if (!Powered)
+        {
+            emfAc = Complex.Zero;
+            emfDc = 0;
+        }
         var b = new Branch
         {
             A = neg,

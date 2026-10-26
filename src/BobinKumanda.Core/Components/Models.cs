@@ -35,9 +35,15 @@ public sealed class CoilModel
     /// <summary>Bobin durumu değişince (çekti/bıraktı) çağrılır.</summary>
     public event Action<bool>? Changed;
 
-    public CoilModel(SimComponent owner, string code, double holdingVa = 8)
+    private readonly string pullKey;
+    private readonly string releaseKey;
+
+    /// <param name="logKeys">Çekti/bıraktı yerine günlüğe yazılacak metinler (fren açıldı, valf açıldı...).</param>
+    public CoilModel(SimComponent owner, string code, double holdingVa = 8, (string Pull, string Release)? logKeys = null)
     {
         this.owner = owner;
+        pullKey = logKeys?.Pull ?? "log.pulled";
+        releaseKey = logKeys?.Release ?? "log.released";
         (RatedVoltage, Dc) = Parse(code);
         if (Dc)
         {
@@ -95,7 +101,7 @@ public sealed class CoilModel
                 {
                     pending = null;
                     Pulled = target;
-                    owner.Sim.AddLog(Loc.T(target ? "log.pulled" : "log.released", owner.Label), owner.Id);
+                    owner.Sim.AddLog(Loc.T(target ? pullKey : releaseKey, owner.Label), owner.Id);
                     Changed?.Invoke(target);
                 });
             }

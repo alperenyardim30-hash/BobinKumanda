@@ -66,9 +66,12 @@ public sealed class Simulator
     /// <summary>Her yerleşim sonrası (durum değişince) tetiklenir.</summary>
     public event Action? Changed;
 
-    public Simulator(Circuit circuit)
+    /// <param name="powered">false: şebeke ve kaynaklar bağlı değilmiş gibi kurulur (ohmmetreyle enerjisiz ölçüm).</param>
+    public Simulator(Circuit circuit, bool powered = true)
     {
         Circuit = circuit;
+        Powered = powered;
+        stamper.Powered = powered;
         Netlist = Netlist.Build(circuit);
         var comps = new List<SimComponent>();
         int internalBase = Netlist.NodeCount;
@@ -116,6 +119,9 @@ public sealed class Simulator
 
     /// <summary>Terminal düğümleri + elemanların iç düğümleri.</summary>
     public int NodeCount { get; }
+
+    /// <summary>false: devre enerjisiz (yalnızca direnç ölçümü için kurulmuş).</summary>
+    public bool Powered { get; }
 
     public SimComponent? Find(string componentId) => byId.GetValueOrDefault(componentId);
 
@@ -202,9 +208,18 @@ public sealed class Simulator
         }
         foreach (SimComponent c in Components)
         {
-            if (c.NeedsTicks && c.Advance(dt, Solution))
+            if (!c.NeedsTicks)
+            {
+                continue;
+            }
+            if (c.Advance(dt, Solution))
             {
                 resolve = true;
+            }
+            else
+            {
+                // Yeniden çözüm gerekmese de görünüm (fan hızı, kalan süre) güncel kalsın
+                c.UpdateVisual(Solution);
             }
         }
     }
@@ -424,7 +439,7 @@ public sealed class Simulator
         {
             return 0;
         }
-        var st = new Stamper();
+        var st = new Stamper { Powered = false };
         foreach (SimComponent c in Components)
         {
             st.CurrentOwner = c;

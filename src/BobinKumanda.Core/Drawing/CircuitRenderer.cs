@@ -111,7 +111,7 @@ public static class CircuitRenderer
 
     /// <summary>Etiket, elemanın sabit adını sembolün kendisi yazıyorsa (L1, N) gösterilmez.</summary>
     public static bool ShowsLabel(ComponentDef def, ComponentInstance c) =>
-        c.Label.Length > 0 && !(def.DefaultLabel != null && c.Label == def.DefaultLabel);
+        c.Label.Length > 0 && !def.DrawsOwnLabel && !(def.DefaultLabel != null && c.Label == def.DefaultLabel);
 
     private static void DrawLabels(ISymbolPainter world, ComponentDef def, ComponentInstance c, SymbolState? state)
     {

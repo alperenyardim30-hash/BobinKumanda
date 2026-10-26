@@ -94,6 +94,19 @@ public sealed class DrawContext
 
     public bool Simulating => State != null;
 
+    /// <summary>Aynı bağlam, başka bir sembol tarzıyla (okul tarzında karşılığı olmayan parçalar için).</summary>
+    public DrawContext WithStyle(SymbolStyle style) => style == Style ? this : new DrawContext
+    {
+        Instance = Instance,
+        Def = Def,
+        State = State,
+        ShowTerminalNumbers = ShowTerminalNumbers,
+        Style = style,
+        AnimTime = AnimTime,
+        Circuit = Circuit,
+        TerminalNumber = TerminalNumber
+    };
+
     public bool IsClosed(int pole, bool restClosed)
     {
         if (State == null || State.Closed.Length == 0)

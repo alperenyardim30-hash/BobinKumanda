@@ -324,3 +324,250 @@ ui.hint.wireTool | Kablo: başlamak için klemense, kabloya ya da boş yere tık
 ui.hint.textTool | Metin: yazının yerine tıklayın, yazıyı sağdaki panelden değiştirin. | Text: click where the text goes, then edit it in the panel on the right.
 ui.hint.stopToEdit | Düzenlemek için önce simülasyonu durdurun (F5). | Stop the simulation first to edit (F5).
 ui.recover | Program geçen sefer beklenmedik şekilde kapandı. Kaydedilmemiş devre bulundu: {0} ({1}). Geri getirilsin mi? | The program closed unexpectedly last time. An unsaved circuit was found: {0} ({1}). Restore it?
+
+# ---- Yeni elemanlar (Aşama 5) ----
+comp.mcb-1p | W otomatı (1 kutuplu) | Circuit breaker (1-pole)
+comp.mcb-3p | W otomatı (3 kutuplu) | Circuit breaker (3-pole)
+comp.fuse-1p | Sigorta | Fuse
+comp.fuse-3p | Sigorta (3 kutuplu) | Fuse (3-pole)
+comp.mpcb | Motor koruma şalteri | Motor protection switch
+comp.rcd-2p | Kaçak akım rölesi (2 kutuplu) | Residual current device (2-pole)
+comp.rcd-4p | Kaçak akım rölesi (4 kutuplu) | Residual current device (4-pole)
+comp.overload | Termik röle | Thermal overload relay
+comp.overload-contacts | Termik röle kontakları (95-96, 97-98) | Overload relay contacts (95-96, 97-98)
+comp.estop | Acil stop butonu | Emergency stop button
+comp.button-lit | Işıklı buton | Illuminated push button
+comp.selector-2 | Seçici şalter (0-1) | Selector switch (0-1)
+comp.selector-3 | Seçici şalter (1-0-2) | Selector switch (1-0-2)
+comp.cam-reverse | İleri-geri pako şalter | Reversing cam switch
+comp.cam-stardelta | Yıldız-üçgen pako şalter | Star-delta cam switch
+comp.cam-012 | 0-1-2 pako şalter | 0-1-2 cam switch
+comp.float-switch | Şamandıra (seviye şalteri) | Float switch
+comp.pressure-switch | Basınç şalteri | Pressure switch
+comp.thermostat | Termostat | Thermostat
+comp.photocell | Fotosel (ışık sensörü) | Photocell (light sensor)
+comp.prox-inductive | Endüktif sensör | Inductive proximity sensor
+comp.prox-capacitive | Kapasitif sensör | Capacitive proximity sensor
+comp.horn | Korna / buzzer / siren | Horn / buzzer / siren
+comp.heater | Isıtıcı (rezistans) | Heater
+comp.solenoid-valve | Selenoid valf | Solenoid valve
+comp.fan | Vantilatör (fan) | Fan
+comp.counter | Sayıcı | Counter
+comp.flasher | Flaşör rölesi | Flasher relay
+comp.timer-stardelta | Yıldız-üçgen zaman rölesi | Star-delta timer relay
+comp.phase-monitor | Faz koruma rölesi | Phase monitoring relay
+comp.motor-brake | Frenli motor | Brake motor
+comp.motor-dahlander | Dahlander motor (Δ/YY) | Dahlander motor (Δ/YY)
+comp.motor-2speed | Ayrı sargılı iki devirli motor | Two-speed motor (separate windings)
+comp.motor-dc | DC motor | DC motor
+comp.transformer | Kumanda trafosu | Control transformer
+comp.psu-dc | DC güç kaynağı | DC power supply
+comp.pe-bar | PE barası | PE busbar
+comp.terminal | Klemens | Terminal
+comp.sheet-link | Sayfa bağlantı oku | Sheet connector
+
+info.mcb-1p | Aşırı akımda (termik) ve kısa devrede (manyetik, B: 4×, C: 8×, D: 15× anma akımı) açar. Simülasyonda koluna tıklayarak açıp kapatın. | Trips on overload (thermal) and short circuit (magnetic: B 4×, C 8×, D 15× rated current). Click its lever in simulation to switch it.
+info.mcb-3p | Üç fazı birlikte koruyan W otomatı. Bir fazda kısa devre olsa da üç kutup birlikte açar. | Circuit breaker protecting all three phases. A fault on one phase opens all three poles.
+info.fuse-1p | Akım anma değerini çok aşınca içindeki tel erir. Atınca "Sigortayı değiştir" ile yenisi takılır. | Its wire melts when the current far exceeds the rating. After it blows, use "Replace fuse".
+info.fuse-3p | Üç fazlı bıçaklı/buşonlu sigorta takımı. | Three-phase fuse set.
+info.mpcb | Motoru hem aşırı yüke (termik) hem kısa devreye (manyetik) karşı korur ve elle açılıp kapanır. Ayar akımını motorun anma akımına getirin. | Protects the motor against overload (thermal) and short circuit (magnetic) and is switched by hand. Set it to the motor's rated current.
+info.rcd-2p | Fazdan giden ve nötrden dönen akım farklıysa (kaçak akım, 30 mA) açar. İnsanı elektrik çarpmasından korur. "Test" düğmesiyle denenir. | Trips when the current going out on the phase differs from the current returning on neutral (residual current, 30 mA). Protects people from electric shock. Check it with the "Test" button.
+info.rcd-4p | Üç fazlı devrelerde kaçak akım koruması: L1, L2, L3 ve N akımlarının toplamı sıfır değilse açar. | Residual current protection for three-phase circuits: trips if the sum of L1, L2, L3 and N currents is not zero.
+info.overload | Motor akımını ısıtıcılarıyla ölçer. Akım ayar değerini uzun süre aşarsa açar: 95-96 kontağı kumanda devresini keser. Soğuduktan sonra resetlenir. | Measures the motor current with its heaters. If the current stays above the setting it trips: contact 95-96 opens the control circuit. Reset it once it has cooled down.
+info.overload-contacts | Termik rölenin kontakları. 95-96 (NC) kontaktör bobinine seri bağlanır; 97-98 (NO) arıza lambasını yakar. Etiketi termik röleyle aynı olmalı (F2). | Contacts of the overload relay. 95-96 (NC) goes in series with the contactor coil; 97-98 (NO) lights a fault lamp. Its label must match the relay (F2).
+info.estop | Basınca kilitlenir ve devreyi açar; yeniden çalıştırmak için çevrilerek (tekrar tıklanarak) bırakılmalıdır. | Latches when pressed and opens the circuit; it must be twisted (clicked again) to release.
+info.button-lit | Başlatma butonu ile içinde bir sinyal lambası. Lamba ayrı uçlardan (X1-X2) beslenir, genelde kontaktör çekince yanar. | A start button with a built-in indicator lamp. The lamp has its own terminals (X1-X2) and usually lights when the contactor pulls in.
+info.selector-2 | Kalıcı konumlu anahtar: 0'da 21-22, 1'de 13-14 kapalı. El/otomatik seçimi gibi işlerde kullanılır. | Maintained switch: 21-22 closed in 0, 13-14 closed in 1. Used for hand/auto selection and similar.
+info.selector-3 | Üç konumlu anahtar: 1'de 13-14, 2'de 23-24 kapanır, 0'da ikisi de açık. | Three-position switch: 13-14 closes in 1, 23-24 in 2, both open in 0.
+info.cam-reverse | Motoru elle ileri (1) ve geri (2) döndürür; 2. konumda iki faz yer değiştirir. Kontaktörsüz yön değiştirme için. | Turns a motor forward (1) or reverse (2) by hand; position 2 swaps two phases. For reversing without contactors.
+info.cam-stardelta | Motoru elle önce yıldızda (Y), sonra üçgende (Δ) çalıştırır. Y'de U2-V2-W2 köprülenir. | Starts a motor by hand in star (Y), then switches to delta (Δ). In Y it bridges U2-V2-W2.
+info.cam-012 | Üç kutbu 1. konumda 2-4-6 uçlarına, 2. konumda 8-10-12 uçlarına bağlar. İki devirli motor ya da iki devre seçimi için. | Connects the three poles to 2-4-6 in position 1 and to 8-10-12 in position 2. For two-speed motors or choosing between two circuits.
+info.float-switch | Depodaki sıvı seviyesi üst değere çıkınca kontağını değiştirir, alt değere inince geri döner. Simülasyonda seviyeyi sağdaki kaydırıcıyla ayarlayın. | Switches when the liquid level rises to the upper value and returns at the lower value. Set the level with the slider on the right in simulation.
+info.pressure-switch | Basınç ayar değerine çıkınca kontağını değiştirir, ayar farkı kadar düşünce geri döner (kompresör, hidrofor). | Switches when the pressure reaches the set point and returns when it drops by the differential (compressor, booster pump).
+info.thermostat | Isıtma modunda sıcaklık ayarın altındayken tetiklidir (ısıtıcı çalışır), ayarı geçince bırakır. Soğutma modunda tersidir. | In heating mode it is actuated below the set point (the heater runs) and releases above it. Cooling mode is the opposite.
+info.photocell | Işık şiddeti ayarın altına inince (hava kararınca) tetikler; sokak ve bahçe aydınlatmasında kullanılır. | Actuates when the light level falls below the setting (at dusk); used for street and garden lighting.
+info.prox-inductive | Metal bir cisim yaklaşınca çıkış verir. 3 kablolu, 24 V DC: kahverengi (+), mavi (−), siyah (çıkış). PNP çıkış yükü +'ya, NPN çıkış −'ye bağlar. Simülasyonda tıklayarak cisim yaklaştırın. | Gives an output when a metal object approaches. 3-wire, 24 V DC: brown (+), blue (−), black (output). A PNP output switches the load to +, NPN to −. Click it in simulation to bring an object near.
+info.prox-capacitive | Metal olmayan cisimleri (sıvı, plastik, tahıl) da algılar. Bağlantısı endüktif sensörle aynıdır. | Also detects non-metal objects (liquid, plastic, grain). Wired the same way as an inductive sensor.
+info.horn | Gerilim gelince ses verir. Korna, buzzer, siren ve zil olarak seçilebilir; ses Görünüm sekmesinden kapatılabilir. | Sounds when energised. Can be set as horn, buzzer, siren or bell; sound can be turned off on the View tab.
+info.heater | Elektrik enerjisini ısıya çeviren dirençli yük. Gücü özelliklerden ayarlanır. | Resistive load that turns electrical energy into heat. Set its power in the properties.
+info.solenoid-valve | Bobini enerjilenince vanayı açar (su, hava, gaz). Bobin gerilimi kontaktör bobini gibi seçilir. | Opens the valve (water, air, gas) when its coil is energised. Its coil voltage is chosen like a contactor coil.
+info.fan | Gerilim gelince hızlanarak dönen küçük bir fazlı motor (havalandırma, pano soğutma). | Small single-phase motor that speeds up when energised (ventilation, panel cooling).
+info.counter | Sayma bobinine (A1-A2) gelen her darbeyi sayar; ayar değerine ulaşınca kontakları değişir. R1-R2'ye gerilim gelince sıfırlanır. | Counts every pulse on the count coil (A1-A2); its contacts switch when the preset is reached. Voltage on R1-R2 resets it.
+info.flasher | Bobini enerjili kaldıkça kontaklarını ayarlanan sürelerle açıp kapatır (yanıp sönen ikaz lambası). | While its coil is energised it opens and closes its contacts with the set times (flashing warning lamp).
+info.timer-stardelta | Bobin enerjilenince 17-18 (yıldız) kapanır; süre dolunca açılır, 50 ms sonra 17-28 (üçgen) kapanır. Bu bekleme iki kontaktörün aynı anda kapalı kalmasını önler. | When energised 17-18 (star) closes; after the set time it opens and 50 ms later 17-28 (delta) closes. The pause keeps both contactors from being closed at once.
+info.phase-monitor | Üç faz da varsa ve sıra doğruysa çıkış rölesi çeker (11-14 kapanır). Faz eksik ya da sıra ters ise motorun çalışmasını engeller. | Its output relay pulls in only if all three phases are present in the right order (11-14 closes). Prevents the motor from running with a missing or reversed phase.
+info.motor-brake | Fren bobini (B1-B2) enerjilenmeden motor dönemez. Bobin motorla birlikte beslenir; enerji kesilince fren motoru hemen durdurur (vinç, asansör). | The motor cannot turn until the brake coil (B1-B2) is energised. Supply the coil together with the motor; when power is cut the brake stops it at once (cranes, lifts).
+info.motor-dahlander | Tek sargılı iki devirli motor. Düşük devir: 1U-1V-1W beslenir (üçgen). Yüksek devir: 2U-2V-2W beslenir ve 1U-1V-1W birbirine köprülenir (çift yıldız). | Two-speed motor with one winding. Low speed: supply 1U-1V-1W (delta). High speed: supply 2U-2V-2W and bridge 1U-1V-1W together (double star).
+info.motor-2speed | İki ayrı yıldız sargılı motor: 1U-1V-1W düşük, 2U-2V-2W yüksek devir. İki sargı aynı anda beslenmemelidir. | Motor with two separate star windings: 1U-1V-1W low speed, 2U-2V-2W high speed. Never supply both at once.
+info.motor-dc | Doğru akım motoru. Hızı gerilimle değişir; kutuplar (A1 +, A2 −) yer değiştirince ters döner. | DC motor. Its speed follows the voltage; swapping the poles (A1 +, A2 −) reverses it.
+info.transformer | Şebeke gerilimini kumanda gerilimine (24 V) düşürür ve kumanda devresini şebekeden yalıtır. Sekonder kısa devresine karşı sekondere sigorta konmalıdır. | Steps the mains voltage down to the control voltage (24 V) and isolates the control circuit. Fuse the secondary against short circuits.
+info.psu-dc | 230 V AC'den sabit 24 V DC üretir (sensörler, PLC, DC bobinler). Aşırı yükte çıkışı kapatır. | Produces a steady 24 V DC from 230 V AC (sensors, PLCs, DC coils). Shuts its output down on overload.
+info.pe-bar | Bütün uçları birbirine bağlı toprak barası. Motor ve pano gövdelerinin koruma iletkenleri burada toplanır. | Earth busbar with all terminals joined. Protective conductors of motor and panel enclosures meet here.
+info.terminal | Sıra klemensi: iki ucu iç bağlıdır. Pano ile dışarıdaki cihazların bağlantı noktası. Numarası özelliklerden verilir (X1:3). | Terminal block: both ends are joined inside. The connection point between the panel and outside devices. Give its number in the properties (X1:3).
+info.sheet-link | Aynı adı taşıyan bütün oklar, başka sayfada olsalar bile, aynı iletkendir. Uzun kabloları ve sayfalar arası bağlantıları kısaltır. | All arrows with the same name are the same conductor, even on other sheets. Shortens long wires and links between sheets.
+
+# ---- Yeni parametreler ----
+param.ratedCurrent | Anma akımı (A) | Rated current (A)
+param.curve | Açma eğrisi | Tripping curve
+param.setCurrent | Ayar akımı | Current setting
+param.sensitivity | Hassasiyet (mA) | Sensitivity (mA)
+param.levelHigh | Üst seviye | Upper level
+param.levelLow | Alt seviye | Lower level
+param.startValue | Başlangıç değeri | Initial value
+param.setPoint | Ayar değeri | Set point
+param.hysteresis | Ayar farkı | Differential
+param.mode | Çalışma | Mode
+param.output | Çıkış tipi | Output type
+param.function | Kontak | Contact
+param.soundKind | Ses tipi | Sound
+param.preset | Sayma değeri | Preset
+param.onTime | Açık kalma süresi | On time
+param.offTime | Kapalı kalma süresi | Off time
+param.load | Mil yükü | Shaft load
+param.bodyFault | Gövde kaçağı (arıza) | Body leakage (fault)
+param.brakeVoltage | Fren bobini gerilimi | Brake coil voltage
+param.primary | Primer gerilimi (V) | Primary voltage (V)
+param.secondary | Sekonder gerilimi (V) | Secondary voltage (V)
+param.ratedVa | Gücü | Rating
+param.outputVoltage | Çıkış gerilimi (V) | Output voltage (V)
+param.pin | Klemens numarası | Terminal number
+choice.curve.B | B (ev, aydınlatma) | B (domestic, lighting)
+choice.curve.C | C (motor, genel) | C (motors, general)
+choice.curve.D | D (yüksek kalkış akımı) | D (high inrush)
+choice.mode.heating | Isıtma | Heating
+choice.mode.cooling | Soğutma | Cooling
+choice.output.pnp | PNP (+ verir) | PNP (sources +)
+choice.output.npn | NPN (− verir) | NPN (sinks −)
+choice.function.no | Normalde açık (NO) | Normally open (NO)
+choice.function.nc | Normalde kapalı (NC) | Normally closed (NC)
+choice.soundKind.horn | Korna | Horn
+choice.soundKind.buzzer | Buzzer | Buzzer
+choice.soundKind.siren | Siren | Siren
+choice.soundKind.bell | Zil | Bell
+choice.brakeVoltage.230AC | 230 V AC | 230 V AC
+choice.brakeVoltage.24AC | 24 V AC | 24 V AC
+choice.brakeVoltage.24DC | 24 V DC | 24 V DC
+choice.brakeVoltage.400AC | 400 V AC | 400 V AC
+choice.brakeVoltage.110AC | 110 V AC | 110 V AC
+choice.brakeVoltage.12DC | 12 V DC | 12 V DC
+
+# ---- Simülasyon: işlemler ve kaydırıcılar ----
+action.lever | Kolu aç / kapat | Switch lever
+action.replaceFuse | Sigortayı değiştir | Replace fuse
+action.reset | Reset | Reset
+action.test | Test | Test
+action.resetCounter | Sayacı sıfırla | Reset counter
+action.bodyFault | Gövde kaçağı oluştur / kaldır | Add / remove body leakage
+slider.level | Seviye | Level
+slider.pressure | Basınç | Pressure
+slider.temperature | Sıcaklık | Temperature
+slider.light | Işık şiddeti | Light level
+slider.load | Mil yükü | Shaft load
+slider.position | Konum | Position
+
+# ---- Yeni günlük metinleri ----
+log.tripShort | {0} attı: kısa devre ({1}) | {0} tripped: short circuit ({1})
+log.tripOverload | {0} attı: aşırı akım ({1}) | {0} tripped: overload ({1})
+log.fuseBlown | {0} attı, sigorta eridi ({1}) | {0} blew ({1})
+log.fuseReplaced | {0} sigortası değiştirildi | {0} fuse replaced
+log.rearmed | {0} yeniden kuruldu | {0} reset
+log.rcdTrip | {0} attı: kaçak akım {1} | {0} tripped: residual current {1}
+log.rcdTest | {0} test düğmesiyle açıldı | {0} opened by its test button
+log.overloadTrip | {0} termik attı: akım {1}, ayar {2} | {0} overload tripped: current {1}, setting {2}
+log.overloadTest | {0} test düğmesiyle açıldı | {0} opened by its test button
+log.overloadHot | {0} henüz soğumadı; yaklaşık {1} s sonra resetleyin | {0} has not cooled yet; reset in about {1} s
+log.overloadReset | {0} resetlendi | {0} reset
+log.estopPressed | {0} acil stop basıldı (kilitlendi) | {0} emergency stop pressed (latched)
+log.estopReleased | {0} acil stop çevrilerek bırakıldı | {0} emergency stop released
+log.position | {0} konum {1} | {0} position {1}
+log.sensorOn | {0} tetiklendi ({1}) | {0} actuated ({1})
+log.sensorOff | {0} serbest ({1}) | {0} released ({1})
+log.targetIn | {0}: cisim algılandı | {0}: object detected
+log.targetOut | {0}: cisim uzaklaştı | {0}: object gone
+log.valveOpen | {0} açıldı | {0} opened
+log.valveClosed | {0} kapandı | {0} closed
+log.brakeReleased | {0} freni açıldı | {0} brake released
+log.brakeApplied | {0} freni kapandı | {0} brake applied
+log.count | {0} sayısı: {1}/{2} | {0} count: {1}/{2}
+log.countDone | {0} {1} sayıya ulaştı, kontakları değişti | {0} reached {1}, contacts switched
+log.countReset | {0} sıfırlandı | {0} reset to zero
+log.starEnd | {0} yıldız süresi doldu | {0} star time elapsed
+log.deltaOn | {0} üçgene geçti | {0} switched to delta
+log.phaseOk | {0}: fazlar tamam, çıkış çekti | {0}: phases OK, output on
+log.phaseFault | {0}: faz hatası, çıkış bıraktı | {0}: phase fault, output off
+log.bodyFaultOn | {0} motorunda gövde kaçağı oluştu | Body leakage fault on motor {0}
+log.bodyFaultOff | {0} motorundaki gövde kaçağı giderildi | Body leakage on motor {0} removed
+log.psuLimit | {0} akım sınırında ({1}): çıkış gerilimi düştü | {0} in current limit ({1}): output voltage dropped
+
+# ---- Yeni sorunlar ----
+problem.tripShort | {0} kısa devre yüzünden attı ({1}). | {0} tripped because of a short circuit ({1}).
+explain.tripShort | Koruma elemanı kısa devreyi gördü ve devreyi açtı: devre korundu. Yanıp sönen yolu inceleyin; faz başka bir faza, nötre ya da toprağa yük üzerinden geçmeden bağlanmış. Sorunu giderip kolu kaldırın (sigortada sigortayı değiştirin). | The protective device saw a short circuit and opened: the circuit is protected. Inspect the flashing path; a phase is connected to another phase, neutral or earth without a load. Fix the fault, then reset the lever (replace the fuse).
+problem.tripOverload | {0} aşırı akım yüzünden attı ({1}). | {0} tripped on overload ({1}).
+explain.tripOverload | Devreden uzun süre anma akımından fazla akım geçti. Yük çok büyük olabilir ya da motor kalkamıyor olabilir. Koruma elemanının anma akımını yüke uygun seçin. | More than the rated current flowed for too long. The load may be too large or a motor cannot start. Choose a rating that suits the load.
+problem.rcdTrip | {0} kaçak akım yüzünden attı ({1}). | {0} tripped on residual current ({1}).
+explain.rcdTrip | Fazdan çıkan akımın bir kısmı nötrden değil başka yoldan (toprağa, bir insanın üzerinden) dönüyor. Gövde kaçağı olan cihazı bulun, arızayı giderip kolu kaldırın. Nötr başka bir devreyle paylaşılmış olabilir. | Part of the current leaving on the phase returns some other way (to earth, through a person) instead of neutral. Find the device with the leak, fix it and reset the lever. The neutral may also be shared with another circuit.
+problem.overloadTrip | {0} termik röle attı (motor akımı {1}). | Overload relay {0} tripped (motor current {1}).
+explain.overloadTrip | Motor ayar akımından fazla akım çekti: aşırı yük, faz eksikliği ya da sıkışmış mil. 95-96 kontağı kontaktörü bıraktırdı ve motoru yanmaktan kurtardı. Soğuduktan sonra Reset ile kurun; ayar akımı motorun anma akımı olmalı. | The motor drew more than the set current: overload, a missing phase or a jammed shaft. Contact 95-96 dropped the contactor and saved the motor. Reset it once it has cooled; the setting should equal the motor's rated current.
+problem.touchVoltage | {0} gövdesinde {1} dokunma gerilimi var! | Touch voltage of {1} on the enclosure of {0}!
+explain.touchVoltage | Motorda gövde kaçağı var ve gövde PE'ye bağlı değil. Gövdeye dokunan kişiden akım toprağa geçer: hayati tehlike! Motorun PE klemensini PE iletkenine bağlayın ve devreye kaçak akım rölesi koyun. | The motor has a body leakage and its enclosure is not connected to PE. Anyone touching it carries current to earth: danger to life! Connect the motor's PE terminal to the protective conductor and add a residual current device.
+explain.touchVoltageEarthed | Gövde PE'ye bağlı ama PE bağlantısı üzerindeki gerilim düşümü yüksek. PE iletkeninin besleme PE'sine bağlı olduğunu kontrol edin. | The enclosure is connected to PE but the voltage on the PE path is high. Check that the protective conductor reaches the supply PE.
+problem.bodyFault | {0} motorunda gövde kaçağı var; kaçak akım toprağa akıyor. | Motor {0} has a body leakage; current is leaking to earth.
+explain.bodyFault | Gövde topraklı olduğu için dokunma gerilimi tehlikeli değil, ama kaçak akım toprağa akıyor. Kaçak akım rölesi varsa açar; yoksa kaçak sürer. Arızayı "Gövde kaçağı oluştur / kaldır" ile kaldırabilirsiniz. | The enclosure is earthed so the touch voltage is safe, but current is leaking to earth. A residual current device would trip; without one the leak continues. Remove the fault with "Add / remove body leakage".
+problem.phaseLoss | {0}: bir faz yok. | {0}: a phase is missing.
+explain.phaseLossRelay | Faz koruma rölesi üç fazdan birinin gelmediğini gördü ve çıkışını bıraktı. Sigortaları ve besleme kablolarını kontrol edin. | The phase monitoring relay saw that one phase is missing and released its output. Check the fuses and supply wires.
+problem.phaseSequence | {0}: faz sırası ters. | {0}: phase sequence reversed.
+explain.phaseSequence | Fazlar L1-L2-L3 sırasıyla gelmiyor; motor ters dönerdi. Beslemedeki iki fazın yerini değiştirin. | The phases are not in L1-L2-L3 order; a motor would run backwards. Swap two supply phases.
+problem.sensorSupply | {0} beslenmiyor ({1}); 24 V DC gerekli. | {0} has no supply ({1}); 24 V DC is required.
+problem.sensorBurned | {0} yandı: {1} uygulandı. | {0} burned out: {1} applied.
+explain.sensorSupply | 3 kablolu sensörler 10-30 V DC ile çalışır: kahverengi (BN) +24 V'a, mavi (BU) 0 V'a bağlanır. Şebeke gerilimi (230 V AC) sensörü yakar. | 3-wire sensors run on 10-30 V DC: brown (BN) to +24 V, blue (BU) to 0 V. Mains voltage (230 V AC) destroys the sensor.
+problem.bothSpeeds | {0}: iki sargı aynı anda besleniyor. | {0}: both windings are energised at once.
+explain.bothSpeeds | Düşük ve yüksek devir kontaktörleri birlikte çekmiş. Kontaktörler arasına karşılıklı kilitleme (NC kontak) koyun. | The low and high speed contactors are both closed. Add an interlock (NC contacts) between them.
+problem.dcMotorAc | {0} DC motoruna {1} AC uygulanıyor. | {1} AC applied to DC motor {0}.
+explain.dcMotorAc | DC motor alternatif akımda dönmez, uğuldar ve ısınır. DC güç kaynağıyla besleyin. | A DC motor does not run on AC; it hums and heats up. Supply it from a DC power supply.
+explain.dcMotorBurned | Motor uzun süre anma akımının çok üstünde akım çekti ya da anma geriliminden yüksek gerilim uygulandı. | The motor drew far more than its rated current for too long, or got more than its rated voltage.
+problem.transformerOverload | {0} aşırı yüklü: {1} çekiliyor (anma {2}). | {0} is overloaded: {1} drawn (rated {2}).
+explain.transformerOverload | Sekonderden anma akımından fazla akım çekiliyor. Trafo ısınır, uzun sürerse yanar. Daha güçlü trafo seçin ya da yükü azaltın. | More than the rated current is drawn from the secondary. The transformer heats up and burns if this continues. Use a larger transformer or reduce the load.
+problem.transformerBurned | {0} yandı. | {0} burned out.
+explain.transformerBurned | Sekonder kısa devre oldu ya da çok aşırı yüklendi ve sekonderde koruma yoktu. Trafo sekonderine uygun bir sigorta ya da W otomatı koyun. | The secondary was shorted or heavily overloaded and had no protection. Put a suitable fuse or circuit breaker on the secondary.
+problem.psuOverload | {0} akım sınırında çalışıyor ({1}): aşırı yük ya da kısa devre. | {0} is in current limit ({1}): overload or short circuit.
+explain.psuOverload | DC güç kaynağı anma akımının %120'sinden fazlasını vermez; daha fazlası istenince çıkış gerilimi düşer ve yükler çalışmaz. Çıkıştaki kısa devreyi giderin, yükü azaltın ya da daha güçlü bir kaynak seçin. Motorların kalkışında kısa süre görülebilir. | The DC supply gives no more than 120% of its rated current; if more is drawn the output voltage drops and loads stop working. Remove the short circuit, reduce the load or choose a bigger supply. It can show briefly while a motor starts.
+problem.psuInput | {0} girişinde {1} var; 230 V AC gerekli. | {0} input sees {1}; 230 V AC is required.
+explain.psuInput | Güç kaynağının L ve N girişleri faz ile nötre bağlanmalıdır. | The L and N inputs of the power supply must connect to phase and neutral.
+
+# ---- Yeni ölçümler ve durumlar ----
+readout.rated | Anma değeri | Rating
+readout.leakage | Kaçak akım | Residual current
+readout.sensitivity | Açma eşiği | Tripping threshold
+readout.setCurrent | Ayar akımı | Current setting
+readout.coolDown | Soğuma süresi | Cool-down time
+readout.lampVoltage | Lamba gerilimi | Lamp voltage
+readout.switchPoint | Çalışma / bırakma | Operate / release
+readout.supply | Besleme | Supply
+readout.target | Cisim | Object
+readout.output | Çıkış | Output
+readout.count | Sayı | Count
+readout.stage | Kademe | Stage
+readout.load | Mil yükü | Shaft load
+readout.touchVoltage | Gövde gerilimi | Enclosure voltage
+readout.brake | Fren | Brake
+readout.primaryVoltage | Primer gerilimi | Primary voltage
+readout.secondaryVoltage | Sekonder gerilimi | Secondary voltage
+readout.secondaryCurrent | Sekonder akımı | Secondary current
+readout.inputVoltage | Giriş gerilimi | Input voltage
+readout.outputVoltage | Çıkış gerilimi | Output voltage
+readout.outputCurrent | Çıkış akımı | Output current
+state.tripped | Attı | Tripped
+state.blown | Attı (eridi) | Blown
+state.open | Açık | Open
+state.closed | Kapalı | Closed
+state.detected | Algılandı | Detected
+state.none | Yok | None
+state.brakeOn | Kapalı (motor kilitli) | Applied (motor locked)
+state.brakeOpen | Açık | Released
+state.phaseOk | Fazlar tamam | Phases OK
+state.phaseMissing | Faz eksik | Phase missing
+state.wrongSequence | Faz sırası ters | Wrong sequence
+speed.low | düşük devir | low speed
+speed.high | yüksek devir | high speed
+hint.position | Tıklayınca sıradaki konuma geçer; kaydırıcıyla konumu seçin. | Click to move to the next position; or choose it with the slider.
+hint.proximity | Tıklayınca sensörün önüne cisim gelir ya da uzaklaşır. | Click to bring an object in front of the sensor or take it away.

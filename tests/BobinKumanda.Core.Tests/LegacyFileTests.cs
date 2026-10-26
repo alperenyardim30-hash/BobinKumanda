@@ -114,7 +114,7 @@ public class LegacyFileTests
         {
             ComponentInstance c = r.Circuit.Components[i];
             ComponentDef def = ComponentCatalog.Get(c.Type);
-            for (int k = 0; k < def.Terminals.Count; k++)
+            for (int k = 0; k < def.LegacyTerminalCount; k++)
             {
                 terminals.Add((doc.Elements[i].ConnPoints[k], net.NodeOf(c.Id, def.Terminals[k].Id), $"{i}:{c.Type}.{def.Terminals[k].Id}"));
             }

@@ -196,6 +196,16 @@ public static partial class SymbolKit
         }
     }
 
+    /// <summary>Motor gövdesinden PE klemensine giden bağlantı ve küçük toprak işareti.</summary>
+    public static void MotorEarth(ISymbolPainter p, Paint ink, Vec terminal, Vec housing)
+    {
+        p.Polyline([terminal, new Vec(terminal.X, Math.Max(housing.Y, terminal.Y - 8)), housing], ink, 0.8);
+        double y = terminal.Y - 4;
+        p.Line(new Vec(terminal.X + 1.5, y), new Vec(terminal.X + 5.5, y), ink, 0.8);
+        p.Line(new Vec(terminal.X + 2.3, y + 1.3), new Vec(terminal.X + 4.7, y + 1.3), ink, 0.7);
+        p.Line(new Vec(terminal.X + 3.1, y + 2.6), new Vec(terminal.X + 3.9, y + 2.6), ink, 0.6);
+    }
+
     /// <summary>Çokgenle yaklaşık yay (açılar derece, 0° = +X, artış saat yönünde).</summary>
     public static void Arc(ISymbolPainter p, Paint ink, Vec center, double r, double startDeg, double sweepDeg, double width = 1)
     {

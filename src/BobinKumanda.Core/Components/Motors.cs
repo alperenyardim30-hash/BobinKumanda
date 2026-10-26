@@ -17,7 +17,9 @@ internal sealed class InductionMotorModel
     private static readonly Complex A = Complex.FromPolarCoordinates(1, 2 * Math.PI / 3);
     private const double RunAngle = 0.61;   // cosφ ≈ 0.82
     private const double StartAngle = 1.21; // cosφ ≈ 0.35
-    private const double ThermalTau = 60;
+    private const double NoLoadAngle = 1.37; // cosφ ≈ 0.2
+    // Sargı ısınma zaman sabiti: termik röle (τ = 240 s, 7,2×Ir'de ~7 s) motor yanmadan önce açar
+    private const double ThermalTau = 300;
 
     private readonly SimComponent owner;
     private readonly int[] branches = new int[3];
@@ -38,9 +40,18 @@ internal sealed class InductionMotorModel
     public bool Burned { get; private set; }
     public bool BrakeEngaged { get; set; }
 
+    /// <summary>Mil yükü: 0 boşta, 1 anma yükü, 2 iki kat aşırı yük. Akımı ve kaymayı belirler.</summary>
+    public double Load { get; set; } = 1;
+
     public double PositiveSeq { get; private set; }
     public double NegativeSeq { get; private set; }
     public double Torque { get; private set; }
+
+    public InductionMotorModel WithLoad(double load)
+    {
+        Load = Math.Clamp(load, 0, 3);
+        return this;
+    }
 
     public InductionMotorModel(SimComponent owner, double windingVoltage, double powerKw, double startTime)
     {
@@ -68,14 +79,16 @@ internal sealed class InductionMotorModel
         }
     }
 
-    /// <summary>Sargı empedansı: kalkışta düşük (yüksek akım), anma hızında nominal.</summary>
+    /// <summary>Sargı empedansı: kalkışta düşük (yüksek akım), anma hızında yüke göre (boşta ~%35 akım).</summary>
     public Complex WindingImpedance()
     {
         double slip = Slip;
         double s = Math.Clamp(slip / 0.9, 0, 1);
-        double k = 1 + 5 * Math.Pow(s, 1.5);
+        double load = Math.Clamp(Load, 0, 3);
+        double k = 5 * Math.Pow(s, 1.5) + 0.35 + 0.65 * load;
         double zRun = WindingVoltage / WindingRatedCurrent;
-        double angle = RunAngle + (StartAngle - RunAngle) * s;
+        double runAngle = NoLoadAngle + (RunAngle - NoLoadAngle) * Math.Min(1, load);
+        double angle = runAngle + (StartAngle - runAngle) * s;
         if (BrakeEngaged && Energized)
         {
             k = 6;
@@ -125,10 +138,11 @@ internal sealed class InductionMotorModel
         {
             Speed = MoveTowards(Speed, 0, dt / 0.3);
         }
-        else if (absTorque > 0.12)
+        else if (absTorque > 0.12 && Load < 3.2 * absTorque)
         {
             int dir = Math.Sign(Torque);
-            double limit = Math.Min(1, 0.75 + 0.25 * Math.Min(1, absTorque)) * dir;
+            // anma yükünde ~%4 kayma; yük arttıkça hız biraz düşer
+            double limit = Math.Min(1, 0.79 + 0.25 * Math.Min(1, absTorque) - 0.04 * Math.Clamp(Load, 0, 2.5)) * dir;
             double rate = Math.Min(1.5, absTorque) / StartTime;
             Speed = MoveTowards(Speed, limit, rate * dt);
         }
@@ -250,8 +264,65 @@ internal sealed class InductionMotorModel
             yield return new Readout(Loc.T("readout.windingCurrent", i + 1), Simulator.FormatAmps(windingCurrent[i].Magnitude));
         }
         yield return new Readout(Loc.T("readout.ratedCurrent"), Simulator.FormatAmps(WindingRatedCurrent));
+        yield return new Readout(Loc.T("readout.load"), string.Format(Loc.Culture, "%{0:0}", Load * 100));
         yield return new Readout(Loc.T("readout.heat"), string.Format(Loc.Culture, "%{0:0}", Heat * 100));
     }
+
+    public SimSlider LoadSlider => new("slider.load", 0, 200, Load * 100, "%", 5);
+}
+
+/// <summary>
+/// Motor gövde kaçağı: sargıdan gövdeye (PE klemensine) düşük dirençli yalıtım hatası. PE bağlıysa kaçak akım toprağa
+/// akar ve kaçak akım rölesi (ya da büyük akımda sigorta) açar; bağlı değilse gövdede dokunma gerilimi oluşur.
+/// </summary>
+internal sealed class BodyFault(SimComponent owner, bool initially)
+{
+    public const double FaultOhms = 20;
+
+    private Complex bodyVoltage;
+
+    public bool Active { get; private set; } = initially;
+
+    public static readonly SimAction Action = new(InteractionKind.Fault, "action.bodyFault");
+
+    public void Stamp(Stamper s, Pin winding, Pin body)
+    {
+        if (Active)
+        {
+            s.Resistor(winding, body, FaultOhms);
+        }
+    }
+
+    public void Read(Solution sol, int bodyNode) => bodyVoltage = sol.NodeAc(bodyNode);
+
+    public void Toggle()
+    {
+        Active = !Active;
+        owner.Sim.AddLog(Loc.T(Active ? "log.bodyFaultOn" : "log.bodyFaultOff", owner.Label), owner.Id,
+            Active ? ProblemSeverity.Warning : ProblemSeverity.Info);
+    }
+
+    public void Check(int bodyTerminal)
+    {
+        if (!Active)
+        {
+            return;
+        }
+        double touch = bodyVoltage.Magnitude;
+        if (touch > 50)
+        {
+            owner.Sim.ReportLive(new SimProblem("touch-voltage", ProblemSeverity.Error,
+                Loc.T("problem.touchVoltage", owner.Label, Simulator.FormatVolts(touch)),
+                Loc.T(owner.IsConnected(bodyTerminal) ? "explain.touchVoltageEarthed" : "explain.touchVoltage"), [owner.Id], []));
+        }
+        else
+        {
+            owner.Sim.ReportLive(new SimProblem("body-fault", ProblemSeverity.Warning,
+                Loc.T("problem.bodyFault", owner.Label), Loc.T("explain.bodyFault"), [owner.Id], []));
+        }
+    }
+
+    public Readout Readout() => new(Loc.T("readout.touchVoltage"), Active ? Simulator.FormatVolts(bodyVoltage.Magnitude) : "—");
 }
 
 /// <summary>3 uçlu üç fazlı motor (iç bağlantı yıldız veya üçgen).</summary>
@@ -270,14 +341,19 @@ public sealed class Motor3Def : ComponentDef
     [
         new TerminalDef("U", new Vec(0, 0), Side.Top, "U"),
         new TerminalDef("V", new Vec(20, 0), Side.Top, "V"),
-        new TerminalDef("W", new Vec(40, 0), Side.Top, "W")
+        new TerminalDef("W", new Vec(40, 0), Side.Top, "W"),
+        new TerminalDef("PE", new Vec(40, 60), Side.Bottom, "PE")
     ];
+
+    public override int LegacyTerminalCount => 3;
 
     public override IReadOnlyList<ParamDef> Params =>
     [
         ParamDef.Number("powerKw", 1.5, "kW", 0.06, 200),
         ParamDef.Choice("connection", "star", "star", "delta"),
-        ParamDef.Number("startTime", 1.0, "s", 0.2, 30)
+        ParamDef.Number("startTime", 1.0, "s", 0.2, 30),
+        ParamDef.Number("load", 100, "%", 0, 200),
+        ParamDef.Bool("bodyFault", false)
     ];
 
     public override string? SubLabel(ComponentInstance c) =>
@@ -295,40 +371,54 @@ public sealed class Motor3Def : ComponentDef
             p.Polyline([new Vec(0, 0), new Vec(0, 20), o + new Vec(-r * 0.707, -r * 0.707)], ink);
             p.Polyline([new Vec(40, 0), new Vec(40, 20), o + new Vec(r * 0.707, -r * 0.707)], ink);
             SymbolKit.SchoolMotor(p, ctx, o, r, "M", "3~", ctx.State?.Level ?? 0, ctx.State?.Direction ?? 0, ctx.AnimTime);
+            SymbolKit.MotorEarth(p, ink, new Vec(40, 60), o + new Vec(r * 0.707, r * 0.707));
             return;
         }
         p.Polyline([new Vec(0, 0), new Vec(0, 14), new Vec(10, 26)], ink);
         p.Line(new Vec(20, 0), new Vec(20, 22), ink);
         p.Polyline([new Vec(40, 0), new Vec(40, 14), new Vec(30, 26)], ink);
         SymbolKit.Motor(p, ctx, new Vec(20, 38), 15, "M", "3~", (ctx.State?.Level ?? 0) * (ctx.State?.Direction ?? 0), ctx.State?.Direction ?? 0, ctx.AnimTime);
+        SymbolKit.MotorEarth(p, ink, new Vec(40, 60), new Vec(20, 38) + new Vec(10.6, 10.6));
     }
 
     public override SimComponent CreateSim(ComponentInstance instance)
     {
         bool delta = instance.GetParam("connection", "star") == "delta";
-        return new Motor3Sim(delta, instance.GetDouble("powerKw", 1.5), instance.GetDouble("startTime", 1.0));
+        return new Motor3Sim(delta, instance.GetDouble("powerKw", 1.5), instance.GetDouble("startTime", 1.0),
+            instance.GetDouble("load", 100) / 100, instance.GetBool("bodyFault", false));
     }
 }
 
-internal sealed class Motor3Sim(bool delta, double powerKw, double startTime) : SimComponent
+/// <summary>Üç fazlı motor simülasyonlarının ortak kısmı: mil yükü kaydırıcısı ve gövde kaçağı.</summary>
+internal abstract class InductionMotorSimBase(double load, bool bodyFault) : SimComponent
 {
     private InductionMotorModel? model;
-    private InductionMotorModel Model => model ??= new InductionMotorModel(this, delta ? 400 : 230, powerKw, startTime);
+    private BodyFault? fault;
 
-    public override int InternalNodeCount => delta ? 0 : 1;
+    protected abstract InductionMotorModel CreateModel();
+
+    /// <summary>PE klemensinin sırası.</summary>
+    protected abstract int PeTerminal { get; }
+
+    protected InductionMotorModel Model => model ??= CreateModel().WithLoad(load);
+    private BodyFault Fault => fault ??= new BodyFault(this, bodyFault);
+
     public override bool NeedsTicks => Model.NeedsTicks;
+    public override SimSlider Slider => Model.LoadSlider;
+    public override IReadOnlyList<SimAction> Actions => [BodyFault.Action];
+
+    protected abstract void StampWindings(Stamper s);
 
     public override void Stamp(Stamper s)
     {
-        (Pin, Pin)[] w = delta
-            ? [(T(0), T(1)), (T(1), T(2)), (T(2), T(0))]
-            : [(T(0), Internal(0)), (T(1), Internal(0)), (T(2), Internal(0))];
-        Model.Stamp(s, w);
+        StampWindings(s);
+        Fault.Stamp(s, T(0), T(PeTerminal));
     }
 
     public override bool Evaluate(Solution sol)
     {
         Model.Read(sol);
+        Fault.Read(sol, TerminalNodes[PeTerminal]);
         return false;
     }
 
@@ -339,9 +429,44 @@ internal sealed class Motor3Sim(bool delta, double powerKw, double startTime) : 
         return changed;
     }
 
-    public override void Check(Solution sol) => Model.Check(this);
+    public override void Interact(Interaction action)
+    {
+        if (action.Kind == InteractionKind.SetValue)
+        {
+            Model.Load = Math.Clamp(action.Value / 100, 0, 3);
+        }
+        else if (action.Kind == InteractionKind.Fault)
+        {
+            Fault.Toggle();
+        }
+    }
+
+    public override void Check(Solution sol)
+    {
+        Model.Check(this);
+        Fault.Check(PeTerminal);
+    }
+
     public override void UpdateVisual(Solution sol) => Model.UpdateVisual(Visual);
-    public override IEnumerable<Readout> Readouts(Solution sol) => Model.Readouts();
+
+    public override IEnumerable<Readout> Readouts(Solution sol) => Model.Readouts().Append(Fault.Readout());
+}
+
+internal sealed class Motor3Sim(bool delta, double powerKw, double startTime, double load, bool bodyFault)
+    : InductionMotorSimBase(load, bodyFault)
+{
+    protected override InductionMotorModel CreateModel() => new(this, delta ? 400 : 230, powerKw, startTime);
+    protected override int PeTerminal => 3;
+
+    public override int InternalNodeCount => delta ? 0 : 1;
+
+    protected override void StampWindings(Stamper s)
+    {
+        (Pin, Pin)[] w = delta
+            ? [(T(0), T(1)), (T(1), T(2)), (T(2), T(0))]
+            : [(T(0), Internal(0)), (T(1), Internal(0)), (T(2), Internal(0))];
+        Model.Stamp(s, w);
+    }
 }
 
 /// <summary>6 uçlu, yıldız-üçgen bağlanabilen motor. Klemens sırası eski EKTS ile aynı: üstte U1 V1 W1, altta W2 U2 V2.</summary>
@@ -362,14 +487,19 @@ public sealed class Motor6Def : ComponentDef
         new TerminalDef("W1", new Vec(25, 0), Side.Top, "W1"),
         new TerminalDef("W2", new Vec(5, 40), Side.Bottom, "W2"),
         new TerminalDef("U2", new Vec(15, 40), Side.Bottom, "U2"),
-        new TerminalDef("V2", new Vec(25, 40), Side.Bottom, "V2")
+        new TerminalDef("V2", new Vec(25, 40), Side.Bottom, "V2"),
+        new TerminalDef("PE", new Vec(65, 40), Side.Bottom, "PE")
     ];
+
+    public override int LegacyTerminalCount => 6;
 
     public override IReadOnlyList<ParamDef> Params =>
     [
         ParamDef.Number("powerKw", 4, "kW", 0.06, 200),
         ParamDef.Choice("windingVoltage", "400", "400", "230"),
-        ParamDef.Number("startTime", 2.0, "s", 0.2, 30)
+        ParamDef.Number("startTime", 2.0, "s", 0.2, 30),
+        ParamDef.Number("load", 100, "%", 0, 200),
+        ParamDef.Bool("bodyFault", false)
     ];
 
     public override string? SubLabel(ComponentInstance c) =>
@@ -398,6 +528,7 @@ public sealed class Motor6Def : ComponentDef
                 p.Text(new Vec(5 + 10 * i, 25.5), down[i], 4.6, ink);
             }
             SymbolKit.SchoolMotor(p, ctx, o, r, "M", "3~", ctx.State?.Level ?? 0, ctx.State?.Direction ?? 0, ctx.AnimTime);
+            SymbolKit.MotorEarth(p, ink, new Vec(65, 40), new Vec(65, 33.2));
             return;
         }
         p.Rect(new Vec(0, 5), new Vec(30, 30), ink, 1, Paint.Of(Ink.Background));
@@ -415,38 +546,22 @@ public sealed class Motor6Def : ComponentDef
         }
         p.Line(new Vec(30, 20), new Vec(38, 20), ink);
         SymbolKit.Motor(p, ctx, new Vec(53, 20), 14, "M", "3~", (ctx.State?.Level ?? 0) * (ctx.State?.Direction ?? 0), ctx.State?.Direction ?? 0, ctx.AnimTime);
+        SymbolKit.MotorEarth(p, ink, new Vec(65, 40), new Vec(62.9, 29.9));
     }
 
     public override SimComponent CreateSim(ComponentInstance instance) =>
-        new Motor6Sim(instance.GetDouble("windingVoltage", 400), instance.GetDouble("powerKw", 4), instance.GetDouble("startTime", 2));
+        new Motor6Sim(instance.GetDouble("windingVoltage", 400), instance.GetDouble("powerKw", 4), instance.GetDouble("startTime", 2),
+            instance.GetDouble("load", 100) / 100, instance.GetBool("bodyFault", false));
 }
 
-internal sealed class Motor6Sim(double windingVoltage, double powerKw, double startTime) : SimComponent
+internal sealed class Motor6Sim(double windingVoltage, double powerKw, double startTime, double load, bool bodyFault)
+    : InductionMotorSimBase(load, bodyFault)
 {
-    private InductionMotorModel? model;
-    private InductionMotorModel Model => model ??= new InductionMotorModel(this, windingVoltage, powerKw, startTime);
-
-    public override bool NeedsTicks => Model.NeedsTicks;
+    protected override InductionMotorModel CreateModel() => new(this, windingVoltage, powerKw, startTime);
+    protected override int PeTerminal => 6;
 
     // Sargılar: U1-U2, V1-V2, W1-W2
-    public override void Stamp(Stamper s) => Model.Stamp(s, [(T(0), T(4)), (T(1), T(5)), (T(2), T(3))]);
-
-    public override bool Evaluate(Solution sol)
-    {
-        Model.Read(sol);
-        return false;
-    }
-
-    public override bool Advance(double dt, Solution sol)
-    {
-        bool changed = Model.Advance(dt);
-        Model.LogTransitions();
-        return changed;
-    }
-
-    public override void Check(Solution sol) => Model.Check(this);
-    public override void UpdateVisual(Solution sol) => Model.UpdateVisual(Visual);
-    public override IEnumerable<Readout> Readouts(Solution sol) => Model.Readouts();
+    protected override void StampWindings(Stamper s) => Model.Stamp(s, [(T(0), T(4)), (T(1), T(5)), (T(2), T(3))]);
 }
 
 /// <summary>
