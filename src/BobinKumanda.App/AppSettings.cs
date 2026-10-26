@@ -46,8 +46,16 @@ public sealed class AppSettings
         return new AppSettings();
     }
 
+    /// <summary>Betikle deneme sırasında kullanıcının ayarları ve son dosyaları değişmesin.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool ReadOnly { get; set; }
+
     public void Save()
     {
+        if (ReadOnly)
+        {
+            return;
+        }
         try
         {
             Directory.CreateDirectory(Folder);

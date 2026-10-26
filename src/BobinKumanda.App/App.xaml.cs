@@ -54,6 +54,7 @@ public partial class App : Application
         scripted = script != null;
 
         AppSettings settings = AppSettings.Load();
+        settings.ReadOnly = scripted;
         Loc.Language = settings.Language;
         var vm = new MainViewModel(settings);
         var window = new MainWindow(vm);
