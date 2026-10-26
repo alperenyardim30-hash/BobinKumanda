@@ -289,7 +289,7 @@ public abstract class ProximityDefBase : ComponentDef
     public override DeviceRole Role => DeviceRole.Master;
     public override string LabelPrefix => "B";
     public override Vec Size => new(30, 30);
-    public override Vec DefaultLabelOffset => new(32, 0);
+    public override Vec DefaultLabelOffset => new(8, -10);
 
     protected abstract bool Capacitive { get; }
 

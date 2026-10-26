@@ -629,3 +629,53 @@ ui.allSheets | Bütün sayfalar | All sheets
 ui.currentSheet | Yalnızca bu sayfa | This sheet only
 ui.printFailed | Yazdırılamadı | Printing failed
 ui.exported | Resim kaydedildi: | Image saved:
+
+# ---- Örnek devreler ----
+ui.samples | Örnekler | Samples
+ui.samplesText | Hazır örnek devreyi açın, simülasyonu başlatın (F5) ve butonlara tıklayarak deneyin. Örnek yeni, adsız bir belge olarak açılır. | Open a ready-made circuit, start the simulation (F5) and try it by clicking the buttons. The sample opens as a new, untitled document.
+sample.button-lamp | Butonla lamba yakma | Lamp with a push button
+sample.button-lamp.info | En basit kumanda: buton basılı tutuldukça lamba yanar. | The simplest control: the lamp is lit while the button is held.
+sample.button-lamp.note | S1 butonuna fareyle basılı tutun: lamba yanar, bırakınca söner (kesik çalışma). | Hold S1 with the mouse: the lamp lights and goes out when released (jogging).
+sample.latching | Mühürleme (start-stop) | Latching (start-stop)
+sample.latching.info | K1 kendi NO kontağıyla kendini tutar; S0 durdurur. | K1 holds itself in with its own NO contact; S0 stops it.
+sample.latching.note | S1'e kısa basın: K1 çeker ve mühürlenir, H1 yanar.\nS0'a basın: K1 bırakır. | Press S1 briefly: K1 pulls in and latches, H1 lights.\nPress S0: K1 drops out.
+sample.dol | Termik korumalı direkt yol verme | Direct-on-line start with overload relay
+sample.dol.info | Üç fazlı motorun kontaktörle çalıştırılması: kumanda ve güç devresi, termik koruma. | Running a three-phase motor with a contactor: control and power circuit with overload protection.
+sample.dol.note | S1 motoru çalıştırır, S0 durdurur. Motoru seçip mil yükünü %200'e çıkarın:\ntermik röle F2 bir süre sonra açar, H2 arıza lambası yanar. Reset ile kurun. | S1 starts the motor, S0 stops it. Select the motor and raise its shaft load to 200%:\noverload relay F2 trips after a while and fault lamp H2 lights. Reset it to re-arm.
+sample.jog | Kesik ve sürekli çalışma | Jog and continuous run
+sample.jog.info | S1 ile sürekli, S2 ile kesik (basılı tuttukça) çalışma. | Continuous run with S1, jogging (while held) with S2.
+sample.jog.note | S1: sürekli çalışma (mühürlenir). S2: basılı tuttukça çalışır;\nS2'nin NC kontağı mühür yolunu açtığı için bırakınca durur. | S1: continuous run (latches). S2: runs while held;\nits NC contact opens the latch path, so it stops when released.
+sample.reversing | İleri-geri çalışma | Forward-reverse
+sample.reversing.info | İki kontaktörle motorun dönüş yönünü değiştirme; kontaktör kilitlemeli. | Reversing a motor with two contactors, with contactor interlocking.
+sample.reversing.note | S1 ileri, S2 geri, S0 durdurur. K1 ve K2'nin NC kontakları birbirini kilitler:\nkilitleme olmasa iki kontaktör birlikte çekip L1-L3 kısa devresi olurdu. | S1 forward, S2 reverse, S0 stops. The NC contacts of K1 and K2 interlock each other:\nwithout them both contactors could close and short L1 to L3.
+sample.star-delta | Yıldız-üçgen yol verme | Star-delta starting
+sample.star-delta.info | Kalkış akımını düşürmek için motor önce yıldızda, sonra üçgende çalışır. | The motor starts in star and then runs in delta to reduce the starting current.
+sample.star-delta.note | S1: KM ve KY çeker (yıldız). 4 s sonra KT, KY'yi bırakıp KD'yi çektirir (üçgen).\nPens ampermetreyi motor kablosuna takıp kalkış akımını izleyin. | S1: KM and KY pull in (star). After 4 s KT drops KY and pulls in KD (delta).\nClamp the meter on a motor wire to watch the starting current.
+sample.sequence | Sıralı çalışma | Sequential start
+sample.sequence.info | İkinci motor ancak birincisi çalışırken çalıştırılabilir. | The second motor can only start while the first one runs.
+sample.sequence.note | Önce S1 ile M1'i çalıştırın; S2 ancak o zaman M2'yi çalıştırır. S0 ikisini de durdurur. | Start M1 with S1 first; only then does S2 start M2. S0 stops both.
+sample.pump | Şamandıralı otomatik pompa | Automatic pump with float switch
+sample.pump.info | Depo dolunca pompa boşaltır, alt seviyede durur. | The pump empties the tank when it is full and stops at the low level.
+sample.pump.note | Şamandırayı (B1) seçip seviyeyi kaydırın: %80'de pompa çalışır, %20'de durur. | Select the float switch (B1) and move the level: the pump starts at 80% and stops at 20%.
+sample.rcd | Kaçak akım rölesi ve gövde kaçağı | Residual current device and body fault
+sample.rcd.info | Motor gövdesine kaçak olunca 30 mA kaçak akım rölesi devreyi açar. | The 30 mA residual current device opens the circuit when the motor leaks to its enclosure.
+sample.rcd.note | Simülasyon başlayınca motor çalışır. Motoru seçip "Gövde kaçağı oluştur / kaldır" düğmesine basın: F1 açar.\nPE kablosunu silip yeniden deneyin: gövdede tehlikeli dokunma gerilimi oluşur. | The motor runs when the simulation starts. Select it and press "Add / remove body leakage": F1 trips.\nDelete the PE wire and try again: the enclosure carries a dangerous touch voltage.
+sample.control-24v | 24 V kumanda devresi | 24 V control circuit
+sample.control-24v.info | Kumanda trafosu ile güvenli 24 V AC kumanda; sekonder sigortalı. | Safe 24 V AC control with a control transformer; fused secondary.
+sample.control-24v.note | Bobin ve lamba 24 V'tur. 230 V'luk bir bobin seçip deneyin: çekmez.\nSekonderi kısa devre edin: F2 atar, trafo korunur. | The coil and lamp are 24 V. Try choosing a 230 V coil: it does not pull in.\nShort the secondary: F2 blows and protects the transformer.
+sample.thermostat | Termostatla ısıtıcı kontrolü | Heater control with a thermostat
+sample.thermostat.info | Sıcaklık ayarın altındayken ısıtıcı ve fan çalışır. | The heater and fan run while the temperature is below the set point.
+sample.thermostat.note | Termostatı (B1) seçip sıcaklığı kaydırın: 38 °C altında K1 çeker, 42 °C üstünde bırakır. | Select the thermostat (B1) and move the temperature: K1 pulls in below 38 °C and drops out above 42 °C.
+sample.counter | Sayıcı ile adet sayma | Counting with a counter
+sample.counter.info | Beş darbeden sonra kontak değişir; ayrı girişle sıfırlanır. | The contact switches after five pulses; a separate input resets it.
+sample.counter.note | S1'e beş kez basın: H1 yanar. S2 sayacı sıfırlar. | Press S1 five times: H1 lights. S2 resets the counter.
+sample.alarm | Flaşörlü ikaz | Flashing alarm
+sample.alarm.info | Alarm lambası yanıp söner, siren öter. | The alarm lamp flashes and the siren sounds.
+sample.alarm.note | S1 alarmı başlatır, S0 susturur. Sesi Görünüm sekmesinden kapatabilirsiniz. | S1 starts the alarm, S0 silences it. Sound can be turned off on the View tab.
+sample.sensor | Yaklaşım sensörü (PNP, 24 V DC) | Proximity sensor (PNP, 24 V DC)
+sample.sensor.info | 3 kablolu endüktif sensör DC güç kaynağından beslenir, çıkışı röleyi sürer. | A 3-wire inductive sensor is powered from a DC supply and drives a relay.
+sample.sensor.note | Sensöre (B1) tıklayın: önüne metal gelir, K1 çeker, H1 yanar. Sensörü 230 V'a bağlarsanız yanar. | Click the sensor (B1): a metal object comes in front of it, K1 pulls in, H1 lights. Connected to 230 V it burns out.
+comp.overload-nc | Termik kontağı 95-96 (NC) | Overload contact 95-96 (NC)
+comp.overload-no | Termik kontağı 97-98 (NO) | Overload contact 97-98 (NO)
+info.overload-nc | Termik rölenin NC kontağı: kontaktör bobinine seri bağlanır, termik atınca açılır ve motoru durdurur. Etiketi termik röleyle aynı olmalı (F2). | NC contact of the overload relay: in series with the contactor coil, it opens when the relay trips and stops the motor. Its label must match the relay (F2).
+info.overload-no | Termik rölenin NO kontağı: termik atınca kapanır, arıza lambasını ya da kornayı çalıştırır. | NO contact of the overload relay: closes when the relay trips and switches on a fault lamp or horn.

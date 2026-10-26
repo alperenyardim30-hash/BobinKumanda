@@ -230,7 +230,10 @@ public static class CircuitRenderer
         {
             if (t.Sheet == sheet)
             {
-                Add(new RectD(t.Position.X, t.Position.Y, t.Size.X, t.Size.Y));
+                // yazının gerçek genişliği (8 birimlik yazıda harf başına ~4,4): sayfaya sığdırırken taşmasın
+                string[] lines = t.Text.Replace("\r", "").Split('\n');
+                double w = Math.Max(t.Size.X, lines.Max(l => l.Length) * 4.4), h = Math.Max(t.Size.Y, 11 * lines.Length + 2);
+                Add(new RectD(t.Position.X, t.Position.Y, w, h));
             }
         }
         return box ?? new RectD(0, 0, 100, 100);

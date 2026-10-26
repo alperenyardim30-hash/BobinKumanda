@@ -13,7 +13,7 @@ namespace BobinKumanda.App;
 
 /// <summary>
 /// Arayüzü elle tıklamadan denemek için küçük komut dili (noktalı virgülle ayrılır). Yalnızca geliştirme içindir.
-/// Dosya: open:yol; new; save:yol
+/// Dosya: open:yol; new; save:yol; sample:kimlik (örnek devre)
 /// Simülasyon: start; stop; press:ETİKET; release:ETİKET; click:ETİKET; run:saniye (anında); wait:saniye (gerçek)
 /// Düzenleme: place:tip@x,y; wire:A.uç-B.uç (A/B etiket ya da kimlik); select:ETİKET; selectall; move:dx,dy;
 ///   rotate; mirror; delete; copy; paste; duplicate; undo; redo; tool:select|wire|text; ghost:tip; esc; sheet:add|N
@@ -80,6 +80,13 @@ internal static class ScriptRunner
                 break;
             case "new":
                 vm.NewCommand.Execute(null);
+                break;
+            case "sample":
+                vm.OpenSample(arg);
+                if (vm.Circuit == null || vm.Circuit.Components.Count == 0)
+                {
+                    throw new ArgumentException("örnek yok: " + arg);
+                }
                 break;
             case "save":
                 vm.SaveDocument(Path.GetFullPath(arg));

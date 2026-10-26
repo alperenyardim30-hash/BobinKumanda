@@ -211,7 +211,8 @@ public class FollowerContactSim : ContactSetSim
 
     public FollowerContactSim(ContactSpec[] contacts, string channel)
     {
-        Contacts = contacts;
+        // NC kontaklar 1. grup: ana cihazın NC konumunu izler
+        Contacts = contacts.Select(c => c with { Group = c.NormallyClosed ? 1 : 0 }).ToArray();
         this.channel = channel;
     }
 
@@ -227,6 +228,13 @@ public class FollowerContactSim : ContactSetSim
         }
     }
 
-    protected override bool IsActuated(int group) =>
-        master != null && master.ChannelActive(channel == "auto" ? master.DefaultChannel : channel);
+    protected override bool IsActuated(int group)
+    {
+        if (master == null)
+        {
+            return false;
+        }
+        string ch = channel == "auto" ? master.DefaultChannel : channel;
+        return group == 1 ? master.ChannelActiveForNc(ch) : master.ChannelActive(ch);
+    }
 }

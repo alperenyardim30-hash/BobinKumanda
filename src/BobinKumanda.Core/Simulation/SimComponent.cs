@@ -40,6 +40,12 @@ public interface IDeviceMaster
     string DefaultChannel { get; }
 
     bool ChannelActive(string channel);
+
+    /// <summary>
+    /// NC kontaklar için konum. Butonlar bırakılınca önce NO kontak açılır, NC kontak biraz sonra kapanır
+    /// (önce aç, sonra kapat); kesik çalışmada mühür yolu bu yüzden kontaktör bırakmadan kapanmaz.
+    /// </summary>
+    bool ChannelActiveForNc(string channel) => ChannelActive(channel);
 }
 
 /// <summary>Bir elemanın simülasyon modeli. Her çözümden önce Stamp, sonra Evaluate çağrılır.</summary>

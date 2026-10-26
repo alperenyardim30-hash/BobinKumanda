@@ -23,6 +23,8 @@ public sealed record ProblemItem(string Message, string Explanation, ProblemSeve
 
 public sealed record ReadoutItem(string Name, string Value);
 
+public sealed record SampleItem(string Id, string Title, string Description);
+
 public sealed record ChoiceItem(string Value, string Text)
 {
     public override string ToString() => Text;

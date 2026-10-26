@@ -164,6 +164,32 @@
                         <Fluent:Button Header="{l:Loc ui.docInfo}" Click="OnDocInfoClick" IsEnabled="{Binding IsEditing}">
                             <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE946;" /></Fluent:Button.Icon>
                         </Fluent:Button>
+                        <Fluent:BackstageTabItem Header="{l:Loc ui.samples}" x:Name="samplesTab">
+                            <DockPanel Margin="24">
+                                <TextBlock DockPanel.Dock="Top" FontSize="22" Text="{l:Loc ui.samples}" Margin="0,0,0,8" />
+                                <TextBlock DockPanel.Dock="Top" Text="{l:Loc ui.samplesText}" TextWrapping="Wrap" MaxWidth="640" HorizontalAlignment="Left"
+                                           Foreground="{DynamicResource App.TextMuted}" Margin="0,0,0,14" />
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding SampleItems}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type vm:SampleItem}">
+                                                <Button Width="300" Margin="0,0,10,10" Padding="12,9" HorizontalContentAlignment="Left" Cursor="Hand"
+                                                        Command="{Binding DataContext.OpenSampleCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding Id}" Click="OnRecentClick">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0,3,0,0" Opacity="0.75" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </Fluent:BackstageTabItem>
                         <Fluent:BackstageTabItem Header="{l:Loc ui.about}">
                             <StackPanel Margin="24" MaxWidth="560" HorizontalAlignment="Left">
                                 <Image Source="Assets/logo-wide.png" Width="420" HorizontalAlignment="Left" Margin="0,0,0,18"
@@ -546,6 +572,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Button Padding="16,7" Command="{Binding NewCommand}" Content="{l:Loc ui.newCircuit}" FontWeight="SemiBold" />
                             <Button Padding="16,7" Margin="8,0,0,0" Command="{Binding OpenCommand}" Content="{l:Loc ui.open}" />
+                            <Button Padding="16,7" Margin="8,0,0,0" Click="OnSamplesClick" Content="{l:Loc ui.samples}" />
                         </StackPanel>
                         <ItemsControl Margin="0,14,0,0" ItemsSource="{Binding RecentFiles}">
                             <ItemsControl.ItemTemplate>

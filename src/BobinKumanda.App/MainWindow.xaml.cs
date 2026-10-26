@@ -668,6 +668,15 @@ public partial class MainWindow
 
     private void OnRecentClick(object sender, RoutedEventArgs e) => backstage.IsOpen = false;
 
+    private void OnSamplesClick(object sender, RoutedEventArgs e)
+    {
+        backstage.IsOpen = true;
+        if (backstage.Content is Fluent.BackstageTabControl tabs)
+        {
+            tabs.SelectedItem = samplesTab;
+        }
+    }
+
     private void OnFitClick(object sender, RoutedEventArgs e) => canvas.ZoomToFit();
 
     private void OnZoomInClick(object sender, RoutedEventArgs e) => canvas.ZoomBy(1.25);

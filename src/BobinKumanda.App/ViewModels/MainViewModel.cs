@@ -14,6 +14,7 @@ using BobinKumanda.Core.Editing;
 using BobinKumanda.Core.IO;
 using BobinKumanda.Core.Localization;
 using BobinKumanda.Core.Model;
+using BobinKumanda.Core.Samples;
 using BobinKumanda.Core.Simulation;
 using Microsoft.Win32;
 
@@ -55,6 +56,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         {
             OnPropertyChanged(nameof(WindowTitle));
             OnPropertyChanged(nameof(DocumentName));
+            OnPropertyChanged(nameof(SampleItems));
             UpdateStatus();
             RebuildSelection();
             RebuildSheets();
@@ -274,6 +276,21 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         {
             OpenFile(dlg.FileName, askToDiscard: false);
         }
+    }
+
+    /// <summary>Örnekler listesi (dile göre adlarıyla).</summary>
+    public IReadOnlyList<SampleItem> SampleItems => SampleLibrary.All.Select(s => new SampleItem(s.Id, s.Title, s.Description)).ToList();
+
+    /// <summary>Örneği yeni, adsız ve kaydedilmemiş sayılmayan bir belge olarak açar.</summary>
+    [RelayCommand]
+    public void OpenSample(string? id)
+    {
+        if (id == null || SampleLibrary.Find(id) is not { } sample || !ConfirmDiscard())
+        {
+            return;
+        }
+        StopSimulation();
+        SetDocument(sample.Build(), null);
     }
 
     [RelayCommand]

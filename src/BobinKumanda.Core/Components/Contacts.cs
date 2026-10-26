@@ -136,7 +136,7 @@ public abstract class ThreePoleContactDef : FollowerContactDef
 {
     protected abstract bool Nc { get; }
     public override Vec Size => new(20, 70);
-    public override Vec DefaultLabelOffset => new(22, 30);
+    public override Vec DefaultLabelOffset => new(2, -13);
 
     public override IReadOnlyList<TerminalDef> Terminals =>
     [

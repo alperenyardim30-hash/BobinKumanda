@@ -272,7 +272,8 @@ public abstract class ProtectionDefBase : ComponentDef
     public override ComponentCategory Category => ComponentCategory.Protection;
     public override string LabelPrefix => "F";
     public override DeviceRole Role => DeviceRole.Master;
-    public override Vec DefaultLabelOffset => Poles == 1 ? new Vec(4, -10) : new Vec(22, 30);
+    // çok kutuplularda etiket üstte: sağa konunca orta kutbun kablosunun üstüne biniyordu
+    public override Vec DefaultLabelOffset => Poles == 1 ? new Vec(4, -10) : new Vec(2, -13);
 
     protected abstract int Poles { get; }
 
@@ -698,6 +699,47 @@ internal sealed class OverloadSim(double setAmps) : SimComponent, IDeviceMaster
             yield return new Readout(L("readout.coolDown"), string.Format(Loc.Culture, "{0:0} s", CoolingSeconds()));
         }
     }
+}
+
+/// <summary>Termik rölenin tek kontağı: 95-96 (NC) ya da 97-98 (NO); kumanda devresinde ayrı yerlerde çizilir.</summary>
+public abstract class OverloadSingleContactDef : FollowerContactDef
+{
+    protected abstract bool Nc { get; }
+    public override string LabelPrefix => "F";
+    public override Vec Size => new(20, 20);
+    public override IReadOnlyList<ParamDef> Params => [];
+
+    public override IReadOnlyList<TerminalDef> Terminals => Nc
+        ? [new TerminalDef("95", new Vec(0, 10), Side.Left, "95"), new TerminalDef("96", new Vec(20, 10), Side.Right, "96")]
+        : [new TerminalDef("97", new Vec(0, 10), Side.Left, "97"), new TerminalDef("98", new Vec(20, 10), Side.Right, "98")];
+
+    protected override ContactSpec[] Specs => [new(0, 1, Nc)];
+
+    public override void Draw(ISymbolPainter p, DrawContext ctx)
+    {
+        Vec mid = SymbolKit.ContactH(p, ctx, 10, Nc, ctx.IsClosed(0, Nc));
+        Paint ink = SymbolKit.InkFor(ctx);
+        // termik çalıştırıcı işareti (⊓) bıçağın üstünde
+        var top = new Vec(mid.X, ctx.School ? -1.5 : 0.5);
+        p.Line(mid, new Vec(top.X, top.Y + 1.5), ink, 0.7, dashed: true);
+        p.Polyline([new Vec(top.X - 3, top.Y + 1.5), new Vec(top.X - 3, top.Y - 0.5), new Vec(top.X + 3, top.Y - 0.5), new Vec(top.X + 3, top.Y + 1.5)], ink, 0.8);
+    }
+
+    public override SimComponent CreateSim(ComponentInstance instance) => new FollowerContactSim(Specs, "main");
+}
+
+public sealed class OverloadNcDef : OverloadSingleContactDef
+{
+    public override string TypeId => "overload-nc";
+    public override string Tags => "termik kontağı 95 96 kapalı termik röle kontak overload contact NC";
+    protected override bool Nc => true;
+}
+
+public sealed class OverloadNoDef : OverloadSingleContactDef
+{
+    public override string TypeId => "overload-no";
+    public override string Tags => "termik kontağı 97 98 açık arıza lambası termik röle kontak overload contact NO";
+    protected override bool Nc => false;
 }
 
 /// <summary>Termik rölenin yardımcı kontakları: 95-96 (NC, kumanda devresine seri) ve 97-98 (NO, arıza lambası).</summary>

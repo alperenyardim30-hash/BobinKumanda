@@ -30,19 +30,46 @@ public abstract class ManualDefBase : ComponentDef
 
 internal class ManualSim(ContactSpec[] specs, bool momentary, string pressKey, string releaseKey) : ContactSetSim, IDeviceMaster
 {
+    /// <summary>Bırakınca NC kontağın kapanması bu kadar gecikir (buton geri dönüş yolu); kontaktör bırakma süresinden uzun.</summary>
+    public const double NcReturnDelay = 0.04;
+
     private bool actuated;
     private bool latched;
+    private bool ncHeld;
+    private EventHandle? ncReturn;
 
     protected bool Actuated => actuated;
 
     SimComponent IDeviceMaster.Component => this;
     public string DefaultChannel => "main";
     public bool ChannelActive(string channel) => actuated;
+    public bool ChannelActiveForNc(string channel) => ncHeld;
     public override bool IsInteractive => true;
 
-    public override void Bind(DeviceRegistry devices) => Contacts = specs;
+    // NC kontaklar 1. grup: bırakınca gecikmeli kapanır
+    public override void Bind(DeviceRegistry devices) =>
+        Contacts = specs.Select(c => c with { Group = c.NormallyClosed ? 1 : 0 }).ToArray();
 
-    protected override bool IsActuated(int group) => actuated;
+    protected override bool IsActuated(int group) => group == 1 ? ncHeld : actuated;
+
+    /// <summary>Konum değişince NC kontaklar: basınca hemen açılır, bırakınca gecikmeyle kapanır.</summary>
+    private void UpdateNc()
+    {
+        Simulator.Cancel(ncReturn);
+        ncReturn = null;
+        if (actuated)
+        {
+            ncHeld = true;
+        }
+        else if (ncHeld)
+        {
+            ncReturn = Sim.Schedule(NcReturnDelay, () =>
+            {
+                ncReturn = null;
+                ncHeld = actuated;
+            });
+        }
+    }
 
     public override void Interact(Interaction action)
     {
@@ -78,6 +105,7 @@ internal class ManualSim(ContactSpec[] specs, bool momentary, string pressKey, s
         if (before != actuated)
         {
             Sim.AddLog(L(actuated ? pressKey : releaseKey, Label), Id);
+            UpdateNc();
         }
     }
 
@@ -86,6 +114,7 @@ internal class ManualSim(ContactSpec[] specs, bool momentary, string pressKey, s
     {
         actuated = value;
         latched = value;
+        UpdateNc();
     }
 
     public override void UpdateVisual(Solution sol)
