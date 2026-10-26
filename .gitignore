@@ -6,3 +6,4 @@ artifacts/
 dist/
 # Orijinal EKTS örnek dosyaları yazarına aittir; testlerde yerel olarak kullanılır, dağıtılmaz
 tests/LegacySamples/
+TestResults/

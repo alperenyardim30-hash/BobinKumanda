@@ -311,4 +311,24 @@ public class EditorTests
         Assert.Null(c.FindComponent(k.Id));
         Assert.False(CircuitEditor.DeleteSheet(c, S));
     }
+
+    [Fact]
+    public void Labels_are_hit_above_the_symbol_and_a_new_coil_label_clears_its_box()
+    {
+        var c = new Circuit();
+        ComponentInstance k1 = CircuitEditor.AddComponent(c, "relay-coil", new Vec(100, 100), S);
+        ComponentDef def = ComponentCatalog.Get(k1.Type);
+        RectD label = HitTest.LabelBounds(def, k1)!.Value;
+        Assert.False(label.Intersects(def.Bounds(k1).Inflate(-0.5)), "etiket bobin kutusunun üstüne binmemeli");
+
+        Hit h = HitTest.Label(c, S, label.Center, 0.5);
+        Assert.Equal(HitKind.Label, h.Kind);
+        Assert.Equal(k1.Id, h.Id);
+        Assert.True(HitTest.Label(c, S, def.Bounds(k1).Center, 0.5).IsNone);
+
+        // Kaydırılan etiket kopyalanınca yeri korunur
+        k1.LabelOffset = new Vec(25, 4);
+        Selection pasted = CircuitEditor.Paste(c, CircuitEditor.Copy(c, Selection.Of(k1)), new Vec(0, 60), S);
+        Assert.Equal(new Vec(25, 4), c.FindComponent(pasted.Components.Single())!.LabelOffset);
+    }
 }

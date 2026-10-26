@@ -50,7 +50,7 @@ public sealed class CircuitCanvas : FrameworkElement
 
     private const double DragThreshold = 4;
 
-    private enum Gesture { None, Pending, Pan, Rubber, Move, Segment, Press }
+    private enum Gesture { None, Pending, Pan, Rubber, Move, Segment, Label, Press }
 
     private readonly WpfPainter painter = new();
     private Circuit? circuit;
@@ -71,6 +71,8 @@ public sealed class CircuitCanvas : FrameworkElement
     private string? segWire;
     private int segIndex;
     private List<Vec>? segOrig;
+    private ComponentInstance? labelOf;
+    private Vec? labelOrig;
     private ComponentInstance? pressed;
     private Vec mouseWorld;
     private bool mouseInside;
@@ -296,6 +298,12 @@ public sealed class CircuitCanvas : FrameworkElement
             w.Points = segOrig;
             Host?.CancelEdit();
         }
+        else if (gesture == Gesture.Label && labelOf != null)
+        {
+            labelOf.LabelOffset = labelOrig;
+            labelOf = null;
+            Host?.CancelEdit();
+        }
         gesture = Gesture.None;
         move = null;
         segOrig = null;
@@ -357,6 +365,10 @@ public sealed class CircuitCanvas : FrameworkElement
         if (h.IsNone)
         {
             h = HitTest.Text(circuit, Sheet, p, 1 / zoom);
+        }
+        if (h.IsNone && Editing)
+        {
+            h = HitTest.Label(circuit, Sheet, p, 0.5 / zoom);
         }
         if (h.IsNone)
         {
@@ -909,7 +921,7 @@ public sealed class CircuitCanvas : FrameworkElement
 
     private bool IsSelected(Hit h) => h.Kind switch
     {
-        HitKind.Component => Selection.Components.Contains(h.Id),
+        HitKind.Component or HitKind.Label => Selection.Components.Contains(h.Id),
         HitKind.Wire => Selection.Wires.Contains(h.Id),
         HitKind.Junction => Selection.Junctions.Contains(h.Id),
         HitKind.Text => Selection.Texts.Contains(h.Id),
@@ -918,7 +930,7 @@ public sealed class CircuitCanvas : FrameworkElement
 
     private HashSet<string>? SetOf(Hit h) => h.Kind switch
     {
-        HitKind.Component => Selection.Components,
+        HitKind.Component or HitKind.Label => Selection.Components,
         HitKind.Wire => Selection.Wires,
         HitKind.Junction => Selection.Junctions,
         HitKind.Text => Selection.Texts,
@@ -967,6 +979,10 @@ public sealed class CircuitCanvas : FrameworkElement
                 w.Points = WirePath.DragSegment(segOrig, segIndex, (mouseWorld - downWorld).Snap(5));
                 InvalidateVisual();
                 return;
+            case Gesture.Label when labelOf != null:
+                labelOf.LabelOffset = (moveAnchor + (mouseWorld - downWorld)).Snap(1);
+                InvalidateVisual();
+                return;
             case Gesture.Rubber:
             case Gesture.Pending:
                 InvalidateVisual();
@@ -1000,6 +1016,16 @@ public sealed class CircuitCanvas : FrameworkElement
         if (downHit.IsNone)
         {
             gesture = Gesture.Rubber;
+            return;
+        }
+        // Etiket tutulup sürüklenirse yalnızca etiket kayar (üst üste binen yazıları ayırmak için)
+        if (downHit.Kind == HitKind.Label && circuit.FindComponent(downHit.Id) is { } lc && ComponentCatalog.Find(lc.Type) is { } ldef)
+        {
+            Host?.BeginEdit();
+            gesture = Gesture.Label;
+            labelOf = lc;
+            labelOrig = lc.LabelOffset;
+            moveAnchor = ldef.LabelWorld(lc) - lc.Position;
             return;
         }
         // Tek başına seçili bir kablonun parçası sürüklenirse köşe düzeltilir
@@ -1124,6 +1150,17 @@ public sealed class CircuitCanvas : FrameworkElement
                 }
                 segOrig = null;
                 break;
+            case Gesture.Label when labelOf != null:
+                if (labelOf.LabelOffset == labelOrig)
+                {
+                    Host?.CancelEdit();
+                }
+                else
+                {
+                    Host?.CommitEdit();
+                }
+                labelOf = null;
+                break;
         }
         if (IsMouseCaptured)
         {
@@ -1198,7 +1235,7 @@ public sealed class CircuitCanvas : FrameworkElement
             pressed = null;
             ComponentReleased?.Invoke(c);
         }
-        if (gesture is Gesture.Move or Gesture.Segment)
+        if (gesture is Gesture.Move or Gesture.Segment or Gesture.Label)
         {
             CancelCurrent();
         }

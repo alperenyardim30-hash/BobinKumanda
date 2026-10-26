@@ -4,7 +4,8 @@ using BobinKumanda.Core.Model;
 
 namespace BobinKumanda.Core.Editing;
 
-public enum HitKind { None, Terminal, Junction, Wire, Component, Text }
+/// <summary>Label: elemanın etiketi (K1); Id elemanın kimliğidir.</summary>
+public enum HitKind { None, Terminal, Junction, Wire, Component, Text, Label }
 
 /// <summary>Fare altındaki şey. Kablo vuruşunda parça numarası ve parça üzerindeki en yakın nokta da verilir.</summary>
 public readonly record struct Hit(HitKind Kind, string Id = "", string? Terminal = null, int Segment = -1, Vec Point = default)
@@ -187,6 +188,20 @@ public static class HitTest
             }
         }
         return box;
+    }
+
+    /// <summary>Etiketi fare altında olan en üstteki eleman.</summary>
+    public static Hit Label(Circuit circuit, string sheet, Vec p, double slack)
+    {
+        for (int i = circuit.Components.Count - 1; i >= 0; i--)
+        {
+            ComponentInstance c = circuit.Components[i];
+            if (c.Sheet == sheet && ComponentCatalog.Find(c.Type) is { } def && LabelBounds(def, c) is { } r && r.Inflate(slack).Contains(p))
+            {
+                return new Hit(HitKind.Label, c.Id, Point: p);
+            }
+        }
+        return Hit.None;
     }
 
     /// <summary>Etiketin kabaca kapladığı alan (etiketi sürüklemek için).</summary>

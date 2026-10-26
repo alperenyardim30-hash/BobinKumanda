@@ -14,7 +14,8 @@ public abstract class CoilDefBase : ComponentDef
     public override DeviceRole Role => DeviceRole.Master;
     public override string LabelPrefix => "K";
     public override Vec Size => new(20, 20);
-    public override Vec DefaultLabelOffset => new(4, -6);
+    // Okul sembolünde bobin kutusu 0..20 yüksekliğinin tamamını kaplar; etiket kutunun üstünde kalsın
+    public override Vec DefaultLabelOffset => new(4, -10);
 
     public override IReadOnlyList<TerminalDef> Terminals =>
     [
