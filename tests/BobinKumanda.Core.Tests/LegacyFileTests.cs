@@ -6,7 +6,6 @@ using BobinKumanda.Core.Drawing;
 using BobinKumanda.Core.IO;
 using BobinKumanda.Core.Model;
 using BobinKumanda.Core.Simulation;
-using BobinKumanda.Core.Tests.Rendering;
 
 namespace BobinKumanda.Core.Tests;
 

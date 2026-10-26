@@ -679,3 +679,5 @@ comp.overload-nc | Termik kontağı 95-96 (NC) | Overload contact 95-96 (NC)
 comp.overload-no | Termik kontağı 97-98 (NO) | Overload contact 97-98 (NO)
 info.overload-nc | Termik rölenin NC kontağı: kontaktör bobinine seri bağlanır, termik atınca açılır ve motoru durdurur. Etiketi termik röleyle aynı olmalı (F2). | NC contact of the overload relay: in series with the contactor coil, it opens when the relay trips and stops the motor. Its label must match the relay (F2).
 info.overload-no | Termik rölenin NO kontağı: termik atınca kapanır, arıza lambasını ya da kornayı çalıştırır. | NO contact of the overload relay: closes when the relay trips and switches on a fault lamp or horn.
+ui.helpPage | Yardım | Help
+ui.componentList | Eleman listesi | Component list

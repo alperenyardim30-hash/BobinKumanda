@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bobin Kumanda — Help</title>
+<style>
+:root { --bg: #f6f7f9; --panel: #ffffff; --text: #1f2430; --muted: #5c6370; --accent: #0e7fa8; --line: #dde1e7; --key: #eef1f5; }
+@media (prefers-color-scheme: dark) { :root { --bg: #17191e; --panel: #23262d; --text: #e6e8ee; --muted: #9aa0aa; --accent: #22d3ee; --line: #353a43; --key: #2e333c; } .sym svg { filter: invert(0.88) hue-rotate(180deg); } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 "Segoe UI", system-ui, sans-serif; }
+header { background: #0a0f1e; color: #fff; padding: 22px max(20px, 5vw); }
+header h1 { margin: 0; font-size: 26px; letter-spacing: .3px; } header h1 span { color: #22d3ee; }
+header p { margin: 4px 0 0; color: #a9b4c8; font-size: 13px; }
+.wrap { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 28px; max-width: 1180px; margin: 0 auto; padding: 24px max(16px, 3vw); }
+nav { position: sticky; top: 16px; align-self: start; font-size: 14px; }
+nav a { display: block; color: var(--muted); text-decoration: none; padding: 4px 8px; border-radius: 6px; }
+nav a:hover { background: var(--panel); color: var(--text); }
+main { min-width: 0; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 18px; }
+h2 { margin: 0 0 10px; font-size: 20px; } h3 { margin: 22px 0 8px; font-size: 16px; color: var(--accent); }
+p, li { max-width: 72ch; } ul { padding-left: 22px; }
+kbd { background: var(--key); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 6px; font: 13px Consolas, monospace; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; } td, th { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+.tip { border-left: 3px solid var(--accent); padding: 6px 12px; background: var(--key); border-radius: 0 8px 8px 0; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.card { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.card p { margin: 4px 0 0; font-size: 13px; color: var(--muted); } .card .terms { font: 12px Consolas, monospace; color: var(--accent); }
+.sym { display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; min-height: 60px; }
+.sym svg { max-width: 104px; height: auto; }
+.tag { margin-left: 6px; font: 12px Consolas, monospace; color: var(--accent); }
+@media (max-width: 760px) { .wrap { grid-template-columns: 1fr; } nav { position: static; } }
+</style>
+</head>
+<body>
+<header><h1>Bobin <span>Kumanda</span></h1><p>Drawing and simulating electrical control circuits · version {{VERSION}} · Bobin Kardeşler</p></header>
+<div class="wrap">
+<nav>
+<a href="#start">Getting started</a>
+<a href="#draw">Drawing</a>
+<a href="#wires">Wires</a>
+<a href="#sim">Simulation</a>
+<a href="#meters">Instruments</a>
+<a href="#protection">Protection and faults</a>
+<a href="#files">Files, export, printing</a>
+<a href="#keys">Keyboard shortcuts</a>
+<a href="#components">Components</a>
+<a href="#about">About</a>
+</nav>
+<main>
+<section id="start">
+<h2>Getting started</h2>
+<p>With Bobin Kumanda you draw contactor control circuits as you would on paper, then watch how they really behave: press the buttons, coils pull in, motors turn and current flows through the wires. If something is wired wrongly the program tells you what happened and how to fix it.</p>
+<ol>
+<li>Open a ready-made circuit from <b>File → Samples</b> or the <b>Samples</b> button on the start screen (for example <i>Latching</i>).</li>
+<li>Start the simulation with <kbd>F5</kbd>.</li>
+<li>Click the buttons with the mouse. Hold a start button down, or <kbd>Shift</kbd>-click it to keep it pressed.</li>
+<li>The event log (bottom panel) shows the sequence: "S1 pressed → K1 pulled in → M1 running".</li>
+<li>Press <kbd>F5</kbd> again to stop and change the circuit.</li>
+</ol>
+<p class="tip">Contacts find their coil by <b>label</b>: every contact labelled K1 switches together with coil K1. Select a contact and change "Coil it belongs to" in the panel on the right.</p>
+</section>
+
+<section id="draw">
+<h2>Drawing</h2>
+<ul>
+<li><b>Adding components:</b> drag them from the palette on the left, or click once and then click where it should go. Type "overload", "fuse", "motor" in the search box (<kbd>Ctrl</kbd>+<kbd>F</kbd>). Frequent ones have a single-key shortcut: <kbd>K</kbd> coil, <kbd>A</kbd> NO contact, <kbd>C</kbd> NC contact, <kbd>B</kbd> start, <kbd>D</kbd> stop, <kbd>H</kbd> lamp, <kbd>M</kbd> motor.</li>
+<li><b>While placing:</b> <kbd>R</kbd> rotates, <kbd>F</kbd> mirrors, <kbd>Shift</kbd>+click places several, <kbd>Esc</kbd> cancels.</li>
+<li><b>Selecting and moving:</b> click and drag. Drag from empty space for a rubber-band selection. Wires follow moved components at right angles. Arrow keys nudge by one grid step.</li>
+<li><b>Labels:</b> relays get K1, K2..., buttons S1, S2..., lamps H1... automatically (IEC). Drag a label to move it.</li>
+<li><b>Properties:</b> the panel on the right changes coil voltage, timer delay, motor power, lamp colour, breaker rating and more.</li>
+<li><b>Undo:</b> <kbd>Ctrl</kbd>+<kbd>Z</kbd> (200 steps), <kbd>Ctrl</kbd>+<kbd>Y</kbd> redo. Relays copied with <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> get new numbers and the contacts copied with them follow the new coil.</li>
+<li><b>Sheets:</b> <b>+</b> at the bottom adds a sheet. Use <i>sheet connectors</i> for long circuits: arrows with the same name are the same conductor.</li>
+<li><b>Text:</b> <kbd>T</kbd> adds a note.</li>
+<li><b>Terminal numbers and cross reference:</b> switch them on in the View tab. Auxiliary contacts are numbered in order (13-14, 21-22, 33-34...; timed contacts 15-16, 17-18) and every coil lists its contacts underneath.</li>
+</ul>
+</section>
+
+<section id="wires">
+<h2>Wires</h2>
+<ul>
+<li>Click a terminal (the dots at the ends of components), then click a second terminal. The wire is routed at right angles automatically.</li>
+<li>Clicking empty space adds a corner; double-click ends the wire there.</li>
+<li>Connecting to the middle of a wire creates a <b>junction</b>.</li>
+<li>Drag a segment of a selected wire to adjust its path.</li>
+<li>Wires take the colour of their phase: L1 brown, L2 black, L3 grey, N blue, PE green-yellow.</li>
+<li>Loose wire ends are marked with a red ring.</li>
+</ul>
+</section>
+
+<section id="sim">
+<h2>Simulation</h2>
+<p>The program solves the circuit like a real electrical circuit: every voltage and every wire current is calculated. Coils pull in at 85% of their rated voltage and drop out below 55%. Short circuits, wrong voltages and missing phases follow from the calculation by themselves.</p>
+<table>
+<tr><th>Action</th><th>How</th></tr>
+<tr><td>Start / stop</td><td><kbd>F5</kbd></td></tr>
+<tr><td>Pause / resume</td><td><kbd>F6</kbd></td></tr>
+<tr><td>Step (to the next event)</td><td><kbd>F10</kbd></td></tr>
+<tr><td>Speed</td><td>Simulation tab: 0.25× to 10× (no need to wait for timers)</td></tr>
+<tr><td>Pressing a button</td><td>Hold the mouse button; <kbd>Shift</kbd>+click keeps it pressed</td></tr>
+<tr><td>Switches, selectors, cam switches, emergency stop</td><td>Click to change position; choose a position with the slider on the right</td></tr>
+<tr><td>Sensors (float, thermostat, pressure, photocell)</td><td>Select it and move the level / temperature slider on the right. Clicking jumps across the switching point</td></tr>
+<tr><td>Proximity sensor</td><td>Click to bring an object near or take it away</td></tr>
+<tr><td>Motor load</td><td>Select the motor and move the "Shaft load" slider: the current rises and the overload relay may trip</td></tr>
+<tr><td>Overload relay, RCD, fuse</td><td><b>Reset</b>, <b>Test</b>, <b>Replace fuse</b> buttons in the panel on the right</td></tr>
+</table>
+<p>Orange dots move along wires that carry current (switch off in the Simulation tab). Horns, buzzers, sirens and bells make a sound; switch it off in the View tab.</p>
+</section>
+
+<section id="meters">
+<h2>Instruments</h2>
+<h3>Multimeter</h3>
+<ul>
+<li>Open it with <b>Measure → Multimeter</b>. Attach the red (V/Ω) and black (COM) probes in turn by clicking a terminal, junction or wire. Drag the instrument by its title to move it.</li>
+<li><b>V~</b> AC voltage and <b>V=</b> DC voltage are measured while the simulation runs.</li>
+<li><b>Ω</b> resistance is measured with the circuit <b>switched off</b> (while editing): see the resistance of a coil or lamp and whether contacts are open or closed (continuity). An open circuit reads "OL".</li>
+<li>Trying to measure resistance on a live circuit gives a warning: a real meter would be damaged.</li>
+</ul>
+<h3>Clamp meter</h3>
+<ul>
+<li>Open it with <b>Measure → Clamp meter</b> and click the wire whose current you want to see.</li>
+<li><b>MAX</b> holds the highest value: clamp it before starting a motor to see the starting current (5-6 times the rated current). Compare it with star-delta starting.</li>
+</ul>
+</section>
+
+<section id="protection">
+<h2>Protection and faults</h2>
+<ul>
+<li><b>Short circuit:</b> an unprotected short stops the simulation, the short-circuit path flashes red and the Problems tab explains why. Put a circuit breaker or fuse at the start of the circuit: it trips and the simulation continues.</li>
+<li><b>Circuit breaker:</b> B, C or D curve; trips with a delay on overload (thermal) and at once on a short circuit (magnetic). Click its lever to reset it.</li>
+<li><b>Overload relay:</b> watches the motor current. Set it to the motor's rated current. When it trips 95-96 opens and 97-98 closes. It cannot be reset until it cools down.</li>
+<li><b>Residual current device:</b> trips when the current leaving on the phases and returning on neutral differ by more than 30 mA. Add a "body leakage" fault to a motor (panel on the right) to try it. If the motor's PE terminal is not connected, a dangerous touch-voltage warning appears.</li>
+<li><b>Burnt coil:</b> a 230 V coil between two phases (400 V), or DC on an AC coil, burns out.</li>
+<li><b>Missing phase:</b> the motor cannot start, hums and heats up; without an overload relay it burns.</li>
+<li>Clicking a problem in the Problems tab shows the component.</li>
+</ul>
+</section>
+
+<section id="files">
+<h2>Files, export and printing</h2>
+<ul>
+<li>Circuits are saved as <b>.bobin</b>. Unsaved work is backed up every 2 minutes and offered back after a power cut.</li>
+<li><b>Old EKTS files (.esc)</b> open. <b>Save as</b> can also write .esc; components the old program does not have and extra sheets are left out, and the program lists them.</li>
+<li><b>Document info:</b> student name, number, class, school, teacher and date, shown in the title block at the bottom right of the page.</li>
+<li><b>Export as image:</b> the page with its title block as PNG or JPG (for homework and reports).</li>
+<li><b>Print</b> (<kbd>Ctrl</kbd>+<kbd>P</kbd>): A4 or A3 landscape, fitted to the page. For PDF choose the "Microsoft Print to PDF" printer.</li>
+</ul>
+</section>
+
+<section id="keys">
+<h2>Keyboard shortcuts</h2>
+<table>
+<tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd> / <kbd>O</kbd> / <kbd>S</kbd></td><td>New / Open / Save</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd></td><td>Undo / Redo</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> / <kbd>C</kbd> / <kbd>V</kbd> / <kbd>D</kbd></td><td>Cut / Copy / Paste / Duplicate</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Select all</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Search components</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>Print</td></tr>
+<tr><td><kbd>R</kbd> / <kbd>F</kbd> / <kbd>Del</kbd></td><td>Rotate / Mirror / Delete</td></tr>
+<tr><td><kbd>W</kbd> / <kbd>T</kbd></td><td>Wire tool / Text tool</td></tr>
+<tr><td><kbd>F5</kbd> / <kbd>F6</kbd> / <kbd>F10</kbd></td><td>Start-stop simulation / pause / step</td></tr>
+<tr><td><kbd>F1</kbd></td><td>This help page</td></tr>
+<tr><td>Wheel / middle button / <kbd>Space</kbd>+drag</td><td>Zoom / pan</td></tr>
+<tr><td><kbd>Home</kbd></td><td>Fit to page</td></tr>
+</table>
+</section>
+
+<section id="components">
+<h2>Components</h2>
+<p>This list is generated from the program's component catalogue, so it always matches this version. The numbers underneath are terminal numbers.</p>
+{{COMPONENTS}}
+</section>
+
+<section id="about">
+<h2>About</h2>
+<p>Bobin Kumanda is free software by Bobin Kardeşler under the GPL-3.0 licence. It is inspired by Vepa HALLIYEV's EKTS program for electrical control lessons (Marmara University, 2005) and was written from scratch.</p>
+</section>
+</main>
+</div>
+</body>
+</html>

@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Localization\Strings.txt" LogicalName="BobinKumanda.Strings.txt" />
+    <EmbeddedResource Include="Help\help-tr.html" LogicalName="BobinKumanda.Help.help-tr.html" />
+    <EmbeddedResource Include="Help\help-en.html" LogicalName="BobinKumanda.Help.help-en.html" />
   </ItemGroup>
 
   <ItemGroup>

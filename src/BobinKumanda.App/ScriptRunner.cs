@@ -210,6 +210,9 @@ internal static class ScriptRunner
             case "expect":
                 Expect(vm, arg);
                 break;
+            case "help":
+                MainWindow.WriteHelp(Path.GetFullPath(arg));
+                break;
             case "export":
                 if (!w.ExportImage(Path.GetFullPath(arg)))
                 {

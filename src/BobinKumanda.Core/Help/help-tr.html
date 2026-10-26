@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bobin Kumanda — Yardım</title>
+<style>
+:root { --bg: #f6f7f9; --panel: #ffffff; --text: #1f2430; --muted: #5c6370; --accent: #0e7fa8; --line: #dde1e7; --key: #eef1f5; }
+@media (prefers-color-scheme: dark) { :root { --bg: #17191e; --panel: #23262d; --text: #e6e8ee; --muted: #9aa0aa; --accent: #22d3ee; --line: #353a43; --key: #2e333c; } .sym svg { filter: invert(0.88) hue-rotate(180deg); } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 "Segoe UI", system-ui, sans-serif; }
+header { background: #0a0f1e; color: #fff; padding: 22px max(20px, 5vw); }
+header h1 { margin: 0; font-size: 26px; letter-spacing: .3px; } header h1 span { color: #22d3ee; }
+header p { margin: 4px 0 0; color: #a9b4c8; font-size: 13px; }
+.wrap { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 28px; max-width: 1180px; margin: 0 auto; padding: 24px max(16px, 3vw); }
+nav { position: sticky; top: 16px; align-self: start; font-size: 14px; }
+nav a { display: block; color: var(--muted); text-decoration: none; padding: 4px 8px; border-radius: 6px; }
+nav a:hover { background: var(--panel); color: var(--text); }
+main { min-width: 0; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 18px; }
+h2 { margin: 0 0 10px; font-size: 20px; } h3 { margin: 22px 0 8px; font-size: 16px; color: var(--accent); }
+p, li { max-width: 72ch; } ul { padding-left: 22px; }
+kbd { background: var(--key); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 6px; font: 13px Consolas, monospace; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; } td, th { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+.tip { border-left: 3px solid var(--accent); padding: 6px 12px; background: var(--key); border-radius: 0 8px 8px 0; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.card { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.card p { margin: 4px 0 0; font-size: 13px; color: var(--muted); } .card .terms { font: 12px Consolas, monospace; color: var(--accent); }
+.sym { display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; min-height: 60px; }
+.sym svg { max-width: 104px; height: auto; }
+.tag { margin-left: 6px; font: 12px Consolas, monospace; color: var(--accent); }
+@media (max-width: 760px) { .wrap { grid-template-columns: 1fr; } nav { position: static; } }
+</style>
+</head>
+<body>
+<header><h1>Bobin <span>Kumanda</span></h1><p>Elektrik kumanda devreleri çizim ve simülasyon programı · sürüm {{VERSION}} · Bobin Kardeşler</p></header>
+<div class="wrap">
+<nav>
+<a href="#baslarken">Başlarken</a>
+<a href="#cizim">Devre çizme</a>
+<a href="#kablo">Kablolar</a>
+<a href="#simulasyon">Simülasyon</a>
+<a href="#olcum">Ölçü aletleri</a>
+<a href="#koruma">Koruma ve arızalar</a>
+<a href="#dosya">Dosya, çıktı, yazdırma</a>
+<a href="#kisayol">Klavye kısayolları</a>
+<a href="#elemanlar">Elemanlar</a>
+<a href="#hakkinda">Hakkında</a>
+</nav>
+<main>
+<section id="baslarken">
+<h2>Başlarken</h2>
+<p>Bobin Kumanda ile kontaktörlü kumanda devrelerini kâğıttaki gibi çizer, sonra gerçekte nasıl çalışacağını görürsünüz: butonlara basarsınız, bobinler çeker, motorlar döner, akım kablolarda akar. Yanlış bir bağlantı yaparsanız program ne olduğunu ve nasıl düzeltileceğini söyler.</p>
+<ol>
+<li><b>Dosya → Örnekler</b> menüsünden ya da açılış ekranındaki <b>Örnekler</b> düğmesinden hazır bir devre açın (örneğin <i>Mühürleme</i>).</li>
+<li><kbd>F5</kbd> ile simülasyonu başlatın.</li>
+<li>Butonlara fareyle tıklayın. Start butonunu basılı tutabilir, <kbd>Shift</kbd> ile tıklayarak basılı bırakabilirsiniz.</li>
+<li>Olay günlüğünde (alt panel) her şeyin sırasını görürsünüz: "S1 basıldı → K1 çekti → M1 çalışıyor".</li>
+<li><kbd>F5</kbd> ile durdurup devreyi değiştirin.</li>
+</ol>
+<p class="tip">Kontaklar, bağlı oldukları bobini <b>etiketten</b> tanır: K1 etiketli bütün kontaklar K1 bobiniyle birlikte konum değiştirir. Kontağı seçip sağdaki panelde "Bağlı olduğu bobin" kutusundan değiştirebilirsiniz.</p>
+</section>
+
+<section id="cizim">
+<h2>Devre çizme</h2>
+<ul>
+<li><b>Eleman eklemek:</b> soldaki paletten sürükleyip bırakın ya da bir kez tıklayıp çizim alanında istediğiniz yere tıklayın. Arama kutusuna "termik", "sigorta", "motor" gibi yazabilirsiniz (<kbd>Ctrl</kbd>+<kbd>F</kbd>). Sık kullanılanların tek tuşluk kısayolu vardır: <kbd>K</kbd> bobin, <kbd>A</kbd> NO kontak, <kbd>C</kbd> NC kontak, <kbd>B</kbd> start, <kbd>D</kbd> stop, <kbd>H</kbd> lamba, <kbd>M</kbd> motor.</li>
+<li><b>Yerleştirirken:</b> <kbd>R</kbd> döndürür, <kbd>F</kbd> aynalar, <kbd>Shift</kbd>+tık art arda birden çok koyar, <kbd>Esc</kbd> vazgeçer.</li>
+<li><b>Seçmek ve taşımak:</b> tıklayın, sürükleyin. Boş yerden sürükleyerek çoklu seçim yapılır. Taşınan elemanın kabloları dik açılı olarak peşinden gelir. Ok tuşları bir ızgara adımı kaydırır.</li>
+<li><b>Etiketler:</b> röleler K1, K2..., butonlar S1, S2..., lambalar H1... gibi IEC'ye uygun otomatik ad alır. Etiketi sürükleyerek yerini değiştirebilirsiniz.</li>
+<li><b>Özellikler:</b> sağ panelde bobin gerilimi, zaman rölesinin süresi, motor gücü, lamba rengi, W otomatının anma akımı gibi değerler değiştirilir.</li>
+<li><b>Geri al:</b> <kbd>Ctrl</kbd>+<kbd>Z</kbd> (200 adım), <kbd>Ctrl</kbd>+<kbd>Y</kbd> yinele. <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> ile kopyalanan rölelere yeni numara verilir ve onlarla gelen kontaklar yeni bobini izler.</li>
+<li><b>Sayfalar:</b> alttaki <b>+</b> ile yeni sayfa açılır. Uzun devrelerde <i>sayfa bağlantı oku</i> kullanın: aynı adı taşıyan oklar aynı iletkendir.</li>
+<li><b>Metin:</b> <kbd>T</kbd> ile açıklama yazısı eklenir.</li>
+<li><b>Klemens numaraları ve çapraz referans:</b> Görünüm sekmesinden açılır. Yardımcı kontaklar sırayla numaralanır (13-14, 21-22, 33-34...; zaman gecikmeli kontaklar 15-16, 17-18), her bobinin altında kontaklarının listesi görünür.</li>
+</ul>
+</section>
+
+<section id="kablo">
+<h2>Kablolar</h2>
+<ul>
+<li>Bir klemense (eleman uçlarındaki nokta) tıklayın, sonra ikinci klemense tıklayın. Kablo dik açılı olarak kendiliğinden çizilir.</li>
+<li>Arada boş bir yere tıklamak köşe ekler; çift tıklamak kabloyu orada bırakır.</li>
+<li>Kablonun ortasına bağlamak <b>ek noktası</b> oluşturur.</li>
+<li>Seçili kablonun bir parçasını sürükleyerek yolunu düzeltebilirsiniz.</li>
+<li>Kablolar renklerini bağlı oldukları fazdan alır: L1 kahverengi, L2 siyah, L3 gri, N mavi, PE sarı-yeşil.</li>
+<li>Boşta kalan kablo uçları kırmızı halkayla gösterilir.</li>
+</ul>
+</section>
+
+<section id="simulasyon">
+<h2>Simülasyon</h2>
+<p>Program devreyi gerçek bir elektrik devresi gibi çözer: her noktadaki gerilim ve her kablodaki akım hesaplanır. Bobinler anma geriliminin %85'inde çeker, %55'in altına inince bırakır. Kısa devre, yanlış gerilim, faz eksikliği gibi hatalar bu hesaptan kendiliğinden ortaya çıkar.</p>
+<table>
+<tr><th>Ne yapılır</th><th>Nasıl</th></tr>
+<tr><td>Başlat / durdur</td><td><kbd>F5</kbd></td></tr>
+<tr><td>Duraklat / devam</td><td><kbd>F6</kbd></td></tr>
+<tr><td>Adım adım (bir sonraki olaya kadar)</td><td><kbd>F10</kbd></td></tr>
+<tr><td>Hız</td><td>Simülasyon sekmesi: 0,25× ile 10× arası (zaman rölelerini beklememek için)</td></tr>
+<tr><td>Butona basmak</td><td>Fareyle basılı tutun; <kbd>Shift</kbd>+tık basılı bırakır</td></tr>
+<tr><td>Şalter, seçici, pako şalter, acil stop</td><td>Tıklayınca konum değiştirir; sağ panelde kaydırıcıyla konum seçilir</td></tr>
+<tr><td>Sensörler (şamandıra, termostat, basınç, fotosel)</td><td>Elemanı seçin, sağ paneldeki kaydırıcıyla seviyeyi / sıcaklığı değiştirin. Tıklamak değeri eşiğin öbür yanına atar</td></tr>
+<tr><td>Yaklaşım sensörü</td><td>Tıklayınca önüne cisim gelir ya da uzaklaşır</td></tr>
+<tr><td>Motor yükü</td><td>Motoru seçip "Mil yükü" kaydırıcısını değiştirin: akım artar, termik röle açabilir</td></tr>
+<tr><td>Termik röle, kaçak akım rölesi, sigorta</td><td>Sağ paneldeki <b>Reset</b>, <b>Test</b>, <b>Sigortayı değiştir</b> düğmeleri</td></tr>
+</table>
+<p>Akım geçen kablolarda turuncu noktalar akış yönünde ilerler (Simülasyon sekmesinden kapatılabilir). Sesli ikaz elemanları (korna, buzzer, siren, zil) bilgisayardan ses verir; Görünüm sekmesinden kapatılabilir.</p>
+</section>
+
+<section id="olcum">
+<h2>Ölçü aletleri</h2>
+<h3>Multimetre</h3>
+<ul>
+<li><b>Ölçüm → Multimetre</b> ile açılır. Kırmızı uç (V/Ω) ve siyah uç (COM) sırayla bir klemense, ek noktasına ya da kabloya tıklanarak takılır. Alet panelini başlığından tutup taşıyabilirsiniz.</li>
+<li><b>V~</b> alternatif gerilim, <b>V=</b> doğru gerilim: simülasyon çalışırken ölçülür.</li>
+<li><b>Ω</b> direnç: devre <b>enerjisizken</b> (düzenleme sırasında) ölçülür. Bobinin, lambanın direncini, kontakların açık/kapalı olduğunu (süreklilik) görebilirsiniz. Açık devrede gösterge "OL" yazar.</li>
+<li>Enerjili devrede direnç ölçmeye çalışırsanız uyarı alırsınız: gerçek alet bundan zarar görür.</li>
+</ul>
+<h3>Pens ampermetre</h3>
+<ul>
+<li><b>Ölçüm → Pens ampermetre</b> ile açılır; akımını ölçmek istediğiniz kabloya tıklayın.</li>
+<li><b>MAX</b> en yüksek değeri tutar: motorun kalkış akımını (anma akımının 5-6 katı) görmek için motoru çalıştırmadan önce pensi takın. Yıldız-üçgen yol vermede kalkış akımının ne kadar düştüğünü karşılaştırın.</li>
+</ul>
+</section>
+
+<section id="koruma">
+<h2>Koruma elemanları ve arızalar</h2>
+<ul>
+<li><b>Kısa devre:</b> korumasız bir kısa devrede simülasyon durur, kısa devre yolu kırmızı yanıp söner ve Sorunlar sekmesinde nedeni anlatılır. Devrenin başına W otomatı ya da sigorta koyarsanız koruma elemanı atar ve simülasyon sürer.</li>
+<li><b>W otomatı:</b> B, C, D eğrisi; aşırı akımda gecikmeli (termik), kısa devrede anında (manyetik) açar. Koluna tıklayarak yeniden kurun.</li>
+<li><b>Termik röle:</b> motor akımını izler. Ayar akımını motorun anma akımına getirin. Atınca 95-96 kontağı açılır, 97-98 kapanır. Soğumadan resetlenemez.</li>
+<li><b>Kaçak akım rölesi:</b> fazdan çıkan ve nötrden dönen akımın farkı 30 mA'i geçerse açar. Motorda "gövde kaçağı" arızası oluşturup (sağ panel) deneyin. Motorun PE ucu bağlı değilse gövdede tehlikeli dokunma gerilimi uyarısı çıkar.</li>
+<li><b>Bobin yanması:</b> 230 V'luk bobini iki faz arasına (400 V) bağlarsanız ya da AC bobine DC verirseniz bobin yanar.</li>
+<li><b>Faz eksikliği:</b> motor kalkamaz, uğuldar ve ısınır; termik röle korumazsa yanar.</li>
+<li>Sorunlar sekmesindeki bir sorunun üstüne tıklamak ilgili elemanı gösterir.</li>
+</ul>
+</section>
+
+<section id="dosya">
+<h2>Dosya, çıktı ve yazdırma</h2>
+<ul>
+<li>Devreler <b>.bobin</b> uzantısıyla kaydedilir. Program her 2 dakikada kaydedilmemiş işinizi yedekler; elektrik kesilirse bir sonraki açılışta geri getirmeyi önerir.</li>
+<li><b>Eski EKTS dosyaları (.esc)</b> açılır. <b>Farklı kaydet</b> ile .esc olarak da kaydedebilirsiniz; eski programda olmayan elemanlar ve ikinci sayfalar kaydedilmez, program bunları listeler.</li>
+<li><b>Belge bilgileri:</b> öğrenci adı, numara, sınıf, okul, öğretmen ve tarih; sayfanın sağ altındaki antete yazılır.</li>
+<li><b>Resim olarak kaydet:</b> sayfa antetle birlikte PNG ya da JPG olur (ödev ve rapor için).</li>
+<li><b>Yazdır</b> (<kbd>Ctrl</kbd>+<kbd>P</kbd>): A4 ya da A3 yatay, sayfaya sığdırılmış. PDF için yazıcı olarak "Microsoft Print to PDF" seçin.</li>
+</ul>
+</section>
+
+<section id="kisayol">
+<h2>Klavye kısayolları</h2>
+<table>
+<tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd> / <kbd>O</kbd> / <kbd>S</kbd></td><td>Yeni / Aç / Kaydet</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd></td><td>Geri al / Yinele</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> / <kbd>C</kbd> / <kbd>V</kbd> / <kbd>D</kbd></td><td>Kes / Kopyala / Yapıştır / Çoğalt</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Tümünü seç</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Eleman ara</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>Yazdır</td></tr>
+<tr><td><kbd>R</kbd> / <kbd>F</kbd> / <kbd>Del</kbd></td><td>Döndür / Aynala / Sil</td></tr>
+<tr><td><kbd>W</kbd> / <kbd>T</kbd></td><td>Kablo aracı / Metin aracı</td></tr>
+<tr><td><kbd>F5</kbd> / <kbd>F6</kbd> / <kbd>F10</kbd></td><td>Simülasyon başlat-durdur / duraklat / adım</td></tr>
+<tr><td><kbd>F1</kbd></td><td>Bu yardım sayfası</td></tr>
+<tr><td>Tekerlek / orta tuş / <kbd>Boşluk</kbd>+sürükle</td><td>Yakınlaştır / kaydır</td></tr>
+<tr><td><kbd>Home</kbd></td><td>Sayfaya sığdır</td></tr>
+</table>
+</section>
+
+<section id="elemanlar">
+<h2>Elemanlar</h2>
+<p>Bu liste programın içindeki eleman kataloğundan üretilir; programın sürümüyle her zaman aynıdır. Altındaki numaralar klemens numaralarıdır.</p>
+{{COMPONENTS}}
+</section>
+
+<section id="hakkinda">
+<h2>Hakkında</h2>
+<p>Bobin Kumanda, Bobin Kardeşler tarafından GPL-3.0 lisansıyla geliştirilen özgür bir yazılımdır. Elektrik kumanda dersleri için Vepa HALLIYEV'in EKTS programından (Marmara Üniversitesi, 2005) esinlenilmiştir; kodu sıfırdan yazılmıştır.</p>
+</section>
+</main>
+</div>
+</body>
+</html>

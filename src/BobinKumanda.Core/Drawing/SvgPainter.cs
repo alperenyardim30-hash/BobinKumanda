@@ -2,13 +2,12 @@ using System.Globalization;
 using System.Text;
 using BobinKumanda.Core;
 using BobinKumanda.Core.Catalog;
-using BobinKumanda.Core.Drawing;
 using BobinKumanda.Core.Model;
 
-namespace BobinKumanda.Core.Tests.Rendering;
+namespace BobinKumanda.Core.Drawing;
 
 /// <summary>Sembolleri SVG'ye çizer (önizleme ve görsel kontrol için).</summary>
-internal sealed class SvgPainter : ISymbolPainter
+public sealed class SvgPainter : ISymbolPainter
 {
     private readonly StringBuilder sb;
     private readonly Func<Vec, Vec> map;

@@ -152,6 +152,12 @@ public partial class MainWindow
             e.Handled = true;
             return;
         }
+        if (e.Key == Key.F1)
+        {
+            OpenHelp(null);
+            e.Handled = true;
+            return;
+        }
         if (e.Key == Key.P && Keyboard.Modifiers == ModifierKeys.Control && vm.Circuit != null)
         {
             PrintCircuit();
@@ -590,6 +596,38 @@ public partial class MainWindow
     }
 
     private void OnExitClick(object sender, RoutedEventArgs e) => Close();
+
+    // ---- Yardım ----
+
+    private void OnHelpClick(object sender, RoutedEventArgs e) => OpenHelp(null);
+
+    private void OnComponentHelpClick(object sender, RoutedEventArgs e) => OpenHelp(settings.Language == "en" ? "components" : "elemanlar");
+
+    /// <summary>Yardım sayfasını o anki dille üretip varsayılan tarayıcıda açar.</summary>
+    public void OpenHelp(string? anchor)
+    {
+        try
+        {
+            string path = WriteHelp(Path.Combine(Path.GetTempPath(), "BobinKumanda"));
+            var uri = new Uri(path).AbsoluteUri + (anchor != null ? "#" + anchor : "");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(uri) { UseShellExecute = true });
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
+        {
+            Dialogs.Show(ex.Message, MessageBoxButton.OK, MessageBoxImage.Warning, this);
+        }
+    }
+
+    /// <summary>Yardım dosyasını klasöre yazar ve yolunu döndürür (betikten de çağrılır).</summary>
+    public static string WriteHelp(string folder)
+    {
+        Directory.CreateDirectory(folder);
+        string lang = Loc.Language;
+        string path = Path.Combine(folder, lang == "en" ? "help-en.html" : "yardim-tr.html");
+        string version = typeof(App).Assembly.GetName().Version?.ToString(3) ?? "";
+        File.WriteAllText(path, Core.Help.HelpPage.Build(lang, version), System.Text.Encoding.UTF8);
+        return path;
+    }
 
     // ---- Çıktı: resim, yazdırma, antet ----
 

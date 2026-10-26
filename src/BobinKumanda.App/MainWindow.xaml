@@ -331,6 +331,20 @@
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
 
+            <Fluent:RibbonTabItem Header="{l:Loc ui.help}">
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.help}">
+                    <Fluent:Button Header="{l:Loc ui.helpPage}" Size="Large" Click="OnHelpClick" ToolTip="F1">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE897;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.componentList}" Size="Large" Click="OnComponentHelpClick">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE8FD;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.samples}" Size="Large" Click="OnSamplesClick">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE8F1;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+
             <Fluent:RibbonTabItem Header="{l:Loc ui.view}">
                 <Fluent:RibbonGroupBox Header="{l:Loc ui.groupZoom}">
                     <Fluent:Button Header="{l:Loc ui.fit}" Size="Large" Click="OnFitClick" ToolTip="Home">
