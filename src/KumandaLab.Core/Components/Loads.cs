@@ -11,7 +11,7 @@ namespace KumandaLab.Core.Components;
 /// <summary>Sinyal lambası: dirençli yük, parlaklık gerilimin karesiyle.</summary>
 public sealed class LampDef : ComponentDef
 {
-    public static readonly string[] Colors = ["yellow", "red", "green", "blue", "white", "orange"];
+    public static readonly string[] Colors = ["yellow", "red", "green", "blue", "white", "orange", "magenta"];
 
     public override string TypeId => "lamp";
     public override int? LegacyType => 9;

@@ -220,6 +220,7 @@ public static partial class SymbolKit
         "blue" => 0x1E88E5,
         "white" => 0xF5F5F5,
         "orange" => 0xFB8C00,
+        "magenta" => 0xC2189B,
         _ => 0xFFC107
     };
 

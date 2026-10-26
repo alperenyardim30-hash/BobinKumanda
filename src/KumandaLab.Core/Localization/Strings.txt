@@ -95,6 +95,7 @@ choice.lampColor.green | Yeşil | Green
 choice.lampColor.blue | Mavi | Blue
 choice.lampColor.white | Beyaz | White
 choice.lampColor.orange | Turuncu | Orange
+choice.lampColor.magenta | Mor | Magenta
 choice.connection.star | Yıldız | Star
 choice.connection.delta | Üçgen | Delta
 choice.coilVoltage.230AC | 230 V AC | 230 V AC
@@ -193,3 +194,14 @@ conn.delta | üçgen | delta
 unit.winding | sargı | winding
 unit.rpm | d/d | rpm
 sys.door | KAPI | DOOR
+
+# ---- Dosyalar ----
+esc.notEkts | Bu dosya bir EKTS devre dosyası değil. | This is not an EKTS circuit file.
+esc.corrupt | EKTS dosyası okunamadı; dosya bozuk ya da eksik olabilir. | The EKTS file could not be read; it may be damaged or incomplete.
+esc.tooLarge | Dosya bir EKTS devresi için fazla büyük. | The file is too large for an EKTS circuit.
+esc.unknownType | Eski dosyadaki {0} numaralı eleman tipi tanınmadı, atlandı. | Element type {0} in the old file is unknown and was skipped.
+esc.terminalCount | {0}: eski dosyada {1} bağlantı ucu var, KumandaLab'de {2}; fazla uçlar bağlanmadı. | {0}: the old file has {1} connection points, KumandaLab has {2}; the extra ones were left unconnected.
+esc.badLinks | Bazı bağlantılar dosyada hatalı kaydedilmiş, atlandı. | Some connections in the file are invalid and were skipped.
+esc.misplaced | {0} kablo ucu klemensin tam üstüne denk gelmedi; kablolar klemense kadar uzatıldı. | {0} wire ends did not sit exactly on their terminal; the wires were extended to it.
+kmlab.corrupt | KumandaLab dosyası okunamadı; dosya bozuk olabilir. | The KumandaLab file could not be read; it may be damaged.
+kmlab.newer | Bu dosya KumandaLab'in daha yeni bir sürümüyle kaydedilmiş. Programı güncelleyin. | This file was saved by a newer KumandaLab. Please update the program.

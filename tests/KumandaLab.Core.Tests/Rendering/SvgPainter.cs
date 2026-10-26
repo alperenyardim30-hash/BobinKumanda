@@ -21,6 +21,14 @@ internal sealed class SvgPainter : ISymbolPainter
         map = p => (Placement.ToWorld(p, def.Size, c.Rotation, c.Mirror, c.Position) - c.Position) * scale + offset;
     }
 
+    /// <summary>Dünya koordinatlarında çizer (bütün devre için, <see cref="CircuitRenderer"/> ile).</summary>
+    public SvgPainter(StringBuilder sb, Vec offset, double scale)
+    {
+        this.sb = sb;
+        this.scale = scale;
+        map = p => p * scale + offset;
+    }
+
     private static string F(double v) => v.ToString("0.##", CultureInfo.InvariantCulture);
 
     private static string Color(Paint p) => p.Ink switch
