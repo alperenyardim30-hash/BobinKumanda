@@ -109,6 +109,12 @@ public abstract class ComponentDef
     /// <summary>Etiketi sembolün içine kendisi yazar (sayfa bağlantı oku); dışarıda ayrıca gösterilmez.</summary>
     public virtual bool DrawsOwnLabel => false;
 
+    /// <summary>Yardımcı kontak: numarası cihazdaki sırasına göre verilir (13-14, 21-22, 33-34...).</summary>
+    public virtual bool AutoNumbered => false;
+
+    /// <summary>Sıra numarasına göre klemens numarası; sıra numarası olmayan elemanlarda tanımdaki numara.</summary>
+    public virtual string? NumberFor(TerminalDef t, ContactNumber n) => t.Number;
+
     /// <summary>Etiketin altında gösterilen kısa değer (zaman rölesinde "3 s").</summary>
     public virtual string? SubLabel(ComponentInstance c) => null;
 

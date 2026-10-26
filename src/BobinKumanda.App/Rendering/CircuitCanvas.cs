@@ -3,6 +3,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using BobinKumanda.Core;
 using BobinKumanda.Core.Catalog;
+using BobinKumanda.Core.Components;
 using BobinKumanda.Core.Drawing;
 using BobinKumanda.Core.Editing;
 using BobinKumanda.Core.Localization;
@@ -12,6 +13,11 @@ using BobinKumanda.Core.Simulation;
 namespace BobinKumanda.App.Rendering;
 
 public enum EditTool { Select, Wire, Text }
+
+/// <summary>Açık ölçü aleti: uçlar klemense, ek noktasına ya da kabloya tıklanarak takılır.</summary>
+public enum MeterTool { None, Multimeter, Clamp }
+
+public enum ProbeKind { Red, Black, Clamp }
 
 /// <summary>Çizim alanının düzenleme sırasında haber verdiği taraf (ana pencerenin görünüm modeli).</summary>
 public interface IEditorHost
@@ -59,6 +65,7 @@ public sealed class CircuitCanvas : FrameworkElement
     private Vector pan = new(20, 20);
     private bool fitPending;
     private IReadOnlyDictionary<string, uint>? wireColors;
+    private (IReadOnlyDictionary<string, ContactNumber> Numbers, IReadOnlyDictionary<string, List<CrossRefEntry>> Mirror)? xrefCache;
 
     private Gesture gesture;
     private Point downScreen;
@@ -77,6 +84,7 @@ public sealed class CircuitCanvas : FrameworkElement
     private Vec mouseWorld;
     private bool mouseInside;
     private Hit hover = Hit.None;
+    private Hit meterHover = Hit.None;
 
     private WireDraft? draft;
 
@@ -109,6 +117,9 @@ public sealed class CircuitCanvas : FrameworkElement
     }
 
     public event Action<ComponentInstance>? ComponentPressed;
+
+    /// <summary>Ölçü aleti açıkken bir klemense, ek noktasına ya da kabloya tıklandı (tıklanan nokta ile).</summary>
+    public event Action<ProbeTarget, Vec>? ProbeRequested;
     public event Action<ComponentInstance>? ComponentReleased;
     public event Action? ViewChanged;
 
@@ -128,6 +139,7 @@ public sealed class CircuitCanvas : FrameworkElement
             ResetGestures();
             circuit = value;
             wireColors = null;
+            xrefCache = null;
             ZoomToFit();
         }
     }
@@ -138,6 +150,7 @@ public sealed class CircuitCanvas : FrameworkElement
         ResetGestures();
         circuit = c;
         wireColors = null;
+        xrefCache = null;
         InvalidateVisual();
     }
 
@@ -156,9 +169,36 @@ public sealed class CircuitCanvas : FrameworkElement
     }
 
     public CanvasTheme Theme { get; set; } = CanvasTheme.Light;
+
+    /// <summary>Açık ölçü aleti; açıkken klemens/kablo tıklamaları ölçü ucunu yerleştirir.</summary>
+    public MeterTool Meter { get; set; }
+
+    /// <summary>Çizilecek ölçü uçları: konum, sayfa ve tür.</summary>
+    public Func<IEnumerable<(Vec At, string Sheet, ProbeKind Kind)>>? ProbeSource { get; set; }
+
+    /// <summary>Sorunlar listesinden seçilen elemanı görünür alana getirir (yakınlığı değiştirmeden).</summary>
+    public void BringIntoView(ComponentInstance c)
+    {
+        if (ComponentCatalog.Find(c.Type) is not { } def || ActualWidth < 10)
+        {
+            return;
+        }
+        RectD r = def.Bounds(c);
+        Point a = ToScreen(r.TopLeft), b = ToScreen(new Vec(r.Right, r.Bottom));
+        if (a.X >= 0 && a.Y >= 0 && b.X <= ActualWidth && b.Y <= ActualHeight)
+        {
+            InvalidateVisual();
+            return;
+        }
+        Vec center = r.Center;
+        pan = new Vector(ActualWidth / 2 - center.X * zoom, ActualHeight / 2 - center.Y * zoom);
+        ViewChanged?.Invoke();
+        InvalidateVisual();
+    }
     public bool ShowTerminalNumbers { get; set; }
     public bool ShowGrid { get; set; } = true;
     public bool ShowFlow { get; set; } = true;
+    public bool ShowCrossReference { get; set; } = true;
     public SymbolStyle SymbolStyle { get; set; } = SymbolStyle.School;
 
     /// <summary>Boşluk tuşu basılıyken sol tuşla sürükleme kaydırır.</summary>
@@ -183,6 +223,7 @@ public sealed class CircuitCanvas : FrameworkElement
     public void InvalidateCircuit()
     {
         wireColors = null;
+        xrefCache = null;
         InvalidateVisual();
     }
 
@@ -432,17 +473,24 @@ public sealed class CircuitCanvas : FrameworkElement
             {
                 if (p.Severity == ProblemSeverity.Error)
                 {
-                    badWires.UnionWith(p.WireIds);
                     badComps.UnionWith(p.ComponentIds);
+                }
+                // atan koruma elemanının kısa devre yolu da (uyarı düzeyinde) gösterilir
+                if (p.Severity >= ProblemSeverity.Warning)
+                {
+                    badWires.UnionWith(p.WireIds);
                 }
             }
         }
         wireColors ??= CircuitRenderer.WireColors(circuit);
+        xrefCache ??= CircuitRenderer.Compute(circuit);
         CircuitRenderer.Draw(circuit, painter, new CircuitRenderOptions
         {
             Sheet = Sheet,
             Style = SymbolStyle,
             ShowTerminalNumbers = ShowTerminalNumbers,
+            ShowCrossReference = ShowCrossReference,
+            CrossRefCache = xrefCache,
             StateOf = sim == null ? null : c => sim.Find(c.Id)?.Visual,
             WireInk = badWires.Count == 0 ? null : w => blinkOn && badWires.Contains(w.Id) ? Paint.Of(Ink.Fault) : null,
             WireColorCache = wireColors,
@@ -469,7 +517,48 @@ public sealed class CircuitCanvas : FrameworkElement
         {
             DrawEditOverlay(dc);
         }
+        DrawProbes();
         dc.Pop();
+    }
+
+    /// <summary>Ölçü aletinin uçları ve fare altındaki takılabilir nokta.</summary>
+    private void DrawProbes()
+    {
+        if (Meter == MeterTool.None)
+        {
+            return;
+        }
+        double r = Math.Max(2.2, 4 / zoom);
+        if (!meterHover.IsNone)
+        {
+            painter.Circle(meterHover.Point, r * 1.5, Paint.Of(Ink.Accent), 1, Paint.Of(Ink.Accent, 0.2));
+        }
+        if (ProbeSource == null)
+        {
+            return;
+        }
+        foreach ((Vec at, string sheet, ProbeKind kind) in ProbeSource())
+        {
+            if (sheet != Sheet)
+            {
+                continue;
+            }
+            if (kind == ProbeKind.Clamp)
+            {
+                // pensin iki çenesi kabloyu sarar
+                Paint jaw = Paint.Color(0xF59F00);
+                SymbolKit.Arc(painter, jaw, at, r * 2.2, 200, 140, Math.Max(1.6, 2.4 / zoom));
+                SymbolKit.Arc(painter, jaw, at, r * 2.2, 20, 140, Math.Max(1.6, 2.4 / zoom));
+                painter.Text(at + new Vec(r * 2.6, -r * 2.2), "A", Math.Max(6, 9 / zoom), jaw, TextAlign.Left, bold: true);
+                continue;
+            }
+            Paint ink = kind == ProbeKind.Red ? Paint.Color(0xE03131) : Paint.Color(0x212529);
+            var tip = at + new Vec(r * 2.2, -r * 2.8);
+            painter.Line(at, tip, ink, Math.Max(1.4, 2.2 / zoom));
+            painter.Circle(at, r * 0.7, ink, 0.8, ink);
+            painter.Circle(tip, r, ink, 0.8, ink);
+            painter.Text(tip + new Vec(r * 1.4, 0), kind == ProbeKind.Red ? "V/Ω" : "COM", Math.Max(5, 8 / zoom), ink, TextAlign.Left, bold: true);
+        }
     }
 
     private void DrawSelection()
@@ -741,6 +830,7 @@ public sealed class CircuitCanvas : FrameworkElement
         Selection.Clear();
         Selection.Wires.Add(w.Id);
         wireColors = null;
+        xrefCache = null;
         Host?.CommitEdit();
         Host?.SelectionChanged();
         Host?.SetHint(null);
@@ -769,6 +859,10 @@ public sealed class CircuitCanvas : FrameworkElement
 
     protected override void OnMouseDown(MouseButtonEventArgs e)
     {
+        if (simulatedModifiers != null)
+        {
+            return;
+        }
         Focus();
         e.Handled = HandleDown(e.GetPosition(this), e.ChangedButton, e.ClickCount);
     }
@@ -828,6 +922,21 @@ public sealed class CircuitCanvas : FrameworkElement
         if (button != MouseButton.Left)
         {
             return button == MouseButton.Right;
+        }
+        if (Meter != MeterTool.None && placeType == null && draft == null)
+        {
+            Hit target = WireTarget(mouseWorld);
+            if (!target.IsNone)
+            {
+                ProbeRequested?.Invoke(target.Kind switch
+                {
+                    HitKind.Terminal => ProbeTarget.Terminal(target.Id, target.Terminal!),
+                    HitKind.Junction => ProbeTarget.Junction(target.Id),
+                    _ => ProbeTarget.Wire(target.Id)
+                }, target.Point);
+                InvalidateVisual();
+                return true;
+            }
         }
         if (!Editing)
         {
@@ -950,7 +1059,15 @@ public sealed class CircuitCanvas : FrameworkElement
         Cursor = Cursors.SizeAll;
     }
 
-    protected override void OnMouseMove(MouseEventArgs e) => HandleMove(e.GetPosition(this));
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        // Betikle taklit edilen tıklama sırasında fare yakalanınca WPF gerçek imlecin yeriyle MouseMove gönderir;
+        // bu, taklit edilen tıklamayı sürüklemeye çevirmesin
+        if (simulatedModifiers == null)
+        {
+            HandleMove(e.GetPosition(this));
+        }
+    }
 
     private void HandleMove(Point pos)
     {
@@ -1001,7 +1118,14 @@ public sealed class CircuitCanvas : FrameworkElement
             hover = h;
             InvalidateVisual();
         }
-        Cursor = !Editing ? (IsInteractive(HitComponent(pos)) ? Cursors.Hand : null) :
+        Hit mh = Meter != MeterTool.None && circuit != null ? WireTarget(mouseWorld) : Hit.None;
+        if (mh != meterHover)
+        {
+            meterHover = mh;
+            InvalidateVisual();
+        }
+        Cursor = !mh.IsNone ? Cursors.Cross :
+            !Editing ? (IsInteractive(HitComponent(pos)) ? Cursors.Hand : null) :
             h.Kind == HitKind.Terminal || Host?.Tool == EditTool.Wire ? Cursors.Cross :
             Host?.Tool == EditTool.Text ? Cursors.IBeam :
             h.IsNone ? null : Cursors.SizeAll;
@@ -1064,7 +1188,13 @@ public sealed class CircuitCanvas : FrameworkElement
         return downWorld.Snap(CircuitEditor.Grid);
     }
 
-    protected override void OnMouseUp(MouseButtonEventArgs e) => e.Handled = HandleUp(e.GetPosition(this), e.ChangedButton);
+    protected override void OnMouseUp(MouseButtonEventArgs e)
+    {
+        if (simulatedModifiers == null)
+        {
+            e.Handled = HandleUp(e.GetPosition(this), e.ChangedButton);
+        }
+    }
 
     private bool HandleUp(Point pos, MouseButton button)
     {
@@ -1134,6 +1264,7 @@ public sealed class CircuitCanvas : FrameworkElement
                 {
                     move.Commit();
                     wireColors = null;
+                    xrefCache = null;
                     Host?.CommitEdit();
                 }
                 move = null;
@@ -1203,6 +1334,7 @@ public sealed class CircuitCanvas : FrameworkElement
         Selection.Clear();
         Selection.Components.Add(c.Id);
         wireColors = null;
+        xrefCache = null;
         Host?.CommitEdit();
         Host?.SelectionChanged();
         if (!keepPlacing)

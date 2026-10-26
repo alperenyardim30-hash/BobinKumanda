@@ -19,7 +19,9 @@ namespace BobinKumanda.App;
 ///   rotate; mirror; delete; copy; paste; duplicate; undo; redo; tool:select|wire|text; ghost:tip; esc; sheet:add|N
 /// Fare (dünya koordinatı, gerçek fareye dokunmaz): mclick:x,y; mdbl:x,y; mright:x,y; mdown/mmove/mup:x,y;
 ///   mdrag:x1,y1>x2,y2 — sonuna " ctrl" ya da " shift" eklenebilir
-/// Denetim: expect:components=3 (components, wires, junctions, texts, sheets, selected, free, dirty) — uymazsa hata yazılır
+/// Denetim: expect:components=3 (components, wires, junctions, texts, sheets, selected, free, dirty, problems),
+///   expect:meter=230.0 (multimetre göstergesi), expect:clamp=3.12, expect:active:K1=1 — uymazsa hata yazılır
+/// Ölçüm: meter:multimeter|clamp|off; fn:ac|dc|ohm; slider:değer; action:sıra (sağ paneldeki düğme)
 /// Görünüm: theme:dark|light; lang:tr|en; numbers:on|off; tab:0|1; ribbon:0..4; fit; search:yazı; shot:yol.png; quit
 /// Hata olursa (bulunamayan eleman gibi) %LOCALAPPDATA%\BobinKumanda\logs\script.txt dosyasına yazılır.
 /// </summary>
@@ -199,6 +201,18 @@ internal static class ScriptRunner
             case "expect":
                 Expect(vm, arg);
                 break;
+            case "meter":
+                vm.Meter = arg switch { "multimeter" => MeterTool.Multimeter, "clamp" => MeterTool.Clamp, _ => MeterTool.None };
+                break;
+            case "fn":
+                vm.MeterFunction = arg switch { "dc" => Core.Simulation.MeterFunction.VoltsDc, "ohm" => Core.Simulation.MeterFunction.Ohms, _ => Core.Simulation.MeterFunction.VoltsAc };
+                break;
+            case "slider":
+                (vm.Slider ?? throw new InvalidOperationException("kaydırıcı yok")).Value = Number(arg);
+                break;
+            case "action":
+                vm.Actions[int.Parse(arg, CultureInfo.InvariantCulture)].Command.Execute(null);
+                break;
             case "theme":
                 w.ApplyTheme(arg == "dark");
                 break;
@@ -263,6 +277,25 @@ internal static class ScriptRunner
     {
         string[] kv = arg.Split('=');
         Circuit c = vm.Circuit ?? throw new ExpectationFailed("devre yok");
+        string key = kv[0].Trim();
+        if (key is "meter" or "clamp")
+        {
+            string shown = key == "meter" ? vm.MeterValue : vm.ClampValue;
+            if (shown != kv[1].Trim())
+            {
+                throw new ExpectationFailed($"gösterge {shown}, beklenen {kv[1].Trim()}");
+            }
+            return;
+        }
+        if (key.StartsWith("active:", StringComparison.Ordinal))
+        {
+            bool on = vm.Simulator?.Find(Find(vm, key[7..]).Id)?.Visual.Active == true;
+            if (on != (kv[1].Trim() == "1"))
+            {
+                throw new ExpectationFailed($"{key[7..]} {(on ? "etkin" : "etkin değil")}");
+            }
+            return;
+        }
         string sheet = vm.CurrentSheet;
         int actual = kv[0].Trim() switch
         {
@@ -274,6 +307,7 @@ internal static class ScriptRunner
             "selected" => vm.Selection.Count,
             "free" => c.Wires.Where(x => x.Sheet == sheet).Sum(x => (x.A.IsFree ? 1 : 0) + (x.B.IsFree ? 1 : 0)),
             "dirty" => vm.IsDirty ? 1 : 0,
+            "problems" => vm.ProblemCount,
             _ => throw new ArgumentException("bilinmeyen ölçü")
         };
         int expected = int.Parse(kv[1].Trim(), CultureInfo.InvariantCulture);

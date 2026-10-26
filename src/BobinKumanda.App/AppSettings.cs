@@ -14,6 +14,8 @@ public sealed class AppSettings
     public bool Grid { get; set; } = true;
     public bool Flow { get; set; } = true;
     public bool ShowPalette { get; set; } = true;
+    public bool Sound { get; set; } = true;
+    public bool CrossReference { get; set; } = true;
     public double Speed { get; set; } = 1;
     public List<string> RecentFiles { get; set; } = [];
 

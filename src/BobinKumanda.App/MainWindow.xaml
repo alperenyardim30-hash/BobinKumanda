@@ -15,7 +15,9 @@
         <c:CountToVisibility x:Key="AnyVisible" />
         <c:CountToVisibility x:Key="NoneVisible" Invert="True" />
         <c:EmptyToVisibility x:Key="EmptyVisible" />
+        <c:EmptyToVisibility x:Key="EmptyHidden" Invert="True" />
         <c:SpeedText x:Key="SpeedText" />
+        <c:NullToVisibility x:Key="NotNullVisible" />
         <Style x:Key="Glyph" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
             <Setter Property="FontSize" Value="16" />
@@ -50,6 +52,46 @@
                                 BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
                             <ContentPresenter VerticalAlignment="Center" />
                         </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Ölçü aletlerinin işlev düğmeleri (V~, V=, Ω) -->
+        <Style x:Key="MeterKey" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#1B1F14" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="key" Background="#3A3D42" CornerRadius="5" Padding="0,4" Margin="2,0" BorderBrush="#1B1F14" BorderThickness="1">
+                            <TextBlock Text="{TemplateBinding Content}" Foreground="White" HorizontalAlignment="Center" FontSize="13" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="key" Property="Background" Value="#E03131" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="key" Property="BorderBrush" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="MeterButton" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="#3A3D42" CornerRadius="4" Padding="8,2">
+                            <ContentPresenter TextElement.Foreground="White" TextElement.FontSize="11" HorizontalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#5C6066" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -235,6 +277,25 @@
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
 
+            <Fluent:RibbonTabItem Header="{l:Loc ui.measure}">
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupInstruments}">
+                    <Fluent:ToggleButton Header="{l:Loc ui.multimeter}" Size="Large" IsChecked="{Binding IsMultimeter}" ToolTip="{l:Loc ui.tip.multimeter}">
+                        <Fluent:ToggleButton.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE945;" Foreground="#E03131" /></Fluent:ToggleButton.LargeIcon>
+                    </Fluent:ToggleButton>
+                    <Fluent:ToggleButton Header="{l:Loc ui.clampMeter}" Size="Large" IsChecked="{Binding IsClamp}" ToolTip="{l:Loc ui.tip.clamp}">
+                        <Fluent:ToggleButton.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE9D9;" Foreground="#F59F00" /></Fluent:ToggleButton.LargeIcon>
+                    </Fluent:ToggleButton>
+                    <Fluent:Button Header="{l:Loc ui.clearProbes}" Size="Middle" Command="{Binding ClearProbesCommand}">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE894;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupMeterFunction}" IsEnabled="{Binding IsMultimeter}">
+                    <Fluent:ToggleButton Header="{l:Loc ui.voltsAc}" Size="Middle" IsChecked="{Binding IsVoltsAc}" GroupName="meterFn" />
+                    <Fluent:ToggleButton Header="{l:Loc ui.voltsDc}" Size="Middle" IsChecked="{Binding IsVoltsDc}" GroupName="meterFn" />
+                    <Fluent:ToggleButton Header="{l:Loc ui.ohms}" Size="Middle" IsChecked="{Binding IsOhms}" GroupName="meterFn" />
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+
             <Fluent:RibbonTabItem Header="{l:Loc ui.view}">
                 <Fluent:RibbonGroupBox Header="{l:Loc ui.groupZoom}">
                     <Fluent:Button Header="{l:Loc ui.fit}" Size="Large" Click="OnFitClick" ToolTip="Home">
@@ -251,6 +312,8 @@
                     <Fluent:CheckBox Header="{l:Loc ui.showPalette}" x:Name="paletteCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
                     <Fluent:CheckBox Header="{l:Loc ui.terminalNumbers}" x:Name="numbersCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
                     <Fluent:CheckBox Header="{l:Loc ui.grid}" x:Name="gridCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
+                    <Fluent:CheckBox Header="{l:Loc ui.crossReference}" x:Name="crossRefCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
+                    <Fluent:CheckBox Header="{l:Loc ui.sound}" x:Name="soundCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="{l:Loc ui.groupLook}">
                     <Fluent:ToggleButton Header="{l:Loc ui.darkTheme}" Size="Large" x:Name="darkToggle" Checked="OnThemeChanged" Unchecked="OnThemeChanged">
@@ -352,6 +415,81 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <r:CircuitCanvas x:Name="canvas" />
+
+                <!-- Multimetre -->
+                <Border x:Name="multimeterPanel" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12" Width="214" Padding="10,8,10,10" CornerRadius="12"
+                        Background="#F4C430" BorderBrush="#8A6D00" BorderThickness="1.5"
+                        Visibility="{Binding IsMultimeter, Converter={StaticResource Visible}}">
+                    <Border.Effect><DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.35" /></Border.Effect>
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6" Background="Transparent" Cursor="SizeAll" ToolTip="{l:Loc ui.tip.dragMeter}"
+                                   MouseLeftButtonDown="OnMeterDragStart" MouseMove="OnMeterDrag" MouseLeftButtonUp="OnMeterDragEnd">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource MeterButton}" Command="{Binding CloseMeterCommand}" ToolTip="{l:Loc ui.close}">
+                                <TextBlock Text="&#xE711;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="9" />
+                            </Button>
+                            <TextBlock Text="{l:Loc ui.multimeter}" FontWeight="Bold" FontSize="12" Foreground="#1B1F14" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <Border Background="#B8C4A0" CornerRadius="5" Padding="8,4" BorderBrush="#6B7558" BorderThickness="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="meterLcd" Text="{Binding MeterValue}" FontFamily="Consolas" FontSize="30" FontWeight="Bold"
+                                           HorizontalAlignment="Right" Foreground="#1B1F14" />
+                                <TextBlock Grid.Column="1" Text="{Binding MeterUnit}" FontFamily="Consolas" FontSize="15" FontWeight="Bold"
+                                           VerticalAlignment="Bottom" Margin="5,0,0,5" Foreground="#1B1F14" />
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="{Binding MeterNote}" TextWrapping="Wrap" FontSize="11" Margin="1,5,1,0" Foreground="#1B1F14"
+                                   Visibility="{Binding MeterNote, Converter={StaticResource EmptyHidden}}" />
+                        <UniformGrid Columns="3" Margin="0,8,0,0">
+                            <RadioButton Style="{StaticResource MeterKey}" Content="V~" IsChecked="{Binding IsVoltsAc}" GroupName="meterKeys" />
+                            <RadioButton Style="{StaticResource MeterKey}" Content="V=" IsChecked="{Binding IsVoltsDc}" GroupName="meterKeys" />
+                            <RadioButton Style="{StaticResource MeterKey}" Content="Ω" IsChecked="{Binding IsOhms}" GroupName="meterKeys" />
+                        </UniformGrid>
+                        <DockPanel Margin="0,8,0,0">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource MeterButton}" Content="{l:Loc ui.clearProbes}" Command="{Binding ClearProbesCommand}" />
+                            <Ellipse Width="10" Height="10" Fill="#E03131" VerticalAlignment="Center" />
+                            <TextBlock Text="V/Ω" FontSize="11" FontWeight="SemiBold" Margin="3,0,8,0" Foreground="#1B1F14" VerticalAlignment="Center" />
+                            <Ellipse Width="10" Height="10" Fill="#212529" VerticalAlignment="Center" />
+                            <TextBlock Text="COM" FontSize="11" FontWeight="SemiBold" Margin="3,0,0,0" Foreground="#1B1F14" VerticalAlignment="Center" />
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Pens ampermetre -->
+                <Border x:Name="clampPanel" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12" Width="214" Padding="10,8,10,10" CornerRadius="12"
+                        Background="#F59F00" BorderBrush="#8F5B00" BorderThickness="1.5"
+                        Visibility="{Binding IsClamp, Converter={StaticResource Visible}}">
+                    <Border.Effect><DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.35" /></Border.Effect>
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6" Background="Transparent" Cursor="SizeAll" ToolTip="{l:Loc ui.tip.dragMeter}"
+                                   MouseLeftButtonDown="OnMeterDragStart" MouseMove="OnMeterDrag" MouseLeftButtonUp="OnMeterDragEnd">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource MeterButton}" Command="{Binding CloseMeterCommand}" ToolTip="{l:Loc ui.close}">
+                                <TextBlock Text="&#xE711;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="9" />
+                            </Button>
+                            <TextBlock Text="{l:Loc ui.clampMeter}" FontWeight="Bold" FontSize="12" Foreground="#1B1F14" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <Border Background="#B8C4A0" CornerRadius="5" Padding="8,4" BorderBrush="#6B7558" BorderThickness="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding ClampValue}" FontFamily="Consolas" FontSize="30" FontWeight="Bold" HorizontalAlignment="Right" Foreground="#1B1F14" />
+                                <TextBlock Grid.Column="1" Text="{Binding ClampUnit}" FontFamily="Consolas" FontSize="15" FontWeight="Bold"
+                                           VerticalAlignment="Bottom" Margin="5,0,0,5" Foreground="#1B1F14" />
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="{Binding ClampNote}" TextWrapping="Wrap" FontSize="11" Margin="1,5,1,0" Foreground="#1B1F14"
+                                   Visibility="{Binding ClampNote, Converter={StaticResource EmptyHidden}}" />
+                        <DockPanel Margin="0,8,0,0">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource MeterButton}" Content="{l:Loc ui.resetMax}" Command="{Binding ResetClampMaxCommand}" />
+                            <TextBlock Text="{Binding ClampMaxText}" FontFamily="Consolas" FontSize="12" FontWeight="Bold" Foreground="#1B1F14" VerticalAlignment="Center" />
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
                 <Border Grid.Row="1" Background="{DynamicResource App.Panel}" BorderBrush="{DynamicResource App.Border}" BorderThickness="0,1,0,0"
                         Visibility="{Binding HasCircuit, Converter={StaticResource Visible}}">
                     <StackPanel Orientation="Horizontal">
@@ -466,6 +604,25 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                             <StackPanel Visibility="{Binding IsSimulating, Converter={StaticResource Visible}}" Margin="0,6,0,0">
+                                <StackPanel Visibility="{Binding Slider, Converter={StaticResource NotNullVisible}}" Margin="0,0,0,10">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Slider.ValueText}" FontWeight="SemiBold" Foreground="{DynamicResource App.Text}" />
+                                        <TextBlock Text="{Binding Slider.Name}" Style="{StaticResource Muted}" />
+                                    </DockPanel>
+                                    <Slider x:Name="simSlider" Minimum="{Binding Slider.Min}" Maximum="{Binding Slider.Max}" Value="{Binding Slider.Value}"
+                                            SmallChange="{Binding Slider.Step}" LargeChange="{Binding Slider.Step}" Margin="0,4,0,0" IsMoveToPointEnabled="True" />
+                                </StackPanel>
+                                <ItemsControl ItemsSource="{Binding Actions}" Margin="0,0,0,10"
+                                              Visibility="{Binding HasActions, Converter={StaticResource Visible}}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:ActionItem}">
+                                            <Button Content="{Binding Name}" Command="{Binding Command}" Padding="10,4" Margin="0,0,6,6" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                                 <TextBlock Style="{StaticResource PanelTitle}" Text="{l:Loc ui.measurements}" />
                                 <ItemsControl ItemsSource="{Binding Readouts}">
                                     <ItemsControl.ItemTemplate>
@@ -528,7 +685,8 @@
                             <ItemsControl ItemsSource="{Binding Problems}" Margin="8,6">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type vm:ProblemItem}">
-                                        <Grid Margin="0,0,0,10">
+                                        <Grid Margin="0,0,0,10" Background="Transparent" Cursor="Hand" MouseLeftButtonUp="OnProblemClick"
+                                              ToolTip="{l:Loc ui.tip.problem}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="26" />
                                                 <ColumnDefinition Width="*" />

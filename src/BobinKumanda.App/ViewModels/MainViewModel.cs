@@ -399,6 +399,8 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         CancelCanvasGesture?.Invoke();
         Circuit = circuit;
         FilePath = path;
+        redProbe = blackProbe = clamp = null;
+        InvalidateInstruments();
         savedState = dirty ? null : CircuitFile.ToBytes(circuit);
         IsDirty = dirty;
         history.Clear();
@@ -469,6 +471,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
     public void CommitEdit()
     {
         IsDirty = true;
+        InvalidateInstruments();
         CircuitEdited?.Invoke();
         Frame?.Invoke();
         RefreshCommands();
@@ -555,6 +558,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
             CurrentSheet = s.Circuit.Sheets[0].Id;
         }
         IsDirty = savedState == null || !CircuitFile.ToBytes(s.Circuit).AsSpan().SequenceEqual(savedState);
+        InvalidateInstruments();
         RebuildSheets();
         CircuitReplaced?.Invoke();
         SheetChanged?.Invoke();
@@ -900,14 +904,24 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
 
     private void UpdateReadouts()
     {
-        Readouts.Clear();
+        var list = new List<ReadoutItem>();
         if (Simulator?.Solution is { } sol && Selected != null && Simulator.Find(Selected.Id) is { } sc)
         {
             foreach (Readout r in sc.Readouts(sol))
             {
-                Readouts.Add(new ReadoutItem(r.Name, r.Value));
+                list.Add(new ReadoutItem(r.Name, r.Value));
             }
         }
+        // Aynı satırlar yeniden kurulmasın: liste her 200 ms'de güncellenir, titreşmesin
+        if (!list.SequenceEqual(Readouts))
+        {
+            Readouts.Clear();
+            foreach (ReadoutItem r in list)
+            {
+                Readouts.Add(r);
+            }
+        }
+        UpdateControls();
     }
 
     // ---- Simülasyon ----
@@ -939,6 +953,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         AnimTime = 0;
         hintKey = null;
         Simulator = new Simulator(Circuit);
+        clampMax = 0;
         IsPaused = false;
         clock.Restart();
         lastTick = TimeSpan.Zero;
@@ -954,12 +969,14 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         }
         timer.Stop();
         Simulator = null;
+        sound.Stop();
         IsPaused = false;
         SimTimeText = "";
         hintKey = null;
         Problems.Clear();
         ProblemCount = 0;
         RebuildSelection();
+        UpdateMeters();
         UpdateStatus();
         Frame?.Invoke();
     }
@@ -1069,24 +1086,58 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
             Problems.Clear();
             foreach (SimProblem p in sim.Problems.OrderByDescending(p => p.Severity))
             {
-                Problems.Add(new ProblemItem(p.Message, p.Explanation, p.Severity));
+                Problems.Add(new ProblemItem(p.Message, p.Explanation, p.Severity, p.ComponentIds));
             }
             ProblemCount = Problems.Count;
         }
         if (readouts)
         {
             UpdateReadouts();
+            UpdateMeters();
         }
+        UpdateSound(sim);
         UpdateStatus();
         Frame?.Invoke();
     }
 
+    private readonly SoundService sound = new();
+
+    /// <summary>Korna, buzzer gibi elemanlar çalarken ses; ayarlardan kapatılabilir, betikle denemede çalmaz.</summary>
+    private void UpdateSound(Simulator sim)
+    {
+        string? kind = null;
+        if (Settings.Sound && !Settings.ReadOnly && sim.Status != SimStatus.Faulted)
+        {
+            kind = sim.Components.OfType<ISoundSource>().FirstOrDefault(s => s.SoundActive)?.SoundKind;
+        }
+        sound.Play(kind);
+    }
+
+    public void SetSound(bool on)
+    {
+        Settings.Sound = on;
+        if (!on)
+        {
+            sound.Stop();
+        }
+        else if (Simulator != null)
+        {
+            UpdateSound(Simulator);
+        }
+    }
+
     private void UpdateStatus()
     {
+        string? meterHint = Meter switch
+        {
+            MeterTool.Multimeter => "ui.hint.multimeter",
+            MeterTool.Clamp => "ui.hint.clamp",
+            _ => null
+        };
         if (Simulator == null)
         {
             StatusText = Loc.T("ui.status.edit");
-            HintText = Circuit == null ? "" : Loc.T(hintKey ?? Tool switch
+            HintText = Circuit == null ? "" : Loc.T(hintKey ?? meterHint ?? Tool switch
             {
                 EditTool.Wire => "ui.hint.wireTool",
                 EditTool.Text => "ui.hint.textTool",
@@ -1100,7 +1151,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
             SimStatus.Faulted => "ui.status.faulted",
             _ => "ui.status.running"
         });
-        HintText = Loc.T(hintKey ?? "ui.hint.sim");
+        HintText = Loc.T(hintKey ?? meterHint ?? "ui.hint.sim");
     }
 
     public string AboutText => Loc.T("ui.aboutText",

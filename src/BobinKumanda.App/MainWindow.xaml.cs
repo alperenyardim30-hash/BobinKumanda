@@ -37,6 +37,8 @@ public partial class MainWindow
         DataContext = vm;
 
         numbersCheck.IsChecked = settings.TerminalNumbers;
+        crossRefCheck.IsChecked = settings.CrossReference;
+        soundCheck.IsChecked = settings.Sound;
         gridCheck.IsChecked = settings.Grid;
         flowCheck.IsChecked = settings.Flow;
         paletteCheck.IsChecked = settings.ShowPalette;
@@ -90,6 +92,13 @@ public partial class MainWindow
             }
         };
         canvas.ComponentPressed += vm.Press;
+        canvas.ProbeRequested += vm.PlaceProbe;
+        canvas.ProbeSource = () => vm.ProbeMarks.Select(m => (vm.PositionOf(m), vm.SheetOf(m) ?? "", m.Kind));
+        vm.ComponentFocused += c =>
+        {
+            canvas.BringIntoView(c);
+            canvas.Focus();
+        };
         canvas.ComponentReleased += vm.Release;
         canvas.ViewChanged += UpdateZoomText;
         canvas.ContextMenuRequested += ShowCanvasMenu;
@@ -105,6 +114,10 @@ public partial class MainWindow
         {
             case nameof(MainViewModel.Simulator):
                 canvas.Simulator = vm.Simulator;
+                break;
+            case nameof(MainViewModel.Meter):
+                canvas.Meter = vm.Meter;
+                canvas.InvalidateVisual();
                 break;
             case nameof(MainViewModel.ProblemCount):
                 // Hata çıkınca sorunlar sekmesini öne getir
@@ -424,6 +437,60 @@ public partial class MainWindow
         menu.IsOpen = true;
     }
 
+    // ---- Ölçü aletini sürükleme ----
+
+    private Point meterDragStart;
+    private Thickness meterDragMargin;
+
+    private void OnMeterDragStart(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement header && FindPanel(header) is { } panel)
+        {
+            meterDragStart = e.GetPosition(this);
+            meterDragMargin = panel.Margin;
+            header.CaptureMouse();
+            e.Handled = true;
+        }
+    }
+
+    private void OnMeterDrag(object sender, MouseEventArgs e)
+    {
+        if (sender is FrameworkElement { IsMouseCaptured: true } header && FindPanel(header) is { } panel &&
+            panel.Parent is FrameworkElement area)
+        {
+            Vector d = e.GetPosition(this) - meterDragStart;
+            // panel sağ üst köşeye hizalı: sağ boşluk azalır, üst boşluk artar; alanın dışına çıkmasın
+            double right = Math.Clamp(meterDragMargin.Right - d.X, 0, Math.Max(0, area.ActualWidth - panel.ActualWidth));
+            double top = Math.Clamp(meterDragMargin.Top + d.Y, 0, Math.Max(0, area.ActualHeight - panel.ActualHeight));
+            multimeterPanel.Margin = clampPanel.Margin = new Thickness(0, top, right, 0);
+        }
+    }
+
+    private void OnMeterDragEnd(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement header)
+        {
+            header.ReleaseMouseCapture();
+        }
+    }
+
+    private static Border? FindPanel(DependencyObject d)
+    {
+        while (d != null && d is not Border { CornerRadius.TopLeft: 12 })
+        {
+            d = VisualTreeHelper.GetParent(d);
+        }
+        return d as Border;
+    }
+
+    private void OnProblemClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: ProblemItem p })
+        {
+            vm.FocusProblem(p);
+        }
+    }
+
     // ---- Sayfa sekmeleri ----
 
     private void OnSheetClick(object sender, RoutedEventArgs e)
@@ -542,6 +609,9 @@ public partial class MainWindow
         settings.Grid = gridCheck.IsChecked == true;
         settings.Flow = flowCheck.IsChecked == true;
         settings.ShowPalette = paletteCheck.IsChecked == true;
+        settings.CrossReference = crossRefCheck.IsChecked == true;
+        canvas.ShowCrossReference = settings.CrossReference;
+        vm.SetSound(soundCheck.IsChecked == true);
         canvas.ShowTerminalNumbers = settings.TerminalNumbers;
         canvas.ShowGrid = settings.Grid;
         canvas.ShowFlow = settings.Flow;

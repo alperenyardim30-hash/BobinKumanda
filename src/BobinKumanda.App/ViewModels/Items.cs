@@ -13,8 +13,10 @@ public sealed record LogItem(string Time, string Text, ProblemSeverity Severity)
     public bool IsError => Severity == ProblemSeverity.Error;
 }
 
-public sealed record ProblemItem(string Message, string Explanation, ProblemSeverity Severity)
+public sealed record ProblemItem(string Message, string Explanation, ProblemSeverity Severity, IReadOnlyList<string> ComponentIds)
 {
+    public bool HasComponent => ComponentIds.Count > 0;
+
     public bool IsError => Severity == ProblemSeverity.Error;
     public string Glyph => Severity == ProblemSeverity.Error ? "" : Severity == ProblemSeverity.Warning ? "" : "";
 }

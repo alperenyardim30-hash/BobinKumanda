@@ -17,6 +17,12 @@ public sealed class CircuitRenderOptions
     /// <summary>Önceden hesaplanmış kablo renkleri (her karede netlist kurulmasın diye); null ise burada hesaplanır.</summary>
     public IReadOnlyDictionary<string, uint>? WireColorCache { get; init; }
 
+    /// <summary>Bobinlerin altında kontak listesi (çapraz referans).</summary>
+    public bool ShowCrossReference { get; init; } = true;
+
+    /// <summary>Önceden hesaplanmış kontak numaraları ve çapraz referans; null ise burada hesaplanır.</summary>
+    public (IReadOnlyDictionary<string, ContactNumber> Numbers, IReadOnlyDictionary<string, List<CrossRefEntry>> Mirror)? CrossRefCache { get; init; }
+
     /// <summary>Simülasyondaki görünüm; düzenleme modunda null.</summary>
     public Func<ComponentInstance, SymbolState?>? StateOf { get; init; }
 
@@ -43,6 +49,7 @@ public static class CircuitRenderer
         IReadOnlyDictionary<string, uint> colors = !options.ColorWires ? new Dictionary<string, uint>() :
             options.WireColorCache ?? WireColors(circuit);
         var junctionInk = new Dictionary<string, Paint>(StringComparer.Ordinal);
+        var xref = options.CrossRefCache ?? Compute(circuit);
 
         foreach (Wire w in circuit.Wires)
         {
@@ -91,7 +98,11 @@ public static class CircuitRenderer
             DrawLabels(world, def, c, state);
             if (options.ShowTerminalNumbers)
             {
-                DrawTerminalNumbers(world, def, c);
+                DrawTerminalNumbers(world, def, c, xref.Numbers.TryGetValue(c.Id, out ContactNumber n) ? n : new ContactNumber(1, false));
+            }
+            if (options.ShowCrossReference && xref.Mirror.TryGetValue(c.Id, out List<CrossRefEntry>? entries))
+            {
+                DrawCrossReference(world, def, c, entries, state?.Text ?? def.SubLabel(c));
             }
         }
 
@@ -129,7 +140,26 @@ public static class CircuitRenderer
         }
     }
 
-    private static void DrawTerminalNumbers(ISymbolPainter world, ComponentDef def, ComponentInstance c)
+    public static (IReadOnlyDictionary<string, ContactNumber> Numbers, IReadOnlyDictionary<string, List<CrossRefEntry>> Mirror) Compute(Circuit circuit)
+    {
+        Dictionary<string, ContactNumber> numbers = CrossReference.Numbers(circuit);
+        return (numbers, CrossReference.Mirror(circuit, numbers));
+    }
+
+    /// <summary>Bobinin altında, kontaklarının numaraları (üç tanesi bir satırda).</summary>
+    private static void DrawCrossReference(ISymbolPainter world, ComponentDef def, ComponentInstance c, List<CrossRefEntry> entries, string? sub)
+    {
+        Vec size = def.WorldSize(c);
+        double y = c.Position.Y + size.Y + (string.IsNullOrEmpty(sub) ? 5.5 : 12);
+        for (int i = 0; i < entries.Count; i += 3)
+        {
+            string line = string.Join("  ", entries.Skip(i).Take(3).Select(e => e.Text));
+            world.Text(new Vec(c.Position.X + size.X / 2, y), line, 4.5, Paint.Of(Ink.Accent));
+            y += 6;
+        }
+    }
+
+    private static void DrawTerminalNumbers(ISymbolPainter world, ComponentDef def, ComponentInstance c, ContactNumber number)
     {
         if (def.Category is ComponentCategory.Supply or ComponentCategory.Systems or ComponentCategory.Motors)
         {
@@ -137,7 +167,8 @@ public static class CircuitRenderer
         }
         foreach (TerminalDef t in def.Terminals)
         {
-            if (t.Number == null)
+            string? text = def.NumberFor(t, number);
+            if (text == null)
             {
                 continue;
             }
@@ -152,7 +183,7 @@ public static class CircuitRenderer
                 Side.Bottom => (new Vec(1.5, 4), TextAlign.Left),
                 _ => (new Vec(1.5, -3.5), TextAlign.Left)
             };
-            world.Text(p + offset, t.Number, 4.5, Paint.Of(Ink.Muted), align);
+            world.Text(p + offset, text, 4.5, Paint.Of(Ink.Muted), align);
         }
     }
 

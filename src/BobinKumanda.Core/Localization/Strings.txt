@@ -571,3 +571,31 @@ speed.low | düşük devir | low speed
 speed.high | yüksek devir | high speed
 hint.position | Tıklayınca sıradaki konuma geçer; kaydırıcıyla konumu seçin. | Click to move to the next position; or choose it with the slider.
 hint.proximity | Tıklayınca sensörün önüne cisim gelir ya da uzaklaşır. | Click to bring an object in front of the sensor or take it away.
+
+# ---- Ölçü aletleri ----
+meter.placeRed | Kırmızı ucu (V/Ω) bir klemense ya da kabloya tıklayarak takın. | Click a terminal or wire to attach the red probe (V/Ω).
+meter.placeBlack | Şimdi siyah ucu (COM) ikinci noktaya takın. | Now attach the black probe (COM) to the second point.
+meter.unpowered | Devre enerjisiz. Gerilim ölçmek için simülasyonu başlatın (F5). | The circuit is not energised. Start the simulation (F5) to measure voltage.
+meter.liveOhms | Enerjili devrede direnç ölçülmez! Gerçek alet zarar görür. Önce enerjiyi kesin. | Never measure resistance on a live circuit! A real meter would be damaged. Switch the power off first.
+meter.open | Açık devre: iki nokta arasında bağlantı yok. | Open circuit: no connection between the two points.
+meter.continuity | Kısa devre / süreklilik var (bip). | Short / continuity (beep).
+meter.placeClamp | Akımını ölçmek istediğiniz kabloya tıklayın. | Click the wire whose current you want to measure.
+ui.measure | Ölçüm | Measure
+ui.groupInstruments | Ölçü aletleri | Instruments
+ui.groupMeterFunction | Multimetre kademesi | Meter range
+ui.multimeter | Multimetre | Multimeter
+ui.clampMeter | Pens ampermetre | Clamp meter
+ui.clearProbes | Uçları çıkar | Remove probes
+ui.voltsAc | Gerilim V~ | Voltage V~
+ui.voltsDc | Gerilim V= | Voltage V=
+ui.ohms | Direnç Ω | Resistance Ω
+ui.resetMax | MAX sıfırla | Reset MAX
+ui.close | Kapat | Close
+ui.crossReference | Çapraz referans | Cross reference
+ui.sound | Ses | Sound
+ui.tip.multimeter | Uçları klemenslere takarak gerilim (simülasyonda) ya da direnç (enerjisizken) ölçün. | Attach the probes to terminals to measure voltage (in simulation) or resistance (with power off).
+ui.tip.clamp | Kabloya takılan pens, içinden geçen akımı gösterir; MAX kalkış akımını tutar. | Clamped on a wire it shows the current; MAX holds the starting current.
+ui.tip.problem | Elemanı göstermek için tıklayın. | Click to show the component.
+ui.hint.multimeter | Multimetre: uçları takmak için klemense ya da kabloya tıklayın. Butonlar yine tıklanabilir. | Multimeter: click a terminal or wire to attach a probe. Buttons can still be clicked.
+ui.hint.clamp | Pens ampermetre: akımını ölçmek istediğiniz kabloya tıklayın. | Clamp meter: click the wire whose current you want to measure.
+ui.tip.dragMeter | Aleti başlığından tutup sürükleyerek taşıyın. | Drag the instrument by its title to move it.

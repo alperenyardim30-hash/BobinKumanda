@@ -22,21 +22,23 @@ public abstract class FollowerContactDef : ComponentDef
         new FollowerContactSim(Specs, instance.GetParam("channel", "auto"));
 
     /// <summary>Bağlı olduğu ana cihaz zaman rölesiyse gecikme işareti.</summary>
-    protected static TimedMark TimedFor(DrawContext ctx)
+    protected static TimedMark TimedFor(DrawContext ctx) => TimedFor(ctx.Circuit, ctx.Instance);
+
+    internal static TimedMark TimedFor(Circuit? circuit, ComponentInstance instance)
     {
-        string channel = ctx.Instance.GetParam("channel", "auto");
-        if (channel == "instant" || ctx.Circuit == null)
+        string channel = instance.GetParam("channel", "auto");
+        if (channel == "instant" || circuit == null)
         {
             return TimedMark.None;
         }
-        string label = ctx.Instance.Label.Trim();
+        string label = instance.Label.Trim();
         if (label.Length == 0)
         {
             return TimedMark.None;
         }
-        foreach (ComponentInstance c in ctx.Circuit.Components)
+        foreach (ComponentInstance c in circuit.Components)
         {
-            if (string.Equals(c.Label.Trim(), label, StringComparison.OrdinalIgnoreCase) && c != ctx.Instance)
+            if (string.Equals(c.Label.Trim(), label, StringComparison.OrdinalIgnoreCase) && c != instance)
             {
                 ComponentDef? def = ComponentCatalog.Find(c.Type);
                 if (def is TimerOnDef)
@@ -57,8 +59,44 @@ public abstract class FollowerContactDef : ComponentDef
     }
 }
 
-public sealed class ContactNoDef : FollowerContactDef
+/// <summary>
+/// IEC 60947-5-1 yardımcı kontak numarası: ilk rakam sıra (aynı cihazın kaçıncı yardımcı kontağı), ikincisi işlev:
+/// 1-2 NC, 3-4 NO; zaman gecikmeli kontaklarda 5-6 NC, 7-8 NO.
+/// </summary>
+public abstract class AuxContactDefBase : FollowerContactDef
 {
+    /// <summary>Klemens sırası → işlev rakamı (NC: 1, 2; NO: 3, 4; değiştirici: 1, 2, 4).</summary>
+    protected abstract int[] FunctionDigits { get; }
+
+    public override bool AutoNumbered => true;
+
+    public override string? NumberFor(TerminalDef t, ContactNumber n)
+    {
+        int index = -1;
+        for (int i = 0; i < Terminals.Count; i++)
+        {
+            if (Terminals[i].Id == t.Id)
+            {
+                index = i;
+            }
+        }
+        if (index < 0)
+        {
+            return t.Number;
+        }
+        int digit = FunctionDigits[index];
+        if (n.Timed)
+        {
+            digit += 4;
+        }
+        return (n.Sequence % 10).ToString(System.Globalization.CultureInfo.InvariantCulture) + digit.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+
+public sealed class ContactNoDef : AuxContactDefBase
+{
+    protected override int[] FunctionDigits => [3, 4];
+
     public override string TypeId => "contact-no";
     public override int? LegacyType => 3;
     public override char? Shortcut => 'A';
@@ -74,8 +112,10 @@ public sealed class ContactNoDef : FollowerContactDef
         SymbolKit.ContactH(p, ctx, 10, false, ctx.IsClosed(0, false), timed: TimedFor(ctx));
 }
 
-public sealed class ContactNcDef : FollowerContactDef
+public sealed class ContactNcDef : AuxContactDefBase
 {
+    protected override int[] FunctionDigits => [1, 2];
+
     public override string TypeId => "contact-nc";
     public override int? LegacyType => 4;
     public override char? Shortcut => 'C';
@@ -133,8 +173,10 @@ public sealed class ContactThreeNcDef : ThreePoleContactDef
 }
 
 /// <summary>Değiştirici (çift yollu) yardımcı kontak: ortak uç, NC ve NO.</summary>
-public sealed class ContactChangeoverDef : FollowerContactDef
+public sealed class ContactChangeoverDef : AuxContactDefBase
 {
+    protected override int[] FunctionDigits => [1, 2, 4];
+
     public override string TypeId => "contact-co";
     public override string Tags => "değiştirici kontak changeover 11 12 14";
     public override Vec Size => new(20, 20);
