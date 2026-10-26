@@ -786,6 +786,20 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         }
     }
 
+    /// <summary>Antet bilgilerini değiştirir (geri alınabilir).</summary>
+    public void SetTitleBlock(TitleBlock t)
+    {
+        if (!EnsureEditing())
+        {
+            return;
+        }
+        BeginEdit();
+        Circuit!.Title = t;
+        CommitEdit();
+        OnPropertyChanged(nameof(DocumentName));
+        OnPropertyChanged(nameof(WindowTitle));
+    }
+
     // ---- Sayfalar ----
 
     private void RebuildSheets()

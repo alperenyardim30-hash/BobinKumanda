@@ -607,3 +607,25 @@ escSave.noCoil | "{0}" kontağının bobini eski biçimde yok; kontak bobinsiz k
 escSave.droppedEnds | {0} kablo ucu kaydedilmeyen elemanlara bağlıydı, boşta kaldı. | {0} wire ends were connected to components that were not saved and are now loose.
 ui.escSaved | Devre eski EKTS biçiminde kaydedildi: | The circuit was saved in the old EKTS format:
 ui.escSavedNotes | Dikkat: | Note:
+
+# ---- Antet ve çıktı ----
+title.circuit | Devre adı | Circuit
+title.sheet | Sayfa | Sheet
+title.student | Öğrenci | Student
+title.number | No | Number
+title.class | Sınıf | Class
+title.school | Okul | School
+title.teacher | Öğretmen | Teacher
+title.date | Tarih | Date
+title.notes | Notlar | Notes
+ui.docInfo | Belge bilgileri | Document info
+ui.docInfoText | Bu bilgiler yazdırırken ve resim olarak kaydederken sayfanın sağ altındaki antete yazılır. | These details are printed in the title block at the bottom right of printed and exported pages.
+ui.export | Resim olarak kaydet | Export as image
+ui.exportPng | PNG resmi | PNG image
+ui.exportJpg | JPG resmi | JPG image
+ui.print | Yazdır | Print
+ui.paper | Kâğıt | Paper
+ui.allSheets | Bütün sayfalar | All sheets
+ui.currentSheet | Yalnızca bu sayfa | This sheet only
+ui.printFailed | Yazdırılamadı | Printing failed
+ui.exported | Resim kaydedildi: | Image saved:

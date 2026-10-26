@@ -152,6 +152,12 @@ public partial class MainWindow
             e.Handled = true;
             return;
         }
+        if (e.Key == Key.P && Keyboard.Modifiers == ModifierKeys.Control && vm.Circuit != null)
+        {
+            PrintCircuit();
+            e.Handled = true;
+            return;
+        }
         if (e.Key == Key.Space && Keyboard.Modifiers == ModifierKeys.Control)
         {
             FocusPaletteSearch();
@@ -584,6 +590,81 @@ public partial class MainWindow
     }
 
     private void OnExitClick(object sender, RoutedEventArgs e) => Close();
+
+    // ---- Çıktı: resim, yazdırma, antet ----
+
+    private PageOutput.Look OutputLook => new(canvas.SymbolStyle, settings.TerminalNumbers, settings.CrossReference);
+
+    private void OnExportClick(object sender, RoutedEventArgs e)
+    {
+        backstage.IsOpen = false;
+        if (vm.Circuit == null)
+        {
+            return;
+        }
+        var dlg = new Microsoft.Win32.SaveFileDialog
+        {
+            Filter = $"{Loc.T("ui.exportPng")} (*.png)|*.png|{Loc.T("ui.exportJpg")} (*.jpg)|*.jpg",
+            FileName = Path.GetFileNameWithoutExtension(vm.DocumentName) + ".png"
+        };
+        if (dlg.ShowDialog(this) == true)
+        {
+            ExportImage(dlg.FileName);
+        }
+    }
+
+    /// <summary>Gösterilen sayfayı antetli A4 resmi olarak kaydeder (betikten de çağrılır).</summary>
+    public bool ExportImage(string path)
+    {
+        try
+        {
+            PageOutput.SaveImage(vm.Circuit!, vm.CurrentSheet, OutputLook, path);
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or NotSupportedException)
+        {
+            Dialogs.Show($"{Loc.T("ui.saveFailed")}:\n{path}\n\n{ex.Message}", MessageBoxButton.OK, MessageBoxImage.Warning, this);
+            return false;
+        }
+    }
+
+    private void OnPrintClick(object sender, RoutedEventArgs e)
+    {
+        backstage.IsOpen = false;
+        PrintCircuit();
+    }
+
+    private void PrintCircuit()
+    {
+        if (vm.Circuit is not { } c)
+        {
+            return;
+        }
+        try
+        {
+            // Bütün sayfalar sırayla, boş sayfalar atlanır
+            var sheets = c.Sheets.Where(s => c.Components.Any(x => x.Sheet == s.Id) || c.Wires.Any(w => w.Sheet == s.Id) ||
+                                             c.Texts.Any(t => t.Sheet == s.Id)).Select(s => s.Id).ToList();
+            if (sheets.Count == 0)
+            {
+                sheets.Add(vm.CurrentSheet);
+            }
+            PageOutput.Print(c, sheets, OutputLook, vm.DocumentName);
+        }
+        catch (Exception ex) when (ex is System.Printing.PrintSystemException or InvalidOperationException)
+        {
+            Dialogs.Show($"{Loc.T("ui.printFailed")}\n\n{ex.Message}", MessageBoxButton.OK, MessageBoxImage.Warning, this);
+        }
+    }
+
+    private void OnDocInfoClick(object sender, RoutedEventArgs e)
+    {
+        backstage.IsOpen = false;
+        if (vm.Circuit != null && vm.IsEditing && DocumentInfoDialog.Ask(this, vm.Circuit.Title) is { } t)
+        {
+            vm.SetTitleBlock(t);
+        }
+    }
 
     private void OnRecentClick(object sender, RoutedEventArgs e) => backstage.IsOpen = false;
 

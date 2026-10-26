@@ -22,6 +22,7 @@ namespace BobinKumanda.App;
 /// Denetim: expect:components=3 (components, wires, junctions, texts, sheets, selected, free, dirty, problems),
 ///   expect:meter=230.0 (multimetre göstergesi), expect:clamp=3.12, expect:active:K1=1 — uymazsa hata yazılır
 /// Ölçüm: meter:multimeter|clamp|off; fn:ac|dc|ohm; slider:değer; action:sıra (sağ paneldeki düğme)
+/// Çıktı: export:yol.png|.jpg (antetli sayfa); title:devre|öğrenci|no|sınıf|okul|öğretmen|tarih
 /// Görünüm: theme:dark|light; lang:tr|en; numbers:on|off; tab:0|1; ribbon:0..4; fit; search:yazı; shot:yol.png; quit
 /// Hata olursa (bulunamayan eleman gibi) %LOCALAPPDATA%\BobinKumanda\logs\script.txt dosyasına yazılır.
 /// </summary>
@@ -201,6 +202,20 @@ internal static class ScriptRunner
                 break;
             case "expect":
                 Expect(vm, arg);
+                break;
+            case "export":
+                if (!w.ExportImage(Path.GetFullPath(arg)))
+                {
+                    throw new IOException("resim kaydedilemedi");
+                }
+                break;
+            case "title":
+                string[] tf = arg.Split('|');
+                string F(int i) => i < tf.Length ? tf[i].Trim() : "";
+                vm.SetTitleBlock(new TitleBlock
+                {
+                    CircuitName = F(0), StudentName = F(1), StudentNumber = F(2), ClassName = F(3), School = F(4), Teacher = F(5), Date = F(6)
+                });
                 break;
             case "meter":
                 vm.Meter = arg switch { "multimeter" => MeterTool.Multimeter, "clamp" => MeterTool.Clamp, _ => MeterTool.None };
