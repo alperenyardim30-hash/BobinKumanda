@@ -1,0 +1,557 @@
+<Fluent:RibbonWindow x:Class="BobinKumanda.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Fluent="urn:fluent-ribbon"
+        xmlns:l="clr-namespace:BobinKumanda.App.Localization"
+        xmlns:r="clr-namespace:BobinKumanda.App.Rendering"
+        xmlns:c="clr-namespace:BobinKumanda.App.Converters"
+        xmlns:vm="clr-namespace:BobinKumanda.App.ViewModels"
+        Title="{Binding WindowTitle}" Width="1280" Height="800" MinWidth="760" MinHeight="480"
+        Icon="Assets/BobinKumanda.ico"
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource App.Background}">
+    <Window.Resources>
+        <c:BoolToVisibility x:Key="Visible" />
+        <c:BoolToVisibility x:Key="Hidden" Invert="True" />
+        <c:CountToVisibility x:Key="AnyVisible" />
+        <c:CountToVisibility x:Key="NoneVisible" Invert="True" />
+        <c:EmptyToVisibility x:Key="EmptyVisible" />
+        <c:SpeedText x:Key="SpeedText" />
+        <Style x:Key="Glyph" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="GlyphLarge" TargetType="TextBlock" BasedOn="{StaticResource Glyph}">
+            <Setter Property="FontSize" Value="26" />
+        </Style>
+        <Style x:Key="PanelTitle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="Foreground" Value="{DynamicResource App.Text}" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Muted">
+            <Setter Property="Foreground" Value="{DynamicResource App.TextMuted}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <!-- Alt sayfa sekmeleri -->
+        <Style x:Key="SheetTab" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource App.TextMuted}" />
+            <Setter Property="BorderThickness" Value="0,0,0,2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Padding" Value="12,4" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Control" Command="{Binding NewCommand}" />
+        <KeyBinding Key="O" Modifiers="Control" Command="{Binding OpenCommand}" />
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveCommand}" />
+        <KeyBinding Key="S" Modifiers="Control+Shift" Command="{Binding SaveAsCommand}" />
+        <KeyBinding Key="Z" Modifiers="Control" Command="{Binding UndoCommand}" />
+        <KeyBinding Key="Y" Modifiers="Control" Command="{Binding RedoCommand}" />
+        <KeyBinding Key="Z" Modifiers="Control+Shift" Command="{Binding RedoCommand}" />
+        <KeyBinding Key="X" Modifiers="Control" Command="{Binding CutCommand}" />
+        <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyCommand}" />
+        <KeyBinding Key="V" Modifiers="Control" Command="{Binding PasteCommand}" />
+        <KeyBinding Key="A" Modifiers="Control" Command="{Binding SelectAllCommand}" />
+        <KeyBinding Key="D" Modifiers="Control" Command="{Binding DuplicateCommand}" />
+        <KeyBinding Key="F5" Command="{Binding ToggleSimulationCommand}" />
+        <KeyBinding Key="F6" Command="{Binding PauseCommand}" />
+        <KeyBinding Key="F10" Command="{Binding StepCommand}" />
+    </Window.InputBindings>
+
+    <DockPanel>
+        <Fluent:Ribbon x:Name="ribbon" DockPanel.Dock="Top">
+            <Fluent:Ribbon.Menu>
+                <Fluent:Backstage x:Name="backstage" Header="{l:Loc ui.file}">
+                    <Fluent:BackstageTabControl>
+                        <Fluent:Button Header="{l:Loc ui.new}" Command="{Binding NewCommand}">
+                            <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE8A5;" /></Fluent:Button.Icon>
+                        </Fluent:Button>
+                        <Fluent:BackstageTabItem Header="{l:Loc ui.open}">
+                            <Grid Margin="24">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock FontSize="22" Text="{l:Loc ui.open}" Margin="0,0,0,16" />
+                                <Fluent:Button Grid.Row="1" Header="{l:Loc ui.open}" Size="Large" HorizontalAlignment="Left"
+                                               Command="{Binding OpenCommand}">
+                                    <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE8E5;" /></Fluent:Button.LargeIcon>
+                                </Fluent:Button>
+                                <ItemsControl Grid.Row="2" Margin="0,16,0,0" ItemsSource="{Binding RecentFiles}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Padding="8,5" Margin="0,1" HorizontalContentAlignment="Left" Background="Transparent" BorderThickness="0"
+                                                    Command="{Binding DataContext.OpenRecentCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}" Click="OnRecentClick">
+                                                <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </Fluent:BackstageTabItem>
+                        <Fluent:Button Header="{l:Loc ui.save}" Command="{Binding SaveCommand}">
+                            <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE74E;" /></Fluent:Button.Icon>
+                        </Fluent:Button>
+                        <Fluent:Button Header="{l:Loc ui.saveAs}" Command="{Binding SaveAsCommand}">
+                            <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE792;" /></Fluent:Button.Icon>
+                        </Fluent:Button>
+                        <Fluent:BackstageTabItem Header="{l:Loc ui.about}">
+                            <StackPanel Margin="24" MaxWidth="560" HorizontalAlignment="Left">
+                                <Image Source="Assets/logo-wide.png" Width="420" HorizontalAlignment="Left" Margin="0,0,0,18"
+                                       RenderOptions.BitmapScalingMode="HighQuality" />
+                                <TextBlock Text="{Binding AboutText}" TextWrapping="Wrap" FontSize="13" />
+                            </StackPanel>
+                        </Fluent:BackstageTabItem>
+                        <Fluent:Button Header="{l:Loc ui.exit}" Click="OnExitClick">
+                            <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE7E8;" /></Fluent:Button.Icon>
+                        </Fluent:Button>
+                    </Fluent:BackstageTabControl>
+                </Fluent:Backstage>
+            </Fluent:Ribbon.Menu>
+
+            <Fluent:RibbonTabItem Header="{l:Loc ui.home}">
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupClipboard}">
+                    <Fluent:Button Header="{l:Loc ui.paste}" Size="Large" Command="{Binding PasteCommand}" ToolTip="Ctrl+V">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE77F;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.cut}" Size="Middle" Command="{Binding CutCommand}" ToolTip="Ctrl+X">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE8C6;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.copy}" Size="Middle" Command="{Binding CopyCommand}" ToolTip="Ctrl+C">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE8C8;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.duplicate}" Size="Middle" Command="{Binding DuplicateCommand}" ToolTip="Ctrl+D">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE8C8;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupEdit}">
+                    <Fluent:Button Header="{l:Loc ui.undo}" Size="Large" Command="{Binding UndoCommand}" ToolTip="Ctrl+Z">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE7A7;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.redo}" Size="Middle" Command="{Binding RedoCommand}" ToolTip="Ctrl+Y">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE7A6;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.delete}" Size="Middle" Command="{Binding DeleteCommand}" ToolTip="Delete">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE74D;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.selectAll}" Size="Middle" Command="{Binding SelectAllCommand}" ToolTip="Ctrl+A">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE8B3;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.rotate}" Size="Large" Command="{Binding RotateCommand}" ToolTip="R">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE7AD;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.mirror}" Size="Large" Command="{Binding MirrorCommand}" ToolTip="F">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE8AB;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupDraw}" IsEnabled="{Binding IsEditing}">
+                    <Fluent:ToggleButton Header="{l:Loc ui.toolSelect}" Size="Large" IsChecked="{Binding IsSelectTool}" ToolTip="Esc">
+                        <Fluent:ToggleButton.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE7C9;" /></Fluent:ToggleButton.LargeIcon>
+                    </Fluent:ToggleButton>
+                    <Fluent:ToggleButton Header="{l:Loc ui.toolWire}" Size="Large" IsChecked="{Binding IsWireTool}" ToolTip="W">
+                        <Fluent:ToggleButton.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE70F;" /></Fluent:ToggleButton.LargeIcon>
+                    </Fluent:ToggleButton>
+                    <Fluent:ToggleButton Header="{l:Loc ui.toolText}" Size="Large" IsChecked="{Binding IsTextTool}" ToolTip="T">
+                        <Fluent:ToggleButton.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE8D2;" /></Fluent:ToggleButton.LargeIcon>
+                    </Fluent:ToggleButton>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupRun}">
+                    <Fluent:Button Header="{l:Loc ui.start}" Size="Large" Command="{Binding ToggleSimulationCommand}" ToolTip="F5"
+                                   Visibility="{Binding IsSimulating, Converter={StaticResource Hidden}}">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE768;" Foreground="#2F9E44" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.stop}" Size="Large" Command="{Binding ToggleSimulationCommand}" ToolTip="F5"
+                                   Visibility="{Binding IsSimulating, Converter={StaticResource Visible}}">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE71A;" Foreground="#E03131" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupZoom}">
+                    <Fluent:Button Header="{l:Loc ui.fit}" Size="Large" Click="OnFitClick" ToolTip="Home">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE9A6;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.zoomIn}" Size="Middle" Click="OnZoomInClick" ToolTip="+">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE8A3;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.zoomOut}" Size="Middle" Click="OnZoomOutClick" ToolTip="-">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE71F;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+
+            <Fluent:RibbonTabItem Header="{l:Loc ui.insert}" x:Name="insertTab">
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.palette}" x:Name="insertGroup" IsEnabled="{Binding IsEditing}" />
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupSheets}" IsEnabled="{Binding IsEditing}">
+                    <Fluent:Button Header="{l:Loc ui.addSheet}" Size="Large" Command="{Binding AddSheetCommand}">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE710;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.toolText}" Size="Large" Command="{Binding SetToolCommand}" CommandParameter="Text">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE8D2;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+
+            <Fluent:RibbonTabItem Header="{l:Loc ui.simulation}">
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupRun}">
+                    <Fluent:Button Header="{l:Loc ui.start}" Size="Large" Command="{Binding ToggleSimulationCommand}" ToolTip="F5"
+                                   Visibility="{Binding IsSimulating, Converter={StaticResource Hidden}}">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE768;" Foreground="#2F9E44" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.stop}" Size="Large" Command="{Binding ToggleSimulationCommand}" ToolTip="F5"
+                                   Visibility="{Binding IsSimulating, Converter={StaticResource Visible}}">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE71A;" Foreground="#E03131" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:ToggleButton Header="{l:Loc ui.pause}" Size="Large" Command="{Binding PauseCommand}" IsChecked="{Binding IsPaused, Mode=OneWay}" ToolTip="F6">
+                        <Fluent:ToggleButton.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE769;" /></Fluent:ToggleButton.LargeIcon>
+                    </Fluent:ToggleButton>
+                    <Fluent:Button Header="{l:Loc ui.step}" Size="Large" Command="{Binding StepCommand}" ToolTip="F10">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE893;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupSpeed}">
+                    <Fluent:ComboBox Header="{l:Loc ui.speed}" ItemsSource="{Binding Speeds}" SelectedItem="{Binding Speed}" IsEditable="False">
+                        <Fluent:ComboBox.ItemTemplate>
+                            <DataTemplate><TextBlock Text="{Binding Converter={StaticResource SpeedText}}" /></DataTemplate>
+                        </Fluent:ComboBox.ItemTemplate>
+                    </Fluent:ComboBox>
+                    <Fluent:CheckBox Header="{l:Loc ui.flow}" x:Name="flowCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+
+            <Fluent:RibbonTabItem Header="{l:Loc ui.view}">
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupZoom}">
+                    <Fluent:Button Header="{l:Loc ui.fit}" Size="Large" Click="OnFitClick" ToolTip="Home">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE9A6;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.zoomIn}" Size="Middle" Click="OnZoomInClick" ToolTip="+">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE8A3;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.zoomOut}" Size="Middle" Click="OnZoomOutClick" ToolTip="-">
+                        <Fluent:Button.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE71F;" /></Fluent:Button.Icon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupShow}">
+                    <Fluent:CheckBox Header="{l:Loc ui.showPalette}" x:Name="paletteCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
+                    <Fluent:CheckBox Header="{l:Loc ui.terminalNumbers}" x:Name="numbersCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
+                    <Fluent:CheckBox Header="{l:Loc ui.grid}" x:Name="gridCheck" Checked="OnViewOptionChanged" Unchecked="OnViewOptionChanged" />
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="{l:Loc ui.groupLook}">
+                    <Fluent:ToggleButton Header="{l:Loc ui.darkTheme}" Size="Large" x:Name="darkToggle" Checked="OnThemeChanged" Unchecked="OnThemeChanged">
+                        <Fluent:ToggleButton.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE708;" /></Fluent:ToggleButton.LargeIcon>
+                    </Fluent:ToggleButton>
+                    <Fluent:ComboBox Header="{l:Loc ui.language}" x:Name="languageBox" IsEditable="False" SelectionChanged="OnLanguageChanged">
+                        <ComboBoxItem Content="Türkçe" Tag="tr" />
+                        <ComboBoxItem Content="English" Tag="en" />
+                    </Fluent:ComboBox>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+        </Fluent:Ribbon>
+
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource App.Panel}" BorderBrush="{DynamicResource App.Border}" BorderThickness="0,1,0,0" Padding="10,3">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" x:Name="zoomText" Foreground="{DynamicResource App.TextMuted}" Margin="16,0,0,0" />
+                <TextBlock DockPanel.Dock="Right" Text="{Binding SimTimeText}" Foreground="{DynamicResource App.Text}" Margin="16,0,0,0" FontFamily="Consolas" />
+                <TextBlock Text="{Binding StatusText}" Foreground="{DynamicResource App.Text}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding HintText}" Foreground="{DynamicResource App.TextMuted}" Margin="14,0,0,0" TextTrimming="CharacterEllipsis" />
+            </DockPanel>
+        </Border>
+
+        <Grid x:Name="mainGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="paletteColumn" Width="230" MinWidth="160" />
+                <ColumnDefinition x:Name="paletteSplitColumn" Width="5" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="290" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="170" MinHeight="60" />
+            </Grid.RowDefinitions>
+
+            <!-- Sol panel: eleman paleti -->
+            <Border Grid.Column="0" Grid.RowSpan="3" x:Name="palettePanel" Background="{DynamicResource App.Panel}">
+                <DockPanel IsEnabled="{Binding IsEditing}">
+                    <TextBlock DockPanel.Dock="Top" Style="{StaticResource PanelTitle}" Text="{l:Loc ui.palette}" Margin="10,10,10,6" />
+                    <Grid DockPanel.Dock="Top" Margin="10,0,10,8">
+                        <TextBox x:Name="paletteSearch" Text="{Binding Palette.SearchText, UpdateSourceTrigger=PropertyChanged}" Padding="5,4"
+                                 PreviewKeyDown="OnPaletteSearchKey" ToolTip="Ctrl+F" />
+                        <TextBlock Text="{l:Loc ui.search}" Margin="8,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"
+                                   Foreground="{DynamicResource App.TextMuted}"
+                                   Visibility="{Binding Palette.SearchText, Converter={StaticResource EmptyVisible}}" />
+                    </Grid>
+                    <TextBlock DockPanel.Dock="Top" Text="{l:Loc ui.searchNone}" Style="{StaticResource Muted}" Margin="12,4"
+                               Visibility="{Binding Palette.HasResults, Converter={StaticResource Hidden}}" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl ItemsSource="{Binding Palette.Groups}" Margin="4,0,4,8">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:PaletteGroup}">
+                                    <Expander IsExpanded="{Binding IsExpanded}" Margin="0,2" Foreground="{DynamicResource App.Text}">
+                                        <Expander.Header>
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="{DynamicResource App.Text}" />
+                                        </Expander.Header>
+                                        <ItemsControl ItemsSource="{Binding Items}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate DataType="{x:Type vm:PaletteItem}">
+                                                    <Border x:Name="item" Padding="6,3" Margin="0,1" CornerRadius="4" Background="Transparent" Cursor="Hand"
+                                                            ToolTip="{Binding ToolTipText}" Tag="{Binding TypeId}"
+                                                            MouseLeftButtonDown="OnPaletteItemDown" MouseMove="OnPaletteItemMove" MouseLeftButtonUp="OnPaletteItemUp">
+                                                        <DockPanel>
+                                                            <Border DockPanel.Dock="Right" CornerRadius="3" Padding="5,0" VerticalAlignment="Center"
+                                                                    BorderBrush="{DynamicResource App.Border}" BorderThickness="1"
+                                                                    Visibility="{Binding HasShortcut, Converter={StaticResource Visible}}">
+                                                                <TextBlock Text="{Binding Shortcut}" FontSize="10" Foreground="{DynamicResource App.TextMuted}" />
+                                                            </Border>
+                                                            <Border Width="36" Height="26" Margin="0,0,8,0">
+                                                                <Image Source="{Binding Icon}" Stretch="Uniform" />
+                                                            </Border>
+                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                       Foreground="{DynamicResource App.Text}" />
+                                                        </DockPanel>
+                                                    </Border>
+                                                    <DataTemplate.Triggers>
+                                                        <Trigger SourceName="item" Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="item" Property="Background" Value="{DynamicResource App.Border}" />
+                                                        </Trigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+            <GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource App.Border}"
+                          x:Name="paletteSplitter" />
+
+            <!-- Çizim alanı ve sayfa sekmeleri -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <r:CircuitCanvas x:Name="canvas" />
+                <Border Grid.Row="1" Background="{DynamicResource App.Panel}" BorderBrush="{DynamicResource App.Border}" BorderThickness="0,1,0,0"
+                        Visibility="{Binding HasCircuit, Converter={StaticResource Visible}}">
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding Sheets}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:SheetItem}">
+                                    <Button x:Name="tab" Style="{StaticResource SheetTab}" Content="{Binding Title}" Tag="{Binding Id}"
+                                            Click="OnSheetClick" MouseDoubleClick="OnSheetDoubleClick" MouseRightButtonUp="OnSheetRightClick" />
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                            <Setter TargetName="tab" Property="BorderBrush" Value="{DynamicResource App.Accent}" />
+                                            <Setter TargetName="tab" Property="Foreground" Value="{DynamicResource App.Text}" />
+                                            <Setter TargetName="tab" Property="FontWeight" Value="SemiBold" />
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Style="{StaticResource SheetTab}" Command="{Binding AddSheetCommand}" ToolTip="{l:Loc ui.addSheet}">
+                            <TextBlock Style="{StaticResource Glyph}" FontSize="12" Text="&#xE710;" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Başlangıç ekranı -->
+            <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Panel.ZIndex="10" Visibility="{Binding HasCircuit, Converter={StaticResource Hidden}}"
+                    Background="{DynamicResource App.Background}">
+                <Border HorizontalAlignment="Center" VerticalAlignment="Center" Padding="28" CornerRadius="10" MaxWidth="580"
+                        Background="{DynamicResource App.Panel}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Image Source="Assets/logo-256.png" Width="72" Height="72" RenderOptions.BitmapScalingMode="HighQuality" />
+                            <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                                <TextBlock FontSize="28" FontWeight="Bold" Foreground="{DynamicResource App.Text}">
+                                    <Run Text="Bobin" /><Run Text=" Kumanda" Foreground="{DynamicResource App.Accent}" />
+                                </TextBlock>
+                                <TextBlock Text="BOBİN KARDEŞLER" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMuted}" Margin="2,2,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Text="{l:Loc ui.welcomeText}" Style="{StaticResource Muted}" Margin="0,0,0,16" FontSize="13" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Padding="16,7" Command="{Binding NewCommand}" Content="{l:Loc ui.newCircuit}" FontWeight="SemiBold" />
+                            <Button Padding="16,7" Margin="8,0,0,0" Command="{Binding OpenCommand}" Content="{l:Loc ui.open}" />
+                        </StackPanel>
+                        <ItemsControl Margin="0,14,0,0" ItemsSource="{Binding RecentFiles}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Padding="6,4" Margin="0,1" HorizontalContentAlignment="Left" Background="Transparent" BorderThickness="0"
+                                            Foreground="{DynamicResource App.Accent}" Cursor="Hand"
+                                            Command="{Binding DataContext.OpenRecentCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Border>
+
+            <GridSplitter Grid.Column="3" Grid.RowSpan="3" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource App.Border}" />
+            <GridSplitter Grid.Row="1" Grid.Column="2" Height="5" HorizontalAlignment="Stretch" Background="{DynamicResource App.Border}" />
+
+            <!-- Sağ panel: özellikler ve ölçümler -->
+            <Border Grid.Column="4" Grid.RowSpan="3" Background="{DynamicResource App.Panel}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource PanelTitle}" Text="{l:Loc ui.properties}" />
+                        <TextBlock Style="{StaticResource Muted}" Text="{l:Loc ui.noSelection}"
+                                   Visibility="{Binding HasAnySelection, Converter={StaticResource Hidden}}" />
+                        <TextBlock Style="{StaticResource Muted}" Text="{Binding SelectionSummary}" />
+
+                        <!-- Metin -->
+                        <StackPanel Visibility="{Binding HasTextSelection, Converter={StaticResource Visible}}">
+                            <TextBlock Text="{l:Loc ui.text}" Style="{StaticResource Muted}" />
+                            <TextBox Text="{Binding SelectedText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsEditing}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60" Margin="0,2,0,8" Padding="3" />
+                        </StackPanel>
+
+                        <!-- Eleman -->
+                        <StackPanel Visibility="{Binding HasSelection, Converter={StaticResource Visible}}">
+                            <TextBlock Text="{Binding SelectedTypeName}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource App.Text}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding SelectedInfo}" Style="{StaticResource Muted}" Margin="0,3,0,10" />
+                            <TextBlock Text="{l:Loc ui.label}" Style="{StaticResource Muted}"
+                                       Visibility="{Binding IsFollower, Converter={StaticResource Hidden}}" />
+                            <TextBox Text="{Binding SelectedLabel, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsEditing}" Margin="0,2,0,8" Padding="3"
+                                     Visibility="{Binding IsFollower, Converter={StaticResource Hidden}}" />
+                            <TextBlock Text="{l:Loc ui.contactOf}" Style="{StaticResource Muted}"
+                                       Visibility="{Binding IsFollower, Converter={StaticResource Visible}}" />
+                            <ComboBox IsEditable="True" ItemsSource="{Binding LabelChoices}" Text="{Binding SelectedLabel, UpdateSourceTrigger=PropertyChanged}"
+                                      IsEnabled="{Binding IsEditing}" Margin="0,2,0,8"
+                                      Visibility="{Binding IsFollower, Converter={StaticResource Visible}}" />
+                            <ItemsControl ItemsSource="{Binding Params}" IsEnabled="{Binding IsEditing}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:ParamItem}">
+                                        <StackPanel Margin="0,0,0,8">
+                                            <TextBlock Style="{StaticResource Muted}">
+                                                <Run Text="{Binding Name, Mode=OneWay}" /><Run Text=" " /><Run Text="{Binding Unit, Mode=OneWay}" />
+                                            </TextBlock>
+                                            <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" Padding="3" Margin="0,2,0,0"
+                                                     Visibility="{Binding IsText, Converter={StaticResource Visible}}" />
+                                            <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding SelectedChoice}" Margin="0,2,0,0"
+                                                      Visibility="{Binding IsChoice, Converter={StaticResource Visible}}" />
+                                            <CheckBox IsChecked="{Binding IsChecked}" Margin="0,4,0,0"
+                                                      Visibility="{Binding IsBool, Converter={StaticResource Visible}}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <StackPanel Visibility="{Binding IsSimulating, Converter={StaticResource Visible}}" Margin="0,6,0,0">
+                                <TextBlock Style="{StaticResource PanelTitle}" Text="{l:Loc ui.measurements}" />
+                                <ItemsControl ItemsSource="{Binding Readouts}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Name}" Style="{StaticResource Muted}" />
+                                                <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{DynamicResource App.Text}" FontWeight="SemiBold" Margin="8,0,0,0" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Alt panel: olay günlüğü ve sorunlar -->
+            <TabControl Grid.Row="2" Grid.Column="2" x:Name="bottomTabs" Background="{DynamicResource App.Panel}" BorderBrush="{DynamicResource App.Border}" Padding="0">
+                <TabItem Header="{l:Loc ui.log}">
+                    <ListBox x:Name="logList" ItemsSource="{Binding Log}" BorderThickness="0" Background="{DynamicResource App.Panel}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:LogItem}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Time}" Width="70" FontFamily="Consolas" Foreground="{DynamicResource App.TextMuted}" />
+                                    <TextBlock x:Name="text" Text="{Binding Text}" Foreground="{DynamicResource App.Text}" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IsError}" Value="True">
+                                        <Setter TargetName="text" Property="Foreground" Value="{DynamicResource App.Error}" />
+                                        <Setter TargetName="text" Property="FontWeight" Value="SemiBold" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsWarning}" Value="True">
+                                        <Setter TargetName="text" Property="Foreground" Value="{DynamicResource App.Warning}" />
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                <TabItem x:Name="problemsTab">
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{l:Loc ui.problems}" />
+                            <Border Background="{DynamicResource App.Error}" CornerRadius="7" Padding="5,0" Margin="6,0,0,0"
+                                    Visibility="{Binding ProblemCount, Converter={StaticResource AnyVisible}}">
+                                <TextBlock Text="{Binding ProblemCount}" Foreground="White" FontSize="11" FontWeight="SemiBold" />
+                            </Border>
+                        </StackPanel>
+                    </TabItem.Header>
+                    <Grid Background="{DynamicResource App.Panel}">
+                        <TextBlock Text="{l:Loc ui.problemsNone}" Style="{StaticResource Muted}" Margin="10"
+                                   Visibility="{Binding ProblemCount, Converter={StaticResource NoneVisible}}" />
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Problems}" Margin="8,6">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:ProblemItem}">
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="26" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock x:Name="glyph" Text="{Binding Glyph}" Style="{StaticResource Glyph}" VerticalAlignment="Top"
+                                                       Foreground="{DynamicResource App.Warning}" Margin="0,1,0,0" />
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding Message}" Foreground="{DynamicResource App.Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Explanation}" Style="{StaticResource Muted}" />
+                                            </StackPanel>
+                                        </Grid>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsError}" Value="True">
+                                                <Setter TargetName="glyph" Property="Foreground" Value="{DynamicResource App.Error}" />
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
+</Fluent:RibbonWindow>

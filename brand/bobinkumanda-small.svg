@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- The same mark simplified for 16–48 px icons: no traces or terminals, a bigger box, fewer and thicker turns -->
+  <defs>
+    <linearGradient id="bks-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1A2858"/><stop offset="1" stop-color="#0A0F1E"/>
+    </linearGradient>
+    <linearGradient id="bks-wire" gradientUnits="userSpaceOnUse" x1="0" y1="540" x2="0" y2="820">
+      <stop offset="0" stop-color="#FFE66B"/><stop offset=".5" stop-color="#FFC21A"/><stop offset="1" stop-color="#D98A00"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="976" height="976" rx="200" fill="url(#bks-bg)"/>
+  <!-- core -->
+  <rect x="230" y="598" width="564" height="164" rx="40" fill="#4E5D82"/>
+  <!-- copper turns -->
+  <g stroke="url(#bks-wire)" stroke-width="66" stroke-linecap="round">
+    <path d="M288 560L318 800"/><path d="M412 560L442 800"/><path d="M536 560L566 800"/><path d="M660 560L690 800"/>
+  </g>
+  <!-- coil box -->
+  <rect x="128" y="456" width="768" height="448" rx="72" fill="none" stroke="#22D3EE" stroke-width="72"/>
+  <!-- bolt -->
+  <path d="M556 60L404 346H508L436 540L640 290H534L604 60Z" fill="#FFD60A" stroke="#0A0F1E" stroke-width="28" stroke-linejoin="round" paint-order="stroke"/>
+</svg>
