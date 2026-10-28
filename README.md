@@ -43,6 +43,8 @@ Program, Vepa HALLIYEV'in EKTS'sinden (Marmara Üniversitesi, 2005) esinlenerek 
 
 ## Belgeler
 
+Belgeler site olarak da yayında: **[alperenyardim30-hash.github.io/BobinKumanda](https://alperenyardim30-hash.github.io/BobinKumanda/)**
+
 - [Kullanım kılavuzu](docs/tr/kullanim-kilavuzu.md)
 - [Eleman listesi](docs/tr/elemanlar.md)
 - [Dosya biçimleri (.bobin ve .esc)](docs/dosya-bicimi.md)
@@ -53,7 +55,9 @@ Programın içindeki yardım sayfası (<kbd>F1</kbd>) da aynı bilgileri, eleman
 
 ## Kurulum
 
-Hazır kurulum dosyası (setup.exe) hazırlanıyor. O zamana kadar kaynaktan derleyebilirsiniz:
+[Releases](https://github.com/alperenyardim30-hash/BobinKumanda/releases/latest) sayfasından `BobinKumanda-…-win-x64.zip` dosyasını indirin, açın ve `BobinKumanda.exe`'yi çalıştırın. Kurulum ya da .NET gerekmez; Windows 10/11 64 bit yeterlidir. Program imzasız olduğu için Windows ilk açılışta uyarı verebilir: **Ek bilgi → Yine de çalıştır**. Kurulum dosyası (setup.exe) hazırlanıyor.
+
+Kaynaktan derlemek için:
 
 1. [.NET 10 SDK](https://dotnet.microsoft.com/download) kurun.
 2. Depoyu indirin ve derleyin:
@@ -96,6 +100,8 @@ It was written **from scratch**, inspired by Vepa HALLIYEV's EKTS (Marmara Unive
 - **Editing:** drag and drop, automatic right-angle wiring, undo, copy/paste, multiple sheets, IEC labels, contact numbering, cross reference.
 - **14 sample circuits**, PNG/JPG export and printing with a title block, Turkish and English, light and dark theme, runs well on older school PCs.
 
-Documentation: [user guide](docs/en/user-guide.md) · [components](docs/en/components.md) · [file formats](docs/dosya-bicimi.md) · [wiki](https://github.com/alperenyardim30-hash/BobinKumanda/wiki)
+Download: [latest release](https://github.com/alperenyardim30-hash/BobinKumanda/releases/latest) (Windows 10/11, 64-bit, no installation needed).
+
+Documentation: [website](https://alperenyardim30-hash.github.io/BobinKumanda/) · [user guide](docs/en/user-guide.md) · [components](docs/en/components.md) · [file formats](docs/dosya-bicimi.md) · [wiki](https://github.com/alperenyardim30-hash/BobinKumanda/wiki)
 
 Licence: [GPL-3.0](LICENSE) © 2026 Bobin Kardeşler.
