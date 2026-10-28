@@ -55,7 +55,13 @@ Programın içindeki yardım sayfası (<kbd>F1</kbd>) da aynı bilgileri, eleman
 
 ## Kurulum
 
-[Releases](https://github.com/alperenyardim30-hash/BobinKumanda/releases/latest) sayfasından `BobinKumanda-…-win-x64.zip` dosyasını indirin, açın ve `BobinKumanda.exe`'yi çalıştırın. Kurulum ya da .NET gerekmez; Windows 10/11 64 bit yeterlidir. Program imzasız olduğu için Windows ilk açılışta uyarı verebilir: **Ek bilgi → Yine de çalıştır**. Kurulum dosyası (setup.exe) hazırlanıyor.
+[Releases](https://github.com/alperenyardim30-hash/BobinKumanda/releases/latest) sayfasından indirin:
+
+- `BobinKumanda-…-setup-x64.exe`: çoğu bilgisayar için kurulum dosyası. Başlat menüsüne kısayol ekler, `.bobin` dosyalarını ilişkilendirir. Yönetici hesabı yoksa "Yalnızca benim için kur"u seçin.
+- `BobinKumanda-…-setup-x86.exe`: eski 32 bit Windows için.
+- `BobinKumanda-…-portable-x64.zip` / `-x86.zip`: kurulum yapılamayan bilgisayarlar için; zip'i açıp `BobinKumanda.exe`'yi çalıştırın.
+
+Hepsi **çevrimdışı** kurulur ve çalışır: .NET çalışma ortamı programın içindedir, hedef bilgisayarda .NET, SDK ya da internet gerekmez. Windows 10 (1607+) ya da 11 yeterlidir. Program imzasız olduğu için Windows ilk açılışta uyarı verebilir: **Ek bilgi → Yine de çalıştır**.
 
 Kaynaktan derlemek için:
 
@@ -75,6 +81,10 @@ dotnet publish src/BobinKumanda.App -c Release -r win-x64 --self-contained -p:Pu
 ```
 
 Testler: `dotnet test --project tests/BobinKumanda.Core.Tests -c Release`
+
+## Geliştirenler
+
+Bobin Kumanda, **Bahadır Değirmenci** ve **Alperen Yardım** tarafından yapılmıştır.
 
 ## Teşekkür
 
@@ -100,7 +110,9 @@ It was written **from scratch**, inspired by Vepa HALLIYEV's EKTS (Marmara Unive
 - **Editing:** drag and drop, automatic right-angle wiring, undo, copy/paste, multiple sheets, IEC labels, contact numbering, cross reference.
 - **14 sample circuits**, PNG/JPG export and printing with a title block, Turkish and English, light and dark theme, runs well on older school PCs.
 
-Download: [latest release](https://github.com/alperenyardim30-hash/BobinKumanda/releases/latest) (Windows 10/11, 64-bit, no installation needed).
+Download: [latest release](https://github.com/alperenyardim30-hash/BobinKumanda/releases/latest): installer or portable zip, 64-bit and 32-bit, all working offline with the .NET runtime built in.
+
+Made by Bahadır Değirmenci and Alperen Yardım.
 
 Documentation: [website](https://alperenyardim30-hash.github.io/BobinKumanda/) · [user guide](docs/en/user-guide.md) · [components](docs/en/components.md) · [file formats](docs/dosya-bicimi.md) · [wiki](https://github.com/alperenyardim30-hash/BobinKumanda/wiki)
 

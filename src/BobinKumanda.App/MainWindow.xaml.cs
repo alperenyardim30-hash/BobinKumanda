@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -715,6 +716,30 @@ public partial class MainWindow
         }
     }
 
+    private void OnAboutClick(object sender, RoutedEventArgs e) => ShowAbout();
+
+    public void ShowAbout()
+    {
+        backstage.IsOpen = true;
+        if (backstage.Content is Fluent.BackstageTabControl tabs)
+        {
+            tabs.SelectedItem = aboutTab;
+        }
+    }
+
+    private void OnLinkNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+    {
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        }
+        catch (System.ComponentModel.Win32Exception ex)
+        {
+            Dialogs.Show(ex.Message, MessageBoxButton.OK, MessageBoxImage.Warning, this);
+        }
+        e.Handled = true;
+    }
+
     private void OnFitClick(object sender, RoutedEventArgs e) => canvas.ZoomToFit();
 
     private void OnZoomInClick(object sender, RoutedEventArgs e) => canvas.ZoomBy(1.25);
@@ -820,6 +845,14 @@ public partial class MainWindow
         {
             dc.DrawRectangle(Background ?? Brushes.White, null, new Rect(0, 0, root.ActualWidth, root.ActualHeight));
             dc.DrawRectangle(new VisualBrush(root), null, new Rect(0, 0, root.ActualWidth, root.ActualHeight));
+            // Dosya menüsü (backstage) içerikte değil, süsleme katmanında çizilir
+            if (backstage.IsOpen && AdornerLayer.GetAdornerLayer(root) is { } layer)
+            {
+                Point o = layer.TranslatePoint(new Point(), root);
+                var size = new Rect(0, 0, layer.ActualWidth, layer.ActualHeight);
+                dc.DrawRectangle(new VisualBrush(layer) { ViewboxUnits = BrushMappingMode.Absolute, Viewbox = size, Stretch = Stretch.None }, null,
+                    new Rect(o.X, o.Y, layer.ActualWidth, layer.ActualHeight));
+            }
         }
         rtb.Render(visual);
         var encoder = new PngBitmapEncoder();

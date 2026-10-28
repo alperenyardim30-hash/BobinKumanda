@@ -190,11 +190,17 @@
                                 </ScrollViewer>
                             </DockPanel>
                         </Fluent:BackstageTabItem>
-                        <Fluent:BackstageTabItem Header="{l:Loc ui.about}">
+                        <Fluent:BackstageTabItem Header="{l:Loc ui.about}" x:Name="aboutTab">
                             <StackPanel Margin="24" MaxWidth="560" HorizontalAlignment="Left">
                                 <Image Source="Assets/logo-wide.png" Width="420" HorizontalAlignment="Left" Margin="0,0,0,18"
                                        RenderOptions.BitmapScalingMode="HighQuality" />
-                                <TextBlock Text="{Binding AboutText}" TextWrapping="Wrap" FontSize="13" />
+                                <TextBlock Text="{Binding AboutVersion}" FontSize="18" FontWeight="SemiBold" />
+                                <TextBlock Text="{l:Loc ui.aboutAuthors}" TextWrapping="Wrap" FontSize="14" Margin="0,8,0,0" />
+                                <TextBlock Text="{l:Loc ui.aboutText}" TextWrapping="Wrap" FontSize="13" Margin="0,14,0,0" Opacity="0.85" />
+                                <TextBlock FontSize="13" Margin="0,14,0,0">
+                                    <Hyperlink NavigateUri="https://github.com/alperenyardim30-hash/BobinKumanda" RequestNavigate="OnLinkNavigate"
+                                               Foreground="{DynamicResource App.Accent}">github.com/alperenyardim30-hash/BobinKumanda</Hyperlink>
+                                </TextBlock>
                             </StackPanel>
                         </Fluent:BackstageTabItem>
                         <Fluent:Button Header="{l:Loc ui.exit}" Click="OnExitClick">
@@ -341,6 +347,9 @@
                     </Fluent:Button>
                     <Fluent:Button Header="{l:Loc ui.samples}" Size="Large" Click="OnSamplesClick">
                         <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE8F1;" /></Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="{l:Loc ui.about}" Size="Large" Click="OnAboutClick">
+                        <Fluent:Button.LargeIcon><TextBlock Style="{StaticResource GlyphLarge}" Text="&#xE946;" /></Fluent:Button.LargeIcon>
                     </Fluent:Button>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>

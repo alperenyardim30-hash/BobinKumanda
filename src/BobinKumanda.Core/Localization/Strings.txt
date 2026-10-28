@@ -261,7 +261,9 @@ ui.status.faulted | Bir hata yüzünden durdu | Stopped by a fault
 ui.hint.sim | Butonlara tıklayın. Tekerlek: yakınlaştır, boş yeri sürükle: kaydır. | Click the buttons. Wheel: zoom, drag empty space: pan.
 ui.welcome | Bobin Kumanda'ya hoş geldiniz | Welcome to Bobin Kumanda
 ui.about | Hakkında | About
-ui.aboutText | Bobin Kumanda {0}\nBobin Kardeşler — GPL-3.0 lisanslı özgür yazılım\n\nElektrik kumanda devrelerini çizip çalıştırmak için. EKTS'den esinlenilmiştir (Vepa HALLIYEV, Marmara Üniversitesi, 2005). | Bobin Kumanda {0}\nBobin Kardeşler — free software under GPL-3.0\n\nFor drawing and running electrical control circuits. Inspired by EKTS (Vepa HALLIYEV, Marmara University, 2005).
+ui.aboutVersion | Bobin Kumanda {0} | Bobin Kumanda {0}
+ui.aboutAuthors | Bahadır Değirmenci ve Alperen Yardım tarafından yapılmıştır. | Made by Bahadır Değirmenci and Alperen Yardım.
+ui.aboutText | Bobin Kardeşler — GPL-3.0 lisanslı özgür yazılım\n\nElektrik kumanda devrelerini çizip çalıştırmak için. EKTS'den esinlenilmiştir (Vepa HALLIYEV, Marmara Üniversitesi, 2005). | Bobin Kardeşler — free software under GPL-3.0\n\nFor drawing and running electrical control circuits. Inspired by EKTS (Vepa HALLIYEV, Marmara University, 2005).
 ui.crash | Beklenmeyen bir hata oluştu. Ayrıntılar şu dosyaya yazıldı: | An unexpected error occurred. Details were written to:
 ui.yes | Evet | Yes
 ui.no | Hayır | No

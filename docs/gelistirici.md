@@ -92,6 +92,22 @@ Komutların tam listesi `src/BobinKumanda.App/ScriptRunner.cs` başındadır; so
 
 Bütün metinler `src/BobinKumanda.Core/Localization/Strings.txt` dosyasındadır: her satır `anahtar | Türkçe | English`. Yeni bir dil için sütun eklemek ve `Loc.Languages`'e kodunu yazmak yeterlidir.
 
+## Yayın paketleri
+
+`installer/package.ps1` her mimari (x64, x86) için iki paket üretir, `artifacts/release` altına yazar:
+
+- `BobinKumanda-<sürüm>-portable-<mimari>.zip`: sıkıştırılmış tek dosyalık exe.
+- `BobinKumanda-<sürüm>-setup-<mimari>.exe`: Inno Setup kurulumu (`installer/BobinKumanda.iss`). İçindeki exe sıkıştırılmamıştır, böylece zayıf bilgisayarda her açılışta açılmayı beklemez; boyutu kurulum dosyası küçültür. Başlat menüsü ve masaüstü kısayolu, `.bobin` (isteğe bağlı `.esc`) ilişkilendirmesi, kaldırıcı ve "yalnızca benim için kur" seçeneği vardır.
+
+İkisi de self-contained'dir; hedef bilgisayarda .NET ya da internet gerekmez. Yerelde çalıştırmak için [Inno Setup 6](https://jrsoftware.org/isdl.php) gerekir.
+
+GitHub Actions her `main` gönderiminde paketleri derleyip "BobinKumanda-paketler" adıyla saklar. Yeni sürüm yayınlamak için `Directory.Build.props` içindeki `Version`'ı artırıp etiket gönderin; Actions paketleri derleyip sürüm sayfasını `installer/release-notes.md` metniyle oluşturur:
+
+```powershell
+git tag v0.2.0
+git push origin v0.2.0
+```
+
 ## Katkı
 
 Hata bildirimi ve önerileri [Issues](https://github.com/alperenyardim30-hash/BobinKumanda/issues) sayfasından iletebilirsiniz. Kod gönderirken testlerin geçtiğinden emin olun. EKTS'nin decompile edilmiş kodundan parça kopyalamayın: Bobin Kumanda yalnızca davranış ve dosya biçimi bilgisinden yola çıkılarak yazılmıştır.

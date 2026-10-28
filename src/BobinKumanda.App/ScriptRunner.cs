@@ -23,7 +23,7 @@ namespace BobinKumanda.App;
 ///   expect:meter=230.0 (multimetre göstergesi), expect:clamp=3.12, expect:active:K1=1 — uymazsa hata yazılır
 /// Ölçüm: meter:multimeter|clamp|off; fn:ac|dc|ohm; slider:değer; action:sıra (sağ paneldeki düğme)
 /// Çıktı: export:yol.png|.jpg (antetli sayfa); title:devre|öğrenci|no|sınıf|okul|öğretmen|tarih
-/// Görünüm: theme:dark|light; lang:tr|en; numbers:on|off; tab:0|1; ribbon:0..4; fit; search:yazı; shot:yol.png; quit
+/// Görünüm: theme:dark|light; lang:tr|en; numbers:on|off; tab:0|1; ribbon:0..4; about; fit; search:yazı; shot:yol.png; quit
 /// Hata olursa (bulunamayan eleman gibi) %LOCALAPPDATA%\BobinKumanda\logs\script.txt dosyasına yazılır.
 /// </summary>
 internal static class ScriptRunner
@@ -253,6 +253,9 @@ internal static class ScriptRunner
                 break;
             case "ribbon":
                 w.ShowRibbonTab(int.Parse(arg, CultureInfo.InvariantCulture));
+                break;
+            case "about":
+                w.ShowAbout();
                 break;
             case "shot":
                 await Task.Delay(250);

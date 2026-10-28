@@ -57,6 +57,7 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
             OnPropertyChanged(nameof(WindowTitle));
             OnPropertyChanged(nameof(DocumentName));
             OnPropertyChanged(nameof(SampleItems));
+            OnPropertyChanged(nameof(AboutVersion));
             UpdateStatus();
             RebuildSelection();
             RebuildSheets();
@@ -1214,6 +1215,6 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         HintText = Loc.T(hintKey ?? meterHint ?? "ui.hint.sim");
     }
 
-    public string AboutText => Loc.T("ui.aboutText",
+    public string AboutVersion => Loc.T("ui.aboutVersion",
         typeof(MainViewModel).Assembly.GetName().Version?.ToString(3) ?? "0.1.0");
 }

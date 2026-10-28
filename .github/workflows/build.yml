@@ -3,11 +3,15 @@ name: build
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
 
 jobs:
   test:
     runs-on: windows-latest
+    # v* etiketinde sürüm sayfasını oluşturmak için
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
 
@@ -21,11 +25,34 @@ jobs:
       - name: Testler
         run: dotnet test --project tests/BobinKumanda.Core.Tests -c Release --no-build
 
-      - name: Tek dosyalık sürüm
-        run: dotnet publish src/BobinKumanda.App -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o dist
+      - name: Inno Setup
+        if: github.event_name == 'push'
+        shell: pwsh
+        run: |
+          if (-not (Get-Command iscc.exe -ErrorAction SilentlyContinue) -and -not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup --no-progress -y
+          }
+
+      - name: Kurulum ve taşınabilir paketler (x64, x86)
+        if: github.event_name == 'push'
+        shell: pwsh
+        run: |
+          $v = if ($env:GITHUB_REF -like 'refs/tags/v*') { $env:GITHUB_REF_NAME.Substring(1) } else { '' }
+          ./installer/package.ps1 -Version $v
 
       - uses: actions/upload-artifact@v7
+        if: github.event_name == 'push'
         with:
-          name: BobinKumanda-win-x64
-          path: dist/BobinKumanda.exe
+          name: BobinKumanda-paketler
+          path: artifacts/release/*
           retention-days: 14
+
+      - name: Sürüm sayfası
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $v = $env:GITHUB_REF_NAME.Substring(1)
+          (Get-Content installer/release-notes.md -Raw).Replace('{VERSION}', $v) | Set-Content -Encoding utf8 notes.md
+          gh release create $env:GITHUB_REF_NAME (Get-ChildItem artifacts/release -File).FullName --title "Bobin Kumanda $v" --notes-file notes.md
