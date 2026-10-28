@@ -20,7 +20,7 @@ public static class HelpPage
         string body = Resource(language == "en" ? "help-en.html" : "help-tr.html") ?? "";
         return body
             .Replace("{{VERSION}}", WebUtility.HtmlEncode(version), StringComparison.Ordinal)
-            .Replace("{{COMPONENTS}}", Components(), StringComparison.Ordinal);
+            .Replace("{{COMPONENTS}}", Components(language), StringComparison.Ordinal);
     }
 
     private static string? Resource(string name)
@@ -42,7 +42,7 @@ public static class HelpPage
     ];
 
     /// <summary>Kategorilere ayrılmış eleman kartları: sembol, ad, etiket harfi, klemensler ve açıklama.</summary>
-    private static string Components()
+    private static string Components(string language)
     {
         var sb = new StringBuilder();
         foreach (ComponentCategory cat in Order)
@@ -52,14 +52,15 @@ public static class HelpPage
             {
                 continue;
             }
-            sb.Append(CultureInfo.InvariantCulture, $"<h3 id=\"cat-{cat}\">{WebUtility.HtmlEncode(Loc.TryT("cat." + cat) ?? cat.ToString())}</h3>\n<div class=\"cards\">\n");
+            sb.Append(CultureInfo.InvariantCulture, $"<h3 id=\"cat-{cat}\">{WebUtility.HtmlEncode(Loc.TryTIn(language, "cat." + cat) ?? cat.ToString())}</h3>\n<div class=\"cards\">\n");
             foreach (ComponentDef def in defs)
             {
                 string terms = string.Join(" ", def.Terminals.Select(t => t.Number ?? t.Id).Where(t => t.Length > 0).Distinct());
-                sb.Append("<div class=\"card\"><div class=\"sym\">").Append(Symbol(def)).Append("</div><div>")
-                  .Append(CultureInfo.InvariantCulture, $"<b>{WebUtility.HtmlEncode(def.Name)}</b>")
+                string name = Loc.TIn(language, "comp." + def.TypeId);
+                sb.Append("<div class=\"card\"><div class=\"sym\">").Append(Symbol(def, name)).Append("</div><div>")
+                  .Append(CultureInfo.InvariantCulture, $"<b>{WebUtility.HtmlEncode(name)}</b>")
                   .Append(CultureInfo.InvariantCulture, $"<span class=\"tag\">{WebUtility.HtmlEncode(def.DefaultLabel ?? def.LabelPrefix + "…")}</span>")
-                  .Append(CultureInfo.InvariantCulture, $"<p>{WebUtility.HtmlEncode(def.Info)}</p>")
+                  .Append(CultureInfo.InvariantCulture, $"<p>{WebUtility.HtmlEncode(Loc.TryTIn(language, "info." + def.TypeId) ?? "")}</p>")
                   .Append(terms.Length > 0 ? $"<p class=\"terms\">{WebUtility.HtmlEncode(terms)}</p>" : "")
                   .Append("</div></div>\n");
             }
@@ -69,14 +70,14 @@ public static class HelpPage
     }
 
     /// <summary>Sembolün SVG çizimi (okul tarzı, açık renk; koyu temada CSS ile ters çevrilir).</summary>
-    private static string Symbol(ComponentDef def)
+    private static string Symbol(ComponentDef def, string name)
     {
         const double scale = 1.6;
         var inst = new ComponentInstance { Id = "help", Type = def.TypeId, Label = def.DefaultLabel ?? def.LabelPrefix + "1" };
         def.ApplyDefaults(inst);
         double w = def.Size.X * scale + 8, h = def.Size.Y * scale + 8;
         var sb = new StringBuilder();
-        sb.Append(CultureInfo.InvariantCulture, $"<svg viewBox=\"0 0 {w:0.#} {h:0.#}\" width=\"{w:0.#}\" height=\"{h:0.#}\" role=\"img\" aria-label=\"{WebUtility.HtmlEncode(def.Name)}\">");
+        sb.Append(CultureInfo.InvariantCulture, $"<svg viewBox=\"0 0 {w:0.#} {h:0.#}\" width=\"{w:0.#}\" height=\"{h:0.#}\" role=\"img\" aria-label=\"{WebUtility.HtmlEncode(name)}\">");
         try
         {
             def.Draw(new SvgPainter(sb, def, inst, new Vec(4, 4), scale), new DrawContext { Instance = inst, Def = def });

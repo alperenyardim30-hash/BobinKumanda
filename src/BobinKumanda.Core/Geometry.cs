@@ -10,6 +10,7 @@ public readonly record struct Vec(double X, double Y)
     public static Vec operator *(Vec a, double k) => new(a.X * k, a.Y * k);
     public static Vec operator /(Vec a, double k) => new(a.X / k, a.Y / k);
 
+    [System.Text.Json.Serialization.JsonIgnore]
     public double Length => Math.Sqrt(X * X + Y * Y);
 
     public double DistanceTo(Vec other) => (this - other).Length;

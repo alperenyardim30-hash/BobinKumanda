@@ -84,6 +84,7 @@ public sealed class TitleBlock
     public string Date { get; set; } = "";
     public string Notes { get; set; } = "";
 
+    [System.Text.Json.Serialization.JsonIgnore]
     public bool IsEmpty =>
         CircuitName.Length + StudentName.Length + StudentNumber.Length + ClassName.Length +
         School.Length + Teacher.Length + Date.Length == 0;

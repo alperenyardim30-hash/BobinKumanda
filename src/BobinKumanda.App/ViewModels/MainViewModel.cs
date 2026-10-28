@@ -442,6 +442,10 @@ public sealed partial class MainViewModel : ObservableObject, IEditorHost
         Circuit = circuit;
         FilePath = path;
         redProbe = blackProbe = clamp = null;
+        // önceki devrenin olay günlüğü ve sorunları yeni belgede kalmasın
+        Log.Clear();
+        Problems.Clear();
+        ProblemCount = 0;
         InvalidateInstruments();
         savedState = dirty ? null : CircuitFile.ToBytes(circuit);
         IsDirty = dirty;

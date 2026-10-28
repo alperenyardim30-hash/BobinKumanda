@@ -59,6 +59,23 @@ public static class Loc
         }
     }
 
+    /// <summary>
+    /// Belirli bir dildeki metin; programın o anki dilini değiştirmez (aynı anda iki dilde belge üretirken genel ayar
+    /// değişirse paralel çalışan işler yanlış dilde metin alır).
+    /// </summary>
+    public static string TIn(string language, string key)
+    {
+        int index = Math.Max(0, Array.IndexOf(Languages, language));
+        if (Table.TryGetValue(key, out string[]? row))
+        {
+            string text = row[index];
+            return text.Length > 0 ? text : row[0];
+        }
+        return key;
+    }
+
+    public static string? TryTIn(string language, string key) => Table.ContainsKey(key) ? TIn(language, key) : null;
+
     /// <summary>Anahtar yoksa null döner (isteğe bağlı açıklamalar için).</summary>
     public static string? TryT(string key) => Table.ContainsKey(key) ? T(key) : null;
 
