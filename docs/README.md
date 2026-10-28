@@ -1,8 +1,8 @@
-# Belgeler / Documentation
+# Bobin Kumanda — Belgeler / Documentation
 
-Bobin Kumanda, elektrik kumanda devrelerini çizip gerçek bir devre gibi çalıştıran özgür (GPL-3.0) bir eğitim programıdır.
+Bobin Kumanda, elektrik kumanda devrelerini çizip gerçek bir devre gibi çalıştıran özgür (GPL-3.0) bir eğitim programıdır. Bahadır Değirmenci ve Alperen Yardım tarafından yapılmıştır.
 
-**İndir / Download:** [son sürüm (Windows 10/11, 64 bit)](https://github.com/alperenyardim30-hash/BobinKumanda/releases/latest)
+**İndir / Download:** [son sürüm](https://github.com/alperenyardim30-hash/BobinKumanda/releases/latest): kurulum dosyası ya da taşınabilir zip, Windows 10/11, 64 ve 32 bit, internetsiz kurulur.
 
 ![Simülasyon](images/simulasyon.png)
 
