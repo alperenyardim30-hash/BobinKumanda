@@ -14,7 +14,7 @@ This page is generated from the program's component catalogue. The label column 
 | **Phase L3** | `L3` | L3 | 230 V phase conductor (formerly T). Shown in grey. |
 | **Neutral (N)** | `N` | N | Neutral conductor. Phase to neutral is 230 V. Shown in blue. |
 | **Protective earth (PE)** | `PE` | PE | Protective earth. Metal enclosures connect to it. Shown in green-yellow. |
-| **Control transformer** | `T1` | 1 2 3 4 | Steps the mains voltage down to the control voltage (24 V) and isolates the control circuit. Fuse the secondary against short circuits. |
+| **Control transformer** | `T1` | 1U1 1U2 2U1 2U2 | Steps the mains voltage down to the control voltage (24 V) and isolates the control circuit. Fuse the secondary against short circuits. |
 
 ## Protection
 
@@ -27,8 +27,8 @@ This page is generated from the program's component catalogue. The label column 
 | **Motor protection switch** | `Q1` | 1 2 3 4 5 6 | Protects the motor against overload (thermal) and short circuit (magnetic) and is switched by hand. Set it to the motor's rated current. |
 | **Thermal overload relay** | `F1` | 1 2 3 4 5 6 | Measures the motor current with its heaters. If the current stays above the setting it trips: contact 95-96 opens the control circuit. Reset it once it has cooled down. |
 | **Phase monitoring relay** | `F1` | L1 L2 L3 11 12 14 | Its output relay pulls in only if all three phases are present in the right order (11-14 closes). Prevents the motor from running with a missing or reversed phase. |
-| **Residual current device (2-pole)** | `F1` | 1 2 N N' | Trips when the current going out on the phase differs from the current returning on neutral (residual current, 30 mA). Protects people from electric shock. Check it with the "Test" button. |
-| **Residual current device (4-pole)** | `F1` | 1 2 3 4 5 6 N N' | Residual current protection for three-phase circuits: trips if the sum of L1, L2, L3 and N currents is not zero. |
+| **Residual current device (2-pole)** | `F1` | 1 2 N | Trips when the current going out on the phase differs from the current returning on neutral (residual current, 30 mA). Protects people from electric shock. Check it with the "Test" button. |
+| **Residual current device (4-pole)** | `F1` | 1 2 3 4 5 6 N | Residual current protection for three-phase circuits: trips if the sum of L1, L2, L3 and N currents is not zero. |
 
 ## Buttons and switches
 
@@ -56,9 +56,9 @@ This page is generated from the program's component catalogue. The label column 
 | **Counter** | `K1` | A1 A2 R1 R2 | Counts every pulse on the count coil (A1-A2); its contacts switch when the preset is reached. Voltage on R1-R2 resets it. |
 | **Flasher relay** | `K1` | A1 A2 | While its coil is energised it opens and closes its contacts with the set times (flashing warning lamp). |
 | **Contactor / relay coil** | `K1` | A1 A2 | When rated voltage is applied the contactor pulls in and all contacts with the same label switch. Coil terminals A1-A2. |
-| **Timer relay (off-delay)** | `KT1` | A1 A2 | Contacts switch immediately when energised and return after the set time once de-energised. |
-| **Timer relay (on-delay)** | `KT1` | A1 A2 | When energised it waits for the set time, then switches its timed contacts. Resets immediately when de-energised. |
-| **Star-delta timer relay** | `KT1` | A1 A2 17 18 28 | When energised 17-18 (star) closes; after the set time it opens and 50 ms later 17-28 (delta) closes. The pause keeps both contactors from being closed at once. |
+| **Timer relay (off-delay)** | `K1` | A1 A2 | Contacts switch immediately when energised and return after the set time once de-energised. |
+| **Timer relay (on-delay)** | `K1` | A1 A2 | When energised it waits for the set time, then switches its timed contacts. Resets immediately when de-energised. |
+| **Star-delta timer relay** | `K1` | A1 A2 17 18 28 | When energised 17-18 (star) closes; after the set time it opens and 50 ms later 17-28 (delta) closes. The pause keeps both contactors from being closed at once. |
 
 ## Contacts
 
@@ -111,9 +111,9 @@ This page is generated from the program's component catalogue. The label column 
 
 | Component | Label | Terminals | Description |
 |---|---|---|---|
-| **Door system 1** | `SYS1` | U V W S1a S1b S1c S1d S2a S2b S2c S2d | Motor-driven sliding door. It presses the limit switches when fully open and fully closed. |
-| **Door system 2** | `SYS1` | U V W S1a S1b S1c S1d S2a S2b S2c S2d | Door that opens upwards, with a limit switch at each end. |
-| **Elevator (5 floors)** | `SYS1` | U V W S1a S1b S1c S1d S2a S2b S2c S2d S3a S3b S3c S3d S4a S4b S4c S4d S5a S5b S5c S5d | Five-floor elevator. The car presses that floor's limit switch when it arrives. |
+| **Door system 1** | `SYS1` | U V W 11 23 24 12 | Motor-driven sliding door. It presses the limit switches when fully open and fully closed. |
+| **Door system 2** | `SYS1` | U V W 11 23 24 12 | Door that opens upwards, with a limit switch at each end. |
+| **Elevator (5 floors)** | `SYS1` | U V W 11 23 24 12 | Five-floor elevator. The car presses that floor's limit switch when it arrives. |
 
 ## Other
 

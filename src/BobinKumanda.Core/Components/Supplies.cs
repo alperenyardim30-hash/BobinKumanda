@@ -47,7 +47,9 @@ public abstract class PhaseSourceDef : ComponentDef
         Paint ink = SymbolKit.InkFor(ctx);
         p.Circle(new Vec(5, 9), 3, ink, 1, Paint.Color(SymbolKit.PhaseColor(Phase)));
         p.Line(new Vec(5, 12), new Vec(5, 30), ink);
-        p.Text(new Vec(5, 2.5), Phase, 6.5, ink, bold: true);
+        // yan yatırılınca yazı dairenin yanına gelir; genişliği yüksekliğinden fazla olduğu için daha uzağa yazılır
+        double gap = (ctx.Instance.Rotation & 1) == 1 ? 2.5 + 2 * Phase.Length : 2.5;
+        p.Text(new Vec(5, 5 - gap), Phase, 6.5, ink, bold: true);
     }
 
     public override SimComponent CreateSim(ComponentInstance instance) => new PhaseSourceSim(Phase);

@@ -17,6 +17,7 @@ public sealed class TransformerDef : ComponentDef
 {
     public override string TypeId => "transformer";
     public override ComponentCategory Category => ComponentCategory.Supply;
+    public override bool ShowsTerminalNumbers => true;
     public override string LabelPrefix => "T";
     public override Vec Size => new(40, 30);
     public override Vec DefaultLabelOffset => new(14, -10);
@@ -24,10 +25,10 @@ public sealed class TransformerDef : ComponentDef
 
     public override IReadOnlyList<TerminalDef> Terminals =>
     [
-        new TerminalDef("1", new Vec(0, 5), Side.Left, "1"),
-        new TerminalDef("2", new Vec(0, 25), Side.Left, "2"),
-        new TerminalDef("3", new Vec(40, 5), Side.Right, "3"),
-        new TerminalDef("4", new Vec(40, 25), Side.Right, "4")
+        new TerminalDef("1", new Vec(0, 5), Side.Left, "1U1"),
+        new TerminalDef("2", new Vec(0, 25), Side.Left, "1U2"),
+        new TerminalDef("3", new Vec(40, 5), Side.Right, "2U1"),
+        new TerminalDef("4", new Vec(40, 25), Side.Right, "2U2")
     ];
 
     public override IReadOnlyList<ParamDef> Params =>

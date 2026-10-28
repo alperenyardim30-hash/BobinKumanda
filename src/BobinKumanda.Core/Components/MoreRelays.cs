@@ -253,7 +253,7 @@ public sealed class StarDeltaTimerDef : ComponentDef
     public override string TypeId => "timer-stardelta";
     public override ComponentCategory Category => ComponentCategory.Relays;
     public override DeviceRole Role => DeviceRole.Master;
-    public override string LabelPrefix => "KT";
+    public override string LabelPrefix => "K";
     public override Vec Size => new(30, 30);
     public override Vec DefaultLabelOffset => new(4, -10);
     public override string Tags => "yıldız üçgen zaman rölesi yıldız üçgen rölesi star delta timer 17 18 28";

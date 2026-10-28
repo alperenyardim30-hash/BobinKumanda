@@ -11,10 +11,17 @@ public abstract class FollowerContactDef : ComponentDef
     public override ComponentCategory Category => ComponentCategory.Contacts;
     public override DeviceRole Role => DeviceRole.Follower;
     public override string LabelPrefix => "K";
-    public override Vec DefaultLabelOffset => new(4, -8);
+    public override Vec DefaultLabelOffset => new(4, -12);
 
     public override IReadOnlyList<ParamDef> Params =>
         [ParamDef.Choice("channel", "auto", "auto", "instant", "timed")];
+
+    /// <summary>Zaman gecikmeli kontağın üstünde gecikme işareti vardır; etiket onun da üstüne çıkar.</summary>
+    protected override Vec DefaultLabelOffsetFor(ComponentInstance c, Circuit? circuit)
+    {
+        Vec offset = base.DefaultLabelOffsetFor(c, circuit);
+        return (c.Rotation & 1) == 0 && TimedFor(circuit, c) != TimedMark.None ? offset + new Vec(0, -6) : offset;
+    }
 
     protected abstract ContactSpec[] Specs { get; }
 
@@ -67,6 +74,9 @@ public abstract class AuxContactDefBase : FollowerContactDef
 {
     /// <summary>Klemens sırası → işlev rakamı (NC: 1, 2; NO: 3, 4; değiştirici: 1, 2, 4).</summary>
     protected abstract int[] FunctionDigits { get; }
+
+    /// <summary>Kontak türü: NC, NO ya da (ikisi birden) değiştirici.</summary>
+    internal (bool Nc, bool No) Kind => (FunctionDigits.Contains(1), FunctionDigits.Contains(4));
 
     public override bool AutoNumbered => true;
 

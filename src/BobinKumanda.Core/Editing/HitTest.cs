@@ -196,7 +196,7 @@ public static class HitTest
         for (int i = circuit.Components.Count - 1; i >= 0; i--)
         {
             ComponentInstance c = circuit.Components[i];
-            if (c.Sheet == sheet && ComponentCatalog.Find(c.Type) is { } def && LabelBounds(def, c) is { } r && r.Inflate(slack).Contains(p))
+            if (c.Sheet == sheet && ComponentCatalog.Find(c.Type) is { } def && LabelBounds(def, c, circuit) is { } r && r.Inflate(slack).Contains(p))
             {
                 return new Hit(HitKind.Label, c.Id, Point: p);
             }
@@ -205,13 +205,13 @@ public static class HitTest
     }
 
     /// <summary>Etiketin kabaca kapladığı alan (etiketi sürüklemek için).</summary>
-    public static RectD? LabelBounds(ComponentDef def, ComponentInstance c)
+    public static RectD? LabelBounds(ComponentDef def, ComponentInstance c, Circuit? circuit = null)
     {
         if (!CircuitRenderer.ShowsLabel(def, c))
         {
             return null;
         }
-        Vec l = def.LabelWorld(c);
+        Vec l = def.LabelWorld(c, circuit);
         return new RectD(l.X, l.Y, Math.Max(6, c.Label.Length * CircuitRenderer.LabelSize * 0.62), CircuitRenderer.LabelSize * 1.2);
     }
 }

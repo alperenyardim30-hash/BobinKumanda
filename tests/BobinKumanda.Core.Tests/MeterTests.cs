@@ -100,10 +100,30 @@ public class MeterTests
         var no = b.Add("contact-no", "KT1");
         var nc = b.Add("contact-nc", "KT1");
         nc.Sheet = "s2";
+        var no2 = b.Add("contact-no", "KT1");
+        no2.Position = new Vec(0, 500);
         var numbers = CrossReference.Numbers(b.Circuit);
+        // gerçek zaman rölesindeki gibi: ilk NC 15-16, ilk NO 17-18, ikinci NO 27-28
         Assert.Equal("17-18", CrossReference.ContactText(ComponentCatalog.Get("contact-no"), numbers[no.Id]));
-        Assert.Equal("25-26", CrossReference.ContactText(ComponentCatalog.Get("contact-nc"), numbers[nc.Id]));
+        Assert.Equal("27-28", CrossReference.ContactText(ComponentCatalog.Get("contact-no"), numbers[no2.Id]));
+        Assert.Equal("15-16", CrossReference.ContactText(ComponentCatalog.Get("contact-nc"), numbers[nc.Id]));
         var mirror = CrossReference.Mirror(b.Circuit, numbers);
-        Assert.Contains(mirror[kt.Id], e => e.Text == "25-26/2");
+        Assert.Contains(mirror[kt.Id], e => e.Text == "15-16/2");
+    }
+
+    [Fact]
+    public void Timed_contacts_of_a_contactor_keep_running_sequence()
+    {
+        // kontaktöre takılan zaman bloğu (channel=timed) IEC sırasıyla numaralanır: 13-14, 25-26, 37-38
+        var b = new CircuitBuilder();
+        b.Add("relay-coil", "K1");
+        var a = b.Add("contact-no", "K1");
+        var t1 = b.Add("contact-nc", "K1", c => c.SetParam("channel", "timed"));
+        var t2 = b.Add("contact-no", "K1", c => c.SetParam("channel", "timed"));
+        (a.Position, t1.Position, t2.Position) = (new Vec(0, 100), new Vec(0, 200), new Vec(0, 300));
+        var numbers = CrossReference.Numbers(b.Circuit);
+        Assert.Equal("13-14", CrossReference.ContactText(ComponentCatalog.Get("contact-no"), numbers[a.Id]));
+        Assert.Equal("25-26", CrossReference.ContactText(ComponentCatalog.Get("contact-nc"), numbers[t1.Id]));
+        Assert.Equal("37-38", CrossReference.ContactText(ComponentCatalog.Get("contact-no"), numbers[t2.Id]));
     }
 }

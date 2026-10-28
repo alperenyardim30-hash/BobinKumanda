@@ -14,7 +14,7 @@ Bu sayfa programın eleman kataloğundan otomatik üretilir. Etiket sütunu otom
 | **L3 fazı** | `L3` | L3 | 230 V faz iletkeni (eski adı T). Gri renkle gösterilir. |
 | **Nötr (N)** | `N` | N | Nötr iletkeni. Faz ile nötr arası 230 V'tur. Mavi renkle gösterilir. |
 | **Koruma iletkeni (PE)** | `PE` | PE | Koruma iletkeni (toprak). Metal gövdeler buna bağlanır. Sarı-yeşil renkle gösterilir. |
-| **Kumanda trafosu** | `T1` | 1 2 3 4 | Şebeke gerilimini kumanda gerilimine (24 V) düşürür ve kumanda devresini şebekeden yalıtır. Sekonder kısa devresine karşı sekondere sigorta konmalıdır. |
+| **Kumanda trafosu** | `T1` | 1U1 1U2 2U1 2U2 | Şebeke gerilimini kumanda gerilimine (24 V) düşürür ve kumanda devresini şebekeden yalıtır. Sekonder kısa devresine karşı sekondere sigorta konmalıdır. |
 
 ## Koruma
 
@@ -27,8 +27,8 @@ Bu sayfa programın eleman kataloğundan otomatik üretilir. Etiket sütunu otom
 | **Motor koruma şalteri** | `Q1` | 1 2 3 4 5 6 | Motoru hem aşırı yüke (termik) hem kısa devreye (manyetik) karşı korur ve elle açılıp kapanır. Ayar akımını motorun anma akımına getirin. |
 | **Termik röle** | `F1` | 1 2 3 4 5 6 | Motor akımını ısıtıcılarıyla ölçer. Akım ayar değerini uzun süre aşarsa açar: 95-96 kontağı kumanda devresini keser. Soğuduktan sonra resetlenir. |
 | **Faz koruma rölesi** | `F1` | L1 L2 L3 11 12 14 | Üç faz da varsa ve sıra doğruysa çıkış rölesi çeker (11-14 kapanır). Faz eksik ya da sıra ters ise motorun çalışmasını engeller. |
-| **Kaçak akım rölesi (2 kutuplu)** | `F1` | 1 2 N N' | Fazdan giden ve nötrden dönen akım farklıysa (kaçak akım, 30 mA) açar. İnsanı elektrik çarpmasından korur. "Test" düğmesiyle denenir. |
-| **Kaçak akım rölesi (4 kutuplu)** | `F1` | 1 2 3 4 5 6 N N' | Üç fazlı devrelerde kaçak akım koruması: L1, L2, L3 ve N akımlarının toplamı sıfır değilse açar. |
+| **Kaçak akım rölesi (2 kutuplu)** | `F1` | 1 2 N | Fazdan giden ve nötrden dönen akım farklıysa (kaçak akım, 30 mA) açar. İnsanı elektrik çarpmasından korur. "Test" düğmesiyle denenir. |
+| **Kaçak akım rölesi (4 kutuplu)** | `F1` | 1 2 3 4 5 6 N | Üç fazlı devrelerde kaçak akım koruması: L1, L2, L3 ve N akımlarının toplamı sıfır değilse açar. |
 
 ## Butonlar ve şalterler
 
@@ -56,9 +56,9 @@ Bu sayfa programın eleman kataloğundan otomatik üretilir. Etiket sütunu otom
 | **Sayıcı** | `K1` | A1 A2 R1 R2 | Sayma bobinine (A1-A2) gelen her darbeyi sayar; ayar değerine ulaşınca kontakları değişir. R1-R2'ye gerilim gelince sıfırlanır. |
 | **Flaşör rölesi** | `K1` | A1 A2 | Bobini enerjili kaldıkça kontaklarını ayarlanan sürelerle açıp kapatır (yanıp sönen ikaz lambası). |
 | **Kontaktör / röle bobini** | `K1` | A1 A2 | Bobine anma gerilimi uygulanınca kontaktör çeker; aynı etiketli bütün kontaklar konum değiştirir. Bobin uçları A1-A2. |
-| **Zaman rölesi (düşmede gecikmeli)** | `KT1` | A1 A2 | Bobin enerjilenince kontaklar hemen değişir; enerji kesildikten sonra ayarlanan süre kadar bekleyip geri döner. |
-| **Zaman rölesi (çekmede gecikmeli)** | `KT1` | A1 A2 | Bobin enerjilenince ayarlanan süre kadar bekler, sonra gecikmeli kontakları değiştirir. Enerji kesilince hemen geri döner. |
-| **Yıldız-üçgen zaman rölesi** | `KT1` | A1 A2 17 18 28 | Bobin enerjilenince 17-18 (yıldız) kapanır; süre dolunca açılır, 50 ms sonra 17-28 (üçgen) kapanır. Bu bekleme iki kontaktörün aynı anda kapalı kalmasını önler. |
+| **Zaman rölesi (düşmede gecikmeli)** | `K1` | A1 A2 | Bobin enerjilenince kontaklar hemen değişir; enerji kesildikten sonra ayarlanan süre kadar bekleyip geri döner. |
+| **Zaman rölesi (çekmede gecikmeli)** | `K1` | A1 A2 | Bobin enerjilenince ayarlanan süre kadar bekler, sonra gecikmeli kontakları değiştirir. Enerji kesilince hemen geri döner. |
+| **Yıldız-üçgen zaman rölesi** | `K1` | A1 A2 17 18 28 | Bobin enerjilenince 17-18 (yıldız) kapanır; süre dolunca açılır, 50 ms sonra 17-28 (üçgen) kapanır. Bu bekleme iki kontaktörün aynı anda kapalı kalmasını önler. |
 
 ## Kontaklar
 
@@ -111,9 +111,9 @@ Bu sayfa programın eleman kataloğundan otomatik üretilir. Etiket sütunu otom
 
 | Eleman | Etiket | Klemensler | Açıklama |
 |---|---|---|---|
-| **Kapı sistemi 1** | `SYS1` | U V W S1a S1b S1c S1d S2a S2b S2c S2d | Motorla açılıp kapanan sürgülü kapı. Kapı tam açık ve tam kapalı konumda sınır anahtarlarına basar. |
-| **Kapı sistemi 2** | `SYS1` | U V W S1a S1b S1c S1d S2a S2b S2c S2d | Yukarı doğru açılan kapı. İki ucunda sınır anahtarı vardır. |
-| **Asansör (5 durak)** | `SYS1` | U V W S1a S1b S1c S1d S2a S2b S2c S2d S3a S3b S3c S3d S4a S4b S4c S4d S5a S5b S5c S5d | Beş duraklı asansör. Kabin bir kata gelince o katın sınır anahtarına basar. |
+| **Kapı sistemi 1** | `SYS1` | U V W 11 23 24 12 | Motorla açılıp kapanan sürgülü kapı. Kapı tam açık ve tam kapalı konumda sınır anahtarlarına basar. |
+| **Kapı sistemi 2** | `SYS1` | U V W 11 23 24 12 | Yukarı doğru açılan kapı. İki ucunda sınır anahtarı vardır. |
+| **Asansör (5 durak)** | `SYS1` | U V W 11 23 24 12 | Beş duraklı asansör. Kabin bir kata gelince o katın sınır anahtarına basar. |
 
 ## Diğer
 

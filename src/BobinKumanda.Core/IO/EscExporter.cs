@@ -79,7 +79,7 @@ public static class EscExporter
                 Rotation = c.Rotation & 3,
                 // eski programda besleme gibi sabit adlı elemanlar adsızdır ("...")
                 Label1 = c.Label.Trim().Length > 0 && c.Label.Trim() != def.DefaultLabel ? c.Label.Trim() : "...",
-                Label1Location = Round(def.LabelWorld(c)),
+                Label1Location = Round(def.LabelWorld(c, circuit)),
                 Label2 = "0"
             };
             Vec size = def.WorldSize(c);

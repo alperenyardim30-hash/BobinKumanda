@@ -75,7 +75,7 @@ internal sealed class RelayCoilSim(string voltage) : SimComponent, IDeviceMaster
 /// <summary>Zaman röleleri için ortak: süre parametresi ve etiket altında süre gösterimi.</summary>
 public abstract class TimerDefBase : CoilDefBase
 {
-    public override string LabelPrefix => "KT";
+    public override string LabelPrefix => "K";
 
     public override IReadOnlyList<ParamDef> Params =>
     [

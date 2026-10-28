@@ -8,7 +8,7 @@ namespace BobinKumanda.Core.Components;
 
 /// <summary>
 /// Hazır sistemler (eski EKTS'deki kapı ve asansör): içlerinde 3 fazlı bir motor ve konuma bağlı sınır anahtarları vardır.
-/// Her sınır anahtarı 4 klemenslidir: (a,d) dinlenmede kapalı, (b,c) tetiklenince kapalı.
+/// Her sınır anahtarı 4 klemenslidir: (a,d) dinlenmede kapalı (11-12), (b,c) tetiklenince kapalı (23-24).
 /// </summary>
 public abstract class SystemDefBase : ComponentDef
 {
@@ -30,10 +30,11 @@ public abstract class SystemDefBase : ComponentDef
             var layout = TerminalLayout;
             var list = new List<TerminalDef>();
             string[] motor = ["U", "V", "W"];
+            string[] numbers = ["11", "23", "24", "12"];
             for (int i = 0; i < layout.Length; i++)
             {
                 string id = i < 3 ? motor[i] : $"S{(i - 3) / 4 + 1}{"abcd"[(i - 3) % 4]}";
-                list.Add(new TerminalDef(id, layout[i].Pos, layout[i].Side, id));
+                list.Add(new TerminalDef(id, layout[i].Pos, layout[i].Side, i < 3 ? id : numbers[(i - 3) % 4]));
             }
             return list;
         }

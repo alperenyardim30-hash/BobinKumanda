@@ -50,6 +50,7 @@ public static class CircuitRenderer
             options.WireColorCache ?? WireColors(circuit);
         var junctionInk = new Dictionary<string, Paint>(StringComparer.Ordinal);
         var xref = options.CrossRefCache ?? Compute(circuit);
+        HashSet<(string, string)> crowded = options.ShowTerminalNumbers ? CrowdedTerminals(circuit, sheet) : [];
 
         foreach (Wire w in circuit.Wires)
         {
@@ -95,14 +96,14 @@ public static class CircuitRenderer
                 Circuit = circuit
             };
             def.Draw(new PlacedPainter(world, def, c), ctx);
-            DrawLabels(world, def, c, state);
+            DrawLabels(world, def, c, state, circuit);
             if (options.ShowTerminalNumbers)
             {
-                DrawTerminalNumbers(world, def, c, xref.Numbers.TryGetValue(c.Id, out ContactNumber n) ? n : new ContactNumber(1, false));
+                DrawTerminalNumbers(world, def, c, xref.Numbers.TryGetValue(c.Id, out ContactNumber n) ? n : new ContactNumber(1, false), crowded);
             }
             if (options.ShowCrossReference && xref.Mirror.TryGetValue(c.Id, out List<CrossRefEntry>? entries))
             {
-                DrawCrossReference(world, def, c, entries, state?.Text ?? def.SubLabel(c));
+                DrawCrossReference(world, def, c, entries, state?.Text ?? def.SubLabel(c), circuit);
             }
         }
 
@@ -124,19 +125,19 @@ public static class CircuitRenderer
     public static bool ShowsLabel(ComponentDef def, ComponentInstance c) =>
         c.Label.Length > 0 && !def.DrawsOwnLabel && !(def.DefaultLabel != null && c.Label == def.DefaultLabel);
 
-    private static void DrawLabels(ISymbolPainter world, ComponentDef def, ComponentInstance c, SymbolState? state)
+    private static void DrawLabels(ISymbolPainter world, ComponentDef def, ComponentInstance c, SymbolState? state, Circuit circuit)
     {
         Paint ink = state is { Fault: true } ? Paint.Of(Ink.Fault) : Paint.Of(Ink.Normal);
         if (ShowsLabel(def, c))
         {
             // LabelWorld etiketin sol üst köşesidir; yazı dikey ortasından hizalanır
-            world.Text(def.LabelWorld(c) + new Vec(0, LabelSize * 0.8), c.Label, LabelSize, ink, TextAlign.Left, bold: true);
+            world.Text(def.LabelWorld(c, circuit) + new Vec(0, LabelSize * 0.8), c.Label, LabelSize, ink, TextAlign.Left, bold: true);
         }
         string? sub = state?.Text ?? def.SubLabel(c);
         if (!string.IsNullOrEmpty(sub))
         {
-            Vec size = def.WorldSize(c);
-            world.Text(c.Position + new Vec(size.X / 2, size.Y + 6), sub, 6, Paint.Of(Ink.Muted));
+            (Vec at, TextAlign align) = def.SubLabelPlace(c, circuit);
+            world.Text(at, sub, 6, Paint.Of(Ink.Muted), align);
         }
     }
 
@@ -147,21 +148,69 @@ public static class CircuitRenderer
     }
 
     /// <summary>Bobinin altında, kontaklarının numaraları (üç tanesi bir satırda).</summary>
-    private static void DrawCrossReference(ISymbolPainter world, ComponentDef def, ComponentInstance c, List<CrossRefEntry> entries, string? sub)
+    private static void DrawCrossReference(ISymbolPainter world, ComponentDef def, ComponentInstance c, List<CrossRefEntry> entries, string? sub,
+        Circuit circuit)
     {
-        Vec size = def.WorldSize(c);
-        double y = c.Position.Y + size.Y + (string.IsNullOrEmpty(sub) ? 5.5 : 12);
+        (Vec at, TextAlign align) = def.SubLabelPlace(c, circuit);
+        double y = at.Y + (string.IsNullOrEmpty(sub) ? -0.5 : 6);
         for (int i = 0; i < entries.Count; i += 3)
         {
             string line = string.Join("  ", entries.Skip(i).Take(3).Select(e => e.Text));
-            world.Text(new Vec(c.Position.X + size.X / 2, y), line, 4.5, Paint.Of(Ink.Accent));
+            world.Text(new Vec(at.X, y), line, 4.5, Paint.Of(Ink.Accent), align);
             y += 6;
         }
     }
 
-    private static void DrawTerminalNumbers(ISymbolPainter world, ComponentDef def, ComponentInstance c, ContactNumber number)
+    /// <summary>Bu kadar yakın karşılıklı iki klemensin numaraları dışarı yazılırsa birbirine karışır ("14" + "11" → "1411").</summary>
+    private const double CrowdedGap = 14;
+
+    /// <summary>
+    /// Başka bir elemanın klemensine bitişik ya da çok yakın duran klemensler (eleman, klemens). Bunların numarası
+    /// dışarı değil, kendi elemanının tarafına yazılır.
+    /// </summary>
+    private static HashSet<(string, string)> CrowdedTerminals(Circuit circuit, string sheet)
     {
-        if (def.Category is ComponentCategory.Supply or ComponentCategory.Systems or ComponentCategory.Motors)
+        var ends = new List<(string C, string T, Vec P, Side S)>();
+        foreach (ComponentInstance c in circuit.Components)
+        {
+            if (c.Sheet == sheet && ComponentCatalog.Find(c.Type) is { ShowsTerminalNumbers: true } def)
+            {
+                foreach (TerminalDef t in def.Terminals)
+                {
+                    ends.Add((c.Id, t.Id, def.TerminalWorld(c, t), def.TerminalSide(c, t)));
+                }
+            }
+        }
+        var result = new HashSet<(string, string)>();
+        foreach (var a in ends)
+        {
+            if (a.S is not (Side.Right or Side.Bottom))
+            {
+                continue;
+            }
+            Side facing = a.S == Side.Right ? Side.Left : Side.Top;
+            foreach (var b in ends)
+            {
+                if (b.S != facing || b.C == a.C)
+                {
+                    continue;
+                }
+                // sağ uç → sağındaki elemanın sol ucu; alt uç → altındaki elemanın üst ucu
+                (double along, double across) = a.S == Side.Right ? (b.P.X - a.P.X, b.P.Y - a.P.Y) : (b.P.Y - a.P.Y, b.P.X - a.P.X);
+                if (Math.Abs(across) < 1 && along >= 0 && along < CrowdedGap)
+                {
+                    result.Add((a.C, a.T));
+                    result.Add((b.C, b.T));
+                }
+            }
+        }
+        return result;
+    }
+
+    private static void DrawTerminalNumbers(ISymbolPainter world, ComponentDef def, ComponentInstance c, ContactNumber number,
+        HashSet<(string, string)> crowded)
+    {
+        if (!def.ShowsTerminalNumbers)
         {
             return;
         }
@@ -174,13 +223,19 @@ public static class CircuitRenderer
             }
             Vec p = def.TerminalWorld(c, t);
             Side side = def.TerminalSide(c, t);
-            // Numara sembolün dışına yazılır: yatay uçlarda gelen kablonun üstüne, dikey uçlarda kablonun yanına
-            (Vec offset, TextAlign align) = side switch
+            // Numara sembolün dışına yazılır: yatay uçlarda gelen kablonun üstüne, dikey uçlarda kablonun yanına.
+            // Komşu elemanın klemensi hemen yanındaysa numaralar karışmasın diye kendi tarafına (içeri) yazılır.
+            bool inward = crowded.Contains((c.Id, t.Id));
+            (Vec offset, TextAlign align) = (side, inward) switch
             {
-                Side.Left => (new Vec(-1, -3.5), TextAlign.Right),
-                Side.Right => (new Vec(1, -3.5), TextAlign.Left),
-                Side.Top => (new Vec(1.5, -4), TextAlign.Left),
-                Side.Bottom => (new Vec(1.5, 4), TextAlign.Left),
+                (Side.Left, false) => (new Vec(-1, -3.5), TextAlign.Right),
+                (Side.Left, true) => (new Vec(1, -3.5), TextAlign.Left),
+                (Side.Right, false) => (new Vec(1, -3.5), TextAlign.Left),
+                (Side.Right, true) => (new Vec(-1, -3.5), TextAlign.Right),
+                (Side.Top, false) => (new Vec(1.5, -4), TextAlign.Left),
+                (Side.Top, true) => (new Vec(1.5, 4), TextAlign.Left),
+                (Side.Bottom, false) => (new Vec(1.5, 4), TextAlign.Left),
+                (Side.Bottom, true) => (new Vec(1.5, -4), TextAlign.Left),
                 _ => (new Vec(1.5, -3.5), TextAlign.Left)
             };
             world.Text(p + offset, text, 4.5, Paint.Of(Ink.Muted), align);
@@ -200,12 +255,13 @@ public static class CircuitRenderer
                 Add(r.Inflate(1));
                 if (ShowsLabel(def, c))
                 {
-                    Vec l = def.LabelWorld(c);
+                    Vec l = def.LabelWorld(c, circuit);
                     Add(new RectD(l.X, l.Y, c.Label.Length * LabelSize * 0.62, LabelSize * 1.4));
                 }
                 if (def.SubLabel(c) != null)
                 {
-                    Add(new RectD(r.X, r.Bottom, r.Width, 10));
+                    (Vec at, TextAlign align) = def.SubLabelPlace(c, circuit);
+                    Add(align == TextAlign.Left ? new RectD(at.X, at.Y - 4, 30, 10) : new RectD(r.X, r.Bottom, r.Width, 10));
                 }
             }
         }

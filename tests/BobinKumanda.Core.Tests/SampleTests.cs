@@ -43,6 +43,30 @@ public class SampleTests
         }
     }
 
+    /// <summary>Etiketler elemanın IEC 81346-2 harfiyle başlar (W otomatı F, şalter Q, röle K...): KM, KY gibi adlar kullanılmaz.</summary>
+    [Theory]
+    [MemberData(nameof(Ids))]
+    public void Sample_labels_use_the_letter_code_of_their_device(string id)
+    {
+        Circuit c = SampleLibrary.Find(id)!.Build();
+        var masters = c.Components.Where(x => Catalog.ComponentCatalog.Get(x.Type).Role == Catalog.DeviceRole.Master)
+            .Select(x => x.Label).ToHashSet();
+        foreach (ComponentInstance x in c.Components)
+        {
+            var def = Catalog.ComponentCatalog.Get(x.Type);
+            if (x.Label.Length == 0 || x.Label == def.DefaultLabel)
+            {
+                continue;
+            }
+            if (def.Role == Catalog.DeviceRole.Follower)
+            {
+                Assert.True(masters.Contains(x.Label), $"{id}: {x.Label} kontağının ana cihazı yok");
+                continue;
+            }
+            Assert.Matches("^" + def.LabelPrefix + "[0-9]+$", x.Label);
+        }
+    }
+
     [Fact]
     public void Direct_on_line_starts_the_motor_and_overload_lights_the_fault_lamp()
     {
@@ -82,11 +106,11 @@ public class SampleTests
         var (c, sim) = Start("star-delta");
         sim.Click(By(c, "S1"));
         sim.Run(2);
-        Assert.True(sim.Of(By(c, "KY", "relay-coil")).Visual.Active);
-        Assert.False(sim.Of(By(c, "KD", "relay-coil")).Visual.Active);
+        Assert.True(sim.Of(By(c, "K2", "relay-coil")).Visual.Active);
+        Assert.False(sim.Of(By(c, "K3", "relay-coil")).Visual.Active);
         sim.Run(4);
-        Assert.False(sim.Of(By(c, "KY", "relay-coil")).Visual.Active);
-        Assert.True(sim.Of(By(c, "KD", "relay-coil")).Visual.Active);
+        Assert.False(sim.Of(By(c, "K2", "relay-coil")).Visual.Active);
+        Assert.True(sim.Of(By(c, "K3", "relay-coil")).Visual.Active);
         Assert.InRange(sim.Of(By(c, "M1")).Visual.Level, 0.9, 1.0);
         Assert.Equal(SimStatus.Running, sim.Status);
     }

@@ -83,7 +83,7 @@ public static class SampleLibrary
         lad.Rung(190).Add("overload-no", "F2").End("lamp", "H2", parameters: ("lampColor", "red"));
         lad.Build();
         var p = new PowerLine(b, 470, 20);
-        p.Add("mcb-3p", "Q1");
+        p.Add("mcb-3p", "F1");
         p.Add("contact-3no", "K1");
         p.Add("overload", "F2", parameters: ("setCurrent", "3.2"));
         p.Motor("M1");
@@ -115,7 +115,7 @@ public static class SampleLibrary
         lad.Build();
 
         var p = new PowerLine(b, 560, 20);
-        p.Add("mcb-3p", "Q1", gap: 70);
+        p.Add("mcb-3p", "F1", gap: 70);
         Junction[] taps = p.Tap(p.X - 30);
         var k1 = p.Add("contact-3no", "K1", gap: 70);
         Junction[] outs = p.Tap(p.X - 50, 10);
@@ -139,15 +139,15 @@ public static class SampleLibrary
         var b = new SampleBuilder();
         var lad = new Ladder(b, 40, 560, 0);
         Rung r1 = lad.Rung(60).Add("overload-nc", "F2").Add("button-nc", "S0").Add("button-no", "S1")
-            .End("relay-coil", "KM").Parallel(2, 3, 40, ("contact-no", "KM"));
-        lad.Rung(140).From(r1, 3).End("timer-on", "KT", parameters: ("time", "4"));
-        lad.Rung(190).From(r1, 3).Add("contact-nc", "KT").Add("contact-nc", "KD").End("relay-coil", "KY");
-        lad.Rung(240).From(r1, 3).Add("contact-no", "KT").Add("contact-nc", "KY").End("relay-coil", "KD");
+            .End("relay-coil", "K1").Parallel(2, 3, 40, ("contact-no", "K1"));
+        lad.Rung(140).From(r1, 3).End("timer-on", "K4", parameters: ("time", "4"));
+        lad.Rung(190).From(r1, 3).Add("contact-nc", "K4").Add("contact-nc", "K3").End("relay-coil", "K2");
+        lad.Rung(240).From(r1, 3).Add("contact-no", "K4").Add("contact-nc", "K2").End("relay-coil", "K3");
         lad.Build();
 
         var p = new PowerLine(b, 640, 20);
-        p.Add("mcb-3p", "Q1");
-        p.Add("contact-3no", "KM");
+        p.Add("mcb-3p", "F1");
+        p.Add("contact-3no", "K1");
         p.Add("overload", "F2", gap: 70, parameters: ("setCurrent", "4.9"));
         Junction[] taps = p.Tap(p.X - 50, 10);
         // Motor 6 uçlu, yan yatırılmış: solda U1 V1 W1, sağda W2 U2 V2
@@ -159,7 +159,7 @@ public static class SampleLibrary
             b.W(taps[i], (m, first[i]), new Vec(p.X + 10, taps[i].Position.Y), new Vec(p.X + 10, to.Y));
         }
         // KD: girişleri ana hattan, çıkışları W2-U2-V2'ye (U1-W2, V1-U2, W1-V2)
-        var kd = p.Branch(taps, "contact-3no", "KD", p.X - 10, 130);
+        var kd = p.Branch(taps, "contact-3no", "K3", p.X - 10, 130);
         double right = SampleBuilder.Pos(m, "W2").X;
         for (int i = 0; i < 3; i++)
         {
@@ -168,7 +168,7 @@ public static class SampleLibrary
             b.W((kd, N(2 * i + 2)), (m, second[i]), new Vec(x, from.Y), new Vec(x, to.Y));
         }
         // KY: W2-U2-V2'yi kısa devre ederek yıldız noktası yapar
-        var ky = b.AddAt("contact-3no", "KY", "1", right + 80, p.PoleY(0));
+        var ky = b.AddAt("contact-3no", "K2", "1", right + 80, p.PoleY(0));
         for (int i = 0; i < 3; i++)
         {
             Vec to = SampleBuilder.Pos(ky, N(2 * i + 1));
@@ -192,7 +192,7 @@ public static class SampleLibrary
         lad.Build();
 
         var p = new PowerLine(b, 540, 20);
-        p.Add("mcb-3p", "Q1", gap: 70);
+        p.Add("mcb-3p", "F1", gap: 70);
         Junction[] taps = p.Tap(p.X - 30);
         p.Add("contact-3no", "K1");
         p.Motor("M1", parameters: ("powerKw", "1.5"));
@@ -217,7 +217,7 @@ public static class SampleLibrary
         lad.Rung(120).Add("contact-no", "K1").End("lamp", "H1", parameters: ("lampColor", "green"));
         lad.Build();
         var p = new PowerLine(b, 490, 20);
-        p.Add("mcb-3p", "Q1");
+        p.Add("mcb-3p", "F1");
         p.Add("contact-3no", "K1");
         p.Add("overload", "F2", parameters: ("setCurrent", "1.6"));
         p.Motor("M1", parameters: ("powerKw", "0.75"));
@@ -238,7 +238,7 @@ public static class SampleLibrary
         }
         b.W((n, "N"), (rcd, "7"));
         p.Continue([(rcd, "2"), (rcd, "4"), (rcd, "6")], SampleBuilder.Pos(rcd, "2").X + 40);
-        p.Add("mcb-3p", "Q1");
+        p.Add("mcb-3p", "F2");
         var m = p.Motor("M1");
         Vec mpe = SampleBuilder.Pos(m, "PE");
         b.W((pe, "PE"), (m, "PE"), new Vec(mpe.X, SampleBuilder.Pos(pe, "PE").Y));

@@ -476,9 +476,9 @@ public sealed class Motor6Def : ComponentDef
     public override int? LegacyType => 19;
     public override ComponentCategory Category => ComponentCategory.Motors;
     public override string LabelPrefix => "M";
-    public override string Tags => "yıldız üçgen motor 6 uçlu klemens kutusu star delta motor U1 V1 W1";
+    public override string Tags => "yıldız üçgen motor 6 uçlu klemens kutusu star delta motor U1 V1 W1 U V W X Y Z";
     public override Vec Size => new(70, 40);
-    public override Vec DefaultLabelOffset => new(40, -10);
+    public override Vec DefaultLabelOffset => new(73, 0);
 
     public override IReadOnlyList<TerminalDef> Terminals =>
     [
@@ -505,12 +505,27 @@ public sealed class Motor6Def : ComponentDef
     public override string? SubLabel(ComponentInstance c) =>
         string.Format(Loc.Culture, "{0:0.##} kW", c.GetDouble("powerKw", 4));
 
+    // Dikey çizilince kablolar klemens kutusunun ve dairenin yanlarından geçer; etiket dairenin altına yazılır
+    protected override Vec DefaultLabelOffsetFor(ComponentInstance c, Circuit? circuit) =>
+        (c.Rotation & 1) == 1 ? new Vec(2, WorldSize(c).Y + 3) : base.DefaultLabelOffsetFor(c, circuit);
+
+    // Yatay çizilince alttaki W2 U2 V2 kablolarının arasına değil dairenin altına
+    public override (Vec Anchor, TextAlign Align) SubLabelPlace(ComponentInstance c, Circuit? circuit = null)
+    {
+        if ((c.Rotation & 1) == 1)
+        {
+            return base.SubLabelPlace(c, circuit);
+        }
+        Vec center = Placement.ToWorld(new Vec(50, 20), Size, c.Rotation, c.Mirror, c.Position);
+        return (new Vec(center.X, c.Position.Y + WorldSize(c).Y + 6), TextAlign.Center);
+    }
+
     public override void Draw(ISymbolPainter p, DrawContext ctx)
     {
         Paint ink = SymbolKit.InkFor(ctx);
         if (ctx.School)
         {
-            // eski EKTS: klemens kutusu daireye bitişik, üstte U V W, altta Z X Y
+            // eski EKTS gibi klemens kutusu daireye bitişik; yazılar IEC 60034-8: üstte U1 V1 W1, altta W2 U2 V2
             var o = new Vec(50, 20);
             const double r = 20;
             double edge = o.X - Math.Sqrt(r * r - 100);
@@ -521,11 +536,11 @@ public sealed class Motor6Def : ComponentDef
                 p.Line(new Vec(x, 30), new Vec(x, 40), ink);
             }
             p.Polyline([new Vec(edge, 10), new Vec(0, 10), new Vec(0, 30), new Vec(edge, 30)], ink);
-            string[] up = ["U", "V", "W"], down = ["Z", "X", "Y"];
+            string[] up = ["U1", "V1", "W1"], down = ["W2", "U2", "V2"];
             for (int i = 0; i < 3; i++)
             {
-                p.Text(new Vec(5 + 10 * i, 14.5), up[i], 4.6, ink);
-                p.Text(new Vec(5 + 10 * i, 25.5), down[i], 4.6, ink);
+                p.Text(new Vec(5 + 10 * i, 14.5), up[i], 4, ink);
+                p.Text(new Vec(5 + 10 * i, 25.5), down[i], 4, ink);
             }
             SymbolKit.SchoolMotor(p, ctx, o, r, "M", "3~", ctx.State?.Level ?? 0, ctx.State?.Direction ?? 0, ctx.AnimTime);
             SymbolKit.MotorEarth(p, ink, new Vec(65, 40), new Vec(65, 33.2));

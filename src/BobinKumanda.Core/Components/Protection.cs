@@ -425,9 +425,9 @@ public abstract class RcdDefBase : ProtectionDefBase
 
     public override string? SubLabel(ComponentInstance c) => c.GetParam("sensitivity", "30") + " mA";
 
-    // Son kutup nötr
+    // Son kutup nötr; cihazda giriş ve çıkış ikisi de N yazar
     protected override string PoleNumber(int pole, bool output) =>
-        pole == Poles - 1 ? (output ? "N'" : "N") : base.PoleNumber(pole, output);
+        pole == Poles - 1 ? "N" : base.PoleNumber(pole, output);
 
     public override void Draw(ISymbolPainter p, DrawContext ctx)
     {

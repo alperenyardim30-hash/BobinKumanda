@@ -1149,7 +1149,7 @@ public sealed class CircuitCanvas : FrameworkElement
             gesture = Gesture.Label;
             labelOf = lc;
             labelOrig = lc.LabelOffset;
-            moveAnchor = ldef.LabelWorld(lc) - lc.Position;
+            moveAnchor = ldef.LabelWorld(lc, circuit) - lc.Position;
             return;
         }
         // Tek başına seçili bir kablonun parçası sürüklenirse köşe düzeltilir

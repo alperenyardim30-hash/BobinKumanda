@@ -127,9 +127,10 @@ public class EditorTests
         ComponentInstance k2 = CircuitEditor.AddComponent(c, "relay-coil", new Vec(0, 40), S);
         ComponentInstance kt = CircuitEditor.AddComponent(c, "timer-on", new Vec(0, 80), S);
         ComponentInstance contact = CircuitEditor.AddComponent(c, "contact-no", new Vec(60, 0), S);
-        Assert.Equal(("K1", "K2", "KT1"), (k1.Label, k2.Label, kt.Label));
-        Assert.Equal("KT1", contact.Label);
-        Assert.Equal(["K1", "K2", "KT1"], Labeler.MasterLabels(c));
+        // IEC 81346-2: zaman rölesi de bir röledir, K harfiyle sırayı sürdürür
+        Assert.Equal(("K1", "K2", "K3"), (k1.Label, k2.Label, kt.Label));
+        Assert.Equal("K3", contact.Label);
+        Assert.Equal(["K1", "K2", "K3"], Labeler.MasterLabels(c));
 
         var sel = Selection.Of(k1);
         CircuitEditor.Delete(c, sel);

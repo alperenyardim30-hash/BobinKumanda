@@ -13,19 +13,36 @@ public sealed record CrossRefEntry(string ContactId, string Text, string Sheet);
 
 /// <summary>
 /// Kontak numaraları ve çapraz referans. Aynı etiketli yardımcı kontaklar okuma sırasıyla (sayfa, yukarıdan aşağı,
-/// soldan sağa) 1, 2, 3... sıra numarası alır. Her ana cihazın (bobin, buton) altında kontaklarının listesi gösterilir.
+/// soldan sağa) 1, 2, 3... sıra numarası alır. Zaman rölesinin gecikmeli kontakları ise rölenin değiştirici
+/// kontak takımları gibi numaralanır: ilk NC 15-16, ilk NO 17-18, ikinciler 25-26 ve 27-28.
+/// Her ana cihazın (bobin, buton) altında kontaklarının listesi gösterilir.
 /// </summary>
 public static class CrossReference
 {
     public static Dictionary<string, ContactNumber> Numbers(Circuit circuit)
     {
         var result = new Dictionary<string, ContactNumber>(StringComparer.Ordinal);
+        var timers = new HashSet<string>(circuit.Components
+            .Where(c => ComponentCatalog.Find(c.Type) is TimerOnDef or TimerOffDef)
+            .Select(c => c.Label.Trim()), StringComparer.OrdinalIgnoreCase);
         foreach (var group in Followers(circuit).Where(f => f.Def.AutoNumbered).GroupBy(f => f.C.Label.Trim(), StringComparer.OrdinalIgnoreCase))
         {
-            int seq = 1;
+            bool timerRelay = timers.Contains(group.Key);
+            int seq = 1, timedNc = 0, timedNo = 0;
             foreach (var f in group)
             {
                 bool timed = FollowerContactDef.TimedFor(circuit, f.C) != TimedMark.None;
+                if (timed && timerRelay && f.Def is AuxContactDefBase aux)
+                {
+                    int n = aux.Kind switch
+                    {
+                        (true, false) => ++timedNc,
+                        (false, true) => ++timedNo,
+                        _ => timedNc = timedNo = Math.Max(timedNc, timedNo) + 1
+                    };
+                    result[f.C.Id] = new ContactNumber(n, true);
+                    continue;
+                }
                 result[f.C.Id] = new ContactNumber(seq++, timed);
             }
         }

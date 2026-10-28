@@ -650,7 +650,7 @@ sample.reversing.info | İki kontaktörle motorun dönüş yönünü değiştirm
 sample.reversing.note | S1 ileri, S2 geri, S0 durdurur. K1 ve K2'nin NC kontakları birbirini kilitler:\nkilitleme olmasa iki kontaktör birlikte çekip L1-L3 kısa devresi olurdu. | S1 forward, S2 reverse, S0 stops. The NC contacts of K1 and K2 interlock each other:\nwithout them both contactors could close and short L1 to L3.
 sample.star-delta | Yıldız-üçgen yol verme | Star-delta starting
 sample.star-delta.info | Kalkış akımını düşürmek için motor önce yıldızda, sonra üçgende çalışır. | The motor starts in star and then runs in delta to reduce the starting current.
-sample.star-delta.note | S1: KM ve KY çeker (yıldız). 4 s sonra KT, KY'yi bırakıp KD'yi çektirir (üçgen).\nPens ampermetreyi motor kablosuna takıp kalkış akımını izleyin. | S1: KM and KY pull in (star). After 4 s KT drops KY and pulls in KD (delta).\nClamp the meter on a motor wire to watch the starting current.
+sample.star-delta.note | S1: K1 (şebeke) ve K2 (yıldız) çeker. 4 s sonra zaman rölesi K4, K2'yi bırakıp K3'ü (üçgen) çektirir.\nPens ampermetreyi motor kablosuna takıp kalkış akımını izleyin. | S1: K1 (line) and K2 (star) pull in. After 4 s timer K4 drops K2 and pulls in K3 (delta).\nClamp the meter on a motor wire to watch the starting current.
 sample.sequence | Sıralı çalışma | Sequential start
 sample.sequence.info | İkinci motor ancak birincisi çalışırken çalıştırılabilir. | The second motor can only start while the first one runs.
 sample.sequence.note | Önce S1 ile M1'i çalıştırın; S2 ancak o zaman M2'yi çalıştırır. S0 ikisini de durdurur. | Start M1 with S1 first; only then does S2 start M2. S0 stops both.

@@ -118,6 +118,23 @@ public abstract class ComponentDef
     /// <summary>Etiketin altında gösterilen kısa değer (zaman rölesinde "3 s").</summary>
     public virtual string? SubLabel(ComponentInstance c) => null;
 
+    /// <summary>Klemens numaraları gösterilir. Besleme, motor ve hazır sistemlerde uç adları sembolün içindedir.</summary>
+    public virtual bool ShowsTerminalNumbers => Category is not (ComponentCategory.Supply or ComponentCategory.Systems or ComponentCategory.Motors);
+
+    /// <summary>
+    /// Alt yazının (değer, süre) ve altındaki çapraz referansın yeri. Yatay elemanda sembolün altında ortada;
+    /// dikey çizilen elemanda alttaki kablonun üstüne binmesin diye etiketin altında.
+    /// </summary>
+    public virtual (Vec Anchor, TextAlign Align) SubLabelPlace(ComponentInstance c, Circuit? circuit = null)
+    {
+        if ((c.Rotation & 1) == 1)
+        {
+            return (LabelWorld(c, circuit) + new Vec(0, CircuitRenderer.LabelSize * 1.2 + 4), TextAlign.Left);
+        }
+        Vec size = WorldSize(c);
+        return (c.Position + new Vec(size.X / 2, size.Y + 6), TextAlign.Center);
+    }
+
     public string Name => Loc.T("comp." + TypeId);
     public string Info => Loc.TryT("info." + TypeId) ?? "";
 
@@ -172,8 +189,9 @@ public abstract class ComponentDef
     public Side TerminalSide(ComponentInstance c, TerminalDef t) =>
         Placement.RotateSide(t.Side, c.Rotation, c.Mirror);
 
-    public Vec LabelWorld(ComponentInstance c) => c.Position + (c.LabelOffset ?? DefaultLabelOffsetFor(c));
+    /// <summary>Etiketin sol üst köşesi. Devre verilirse varsayılan yer devreye göre seçilebilir (zaman rölesi kontağı).</summary>
+    public Vec LabelWorld(ComponentInstance c, Circuit? circuit = null) => c.Position + (c.LabelOffset ?? DefaultLabelOffsetFor(c, circuit));
 
-    protected virtual Vec DefaultLabelOffsetFor(ComponentInstance c) =>
+    protected virtual Vec DefaultLabelOffsetFor(ComponentInstance c, Circuit? circuit) =>
         (c.Rotation & 1) == 1 ? new Vec(WorldSize(c).X + 4, 0) : DefaultLabelOffset;
 }
